@@ -1,12 +1,22 @@
-# Creates a GitHub Release with a zip of the site whenever a version tag is pushed.
-#   git tag v0.2.0 && git push origin v0.2.0
+# Creates a GitHub Release with a zip of the site.
+#
+# Two ways to run it:
+#   1. Push a version tag:   git tag -a v0.2.0 -m "v0.2.0" && git push origin v0.2.0
+#   2. Run it by hand:       Actions tab -> Release -> Run workflow -> enter a version (e.g. v0.2.0).
+#      The tag is created on the current commit of the branch you pick.
+#
 # Release notes come from the matching "## [vX.Y.Z]" section of CHANGELOG.md.
-# Tags starting with v0. are marked as pre-releases.
+# Versions starting with v0. are marked as pre-releases.
 name: Release
 
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. v0.2.0)"
+        required: true
 
 permissions:
   contents: write
@@ -14,31 +24,41 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.event.inputs.version || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Check version format
+        run: |
+          case "$VERSION" in
+            v[0-9]*.[0-9]*.[0-9]*) ;;
+            *) echo "Version must look like v1.2.3 (got: $VERSION)"; exit 1 ;;
+          esac
 
       - name: Package site
         run: |
           mkdir -p dist
-          zip -r "dist/suho-detailing-site-${GITHUB_REF_NAME}.zip" \
+          zip -r "dist/suho-detailing-site-${VERSION}.zip" \
             index.html styles.css script.js CNAME README.md CHANGELOG.md .nojekyll assets \
             -x "assets/gallery/.gitkeep"
 
       - name: Extract release notes
         run: |
-          awk -v tag="$GITHUB_REF_NAME" '
+          awk -v tag="$VERSION" '
             index($0, "## [" tag "]") == 1 { on = 1; next }
             on && /^## \[/ { exit }
             on { print }
           ' CHANGELOG.md > notes.md
-          if [ ! -s notes.md ]; then echo "Release $GITHUB_REF_NAME" > notes.md; fi
+          if [ ! -s notes.md ]; then echo "Release $VERSION" > notes.md; fi
 
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           PRE=""
-          case "$GITHUB_REF_NAME" in v0.*) PRE="--prerelease" ;; esac
-          gh release create "$GITHUB_REF_NAME" "dist/suho-detailing-site-${GITHUB_REF_NAME}.zip" \
-            --title "SUHO Detailing site $GITHUB_REF_NAME" \
+          case "$VERSION" in v0.*) PRE="--prerelease" ;; esac
+          gh release create "$VERSION" "dist/suho-detailing-site-${VERSION}.zip" \
+            --target "$GITHUB_SHA" \
+            --title "SUHO Detailing site $VERSION" \
             --notes-file notes.md $PRE

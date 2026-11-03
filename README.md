@@ -168,6 +168,8 @@ Each release is a snapshot of the site with a downloadable zip.
    git push origin v0.2.0
    ```
 
+   Or skip the terminal: on GitHub go to **Actions → Release → Run workflow**, pick `main`, and enter the version (e.g. `v0.2.0`). The workflow creates the tag for you.
+
 3. The **Release** workflow (Actions tab) creates the GitHub Release, using the changelog section as the notes and attaching `suho-detailing-site-v0.2.0.zip`. Versions starting with `v0.` are marked as pre-releases. Use `v1.0.0` for the first full launch.
 
 ---
