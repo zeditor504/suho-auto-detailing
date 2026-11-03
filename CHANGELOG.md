@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.2.0] - 2026-11-03
+
+A full visual redesign, plus automatic light and dark mode.
+
+### Added
+- **Light by day, dark after sunset.** The theme follows Houston's sunrise and sunset, worked out in the browser, and switches live while the page is open. A header button cycles Auto, Light and Dark, and remembers the visitor's choice. Theme changes play a circular reveal where supported.
+- **Why SUHO section** in a grid layout: we come to you, motorcycles too, prices up front, text/call/DM, and "Sleeves up. Hands on." Copy is based on Houston market research and limited to claims that are true today.
+- **Sticky action bar on phones** (Book, Call, Text) that appears after the hero.
+- Scrolling marquee band; floating service tags in the hero (desktop); scroll progress bar; nav highlight for the current section.
+- Animated service-area radar around Houston, TX.
+- Transparent white and near-black logo versions so the logo works on both themes.
+- Offer data for both services in the search data (JSON-LD).
+
+### Changed
+- New look throughout: drifting background light, fine grain, frosted glass surfaces, cursor-following spotlights on cards, slight 3D tilt on pricing cards, magnetic buttons with a light sweep, word-by-word headline entrance, scroll reveals, rotating red edge on the booking panel, and a large gradient wordmark in the footer.
+- Motion follows one easing curve. Hover feedback is under 250ms, and looping motion is slow. With "reduce motion" turned on, everything holds still.
+- On phones, cards use a near-solid surface instead of glass blur so scrolling stays smooth.
+
 ## [v0.1.2] - 2026-11-03
 
 ### Changed

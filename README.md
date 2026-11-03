@@ -2,18 +2,20 @@
 
 One-page site for **Sleeves-Up Hands-On Auto Detailing** (SUHO Detailing): mobile car and motorcycle detailing in Houston, TX.
 
-It's plain HTML, CSS, and a little vanilla JavaScript. There's no framework, no build step, no backend, and nothing to install. To preview it, open `index.html` in a browser.
+It's plain HTML, CSS, and vanilla JavaScript. There's no framework, no build step, no backend, and nothing to install. To preview it, open `index.html` in a browser. (Opened straight from disk, the light sweep across the hero logo doesn't run because browsers block it on `file://` pages. Everything else works, and the live site shows it all.)
 
 ```
 index.html        the page
-styles.css        all styles (brand colors are CSS variables at the top)
-script.js         config block at the top + small behaviors (links, share, gallery)
+styles.css        all styles; light and dark theme colors are CSS variables at the top
+script.js         config block at the top + behaviors (links, share, gallery, theme button, animations)
+theme.js          picks light or dark mode from Houston's sunrise and sunset (loads first, before the page paints)
 CHANGELOG.md      what changed in each release
 .github/workflows/release.yml  builds a GitHub Release (with a zip of the site) when a version tag is pushed
 .gitignore        keeps OS junk, editor folders, secrets, and build output out of git
 .nojekyll         tells GitHub Pages to serve files as-is
 assets/logo.png   original square logo (used as the social preview image)
-assets/logo-wordmark.png  logo cropped to the artwork, used in the header and hero
+assets/logo-wordmark-white.png  logo artwork on a transparent background, white (dark mode)
+assets/logo-wordmark-ink.png    the same in near-black (light mode)
 assets/favicon-48.png, assets/apple-touch-icon.png  icons cut from the logo
 assets/pricing.pdf  official price sheet, linked as "Download price sheet (PDF)"
 price-sheet/       HTML source for the price sheet PDF, with rebuild steps
@@ -50,9 +52,17 @@ To confirm nothing was missed, run this. If it prints nothing, every placeholder
 grep -n "{{" index.html script.js
 ```
 
+### Light and dark mode
+
+The site is light from sunrise to sunset in Houston and dark after sunset. `theme.js` works out the sun times in the browser from Houston's coordinates, with no outside service. It switches by itself at sunrise and sunset if the page is open.
+
+Visitors can override it with the sun/moon button in the header, which cycles **Auto → Light → Dark**. The small red "A" means automatic. Their choice is remembered on their device.
+
+To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js`.
+
 ### Brand red
 
-The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Every price, card border, button, and divider uses it, so changing it there updates all of them.
+The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Each theme block (`[data-theme="dark"]` and `[data-theme="light"]`) also has `--red-ink` (a red tuned for small text) and `--red-btn` (a slightly deeper button red so white text stays readable).
 
 The site uses one font, **Inter Tight** (Google Fonts), set by `--font` in the same place.
 
