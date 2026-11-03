@@ -16,6 +16,7 @@ assets/logo.png   original square logo (used as the social preview image)
 assets/logo-wordmark.png  logo cropped to the artwork, used in the header and hero
 assets/favicon-48.png, assets/apple-touch-icon.png  icons cut from the logo
 assets/pricing.pdf  official price sheet, linked as "Download price sheet (PDF)"
+price-sheet/       HTML source for the price sheet PDF, with rebuild steps
 assets/gallery/   drop gallery photos here
 ```
 

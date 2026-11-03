@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.1.2] - 2026-11-03
+
+### Changed
+- Price sheet PDF (`assets/pricing.pdf`) re-set in Inter Tight to match the site. Layout, colors, logo, prices, and wording are unchanged.
+
+### Added
+- `price-sheet/` folder with the price sheet's HTML source and steps to rebuild the PDF.
+
 ## [v0.1.1] - 2026-11-03
 
 ### Changed

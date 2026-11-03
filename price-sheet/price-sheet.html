@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>SUHO Detailing Price Sheet</title>
+  <!-- Source for assets/pricing.pdf. To rebuild the PDF, see price-sheet/README.md. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=block">
+  <style>
+    @page { size: letter; margin: 0; }
+
+    :root {
+      --bg: #08090b;
+      --card: #151619;
+      --red: #e5222d;
+      --white: #ffffff;
+      --text: #d4d4d8;
+      --muted: #9b9ca3;
+      --hairline: #2a2b30;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 612pt;
+      height: 792pt;
+      background: var(--bg);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: "Inter Tight", sans-serif;
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    .sheet {
+      width: 612pt;
+      height: 792pt;
+      padding: 60pt 59pt 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      display: block;
+      width: 490pt;
+      height: auto;
+    }
+
+    .hairline {
+      width: 472pt;
+      height: 1pt;
+      margin-top: 3pt;
+      background: var(--hairline);
+    }
+
+    .header {
+      margin-top: 24pt;
+      color: var(--muted);
+      font-size: 11pt;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .cards {
+      width: 100%;
+      margin-top: 22pt;
+      display: flex;
+      flex-direction: column;
+      gap: 22pt;
+    }
+
+    .card {
+      position: relative;
+      height: 155pt;
+      padding: 28pt 24pt 0 25pt;
+      background: var(--card);
+      border-radius: 11pt;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4pt;
+      background: var(--red);
+      border-radius: 2pt;
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .title {
+      color: var(--white);
+      font-size: 20pt;
+      font-weight: 700;
+      letter-spacing: -0.005em;
+      line-height: 1.15;
+    }
+
+    .subtitle {
+      margin-top: 7pt;
+      color: var(--muted);
+      font-size: 9pt;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .price {
+      color: var(--red);
+      font-size: 29pt;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      margin-top: -1pt;
+    }
+
+    .features {
+      list-style: none;
+      margin-top: 23pt;
+      font-size: 11pt;
+      line-height: 1;
+    }
+    .features li + li { margin-top: 10pt; }
+
+    .fine-print {
+      margin-top: 30pt;
+      color: var(--muted);
+      font-size: 9pt;
+      font-weight: 400;
+    }
+
+    .footer {
+      margin-top: 19pt;
+      color: var(--white);
+      font-size: 12pt;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+    }
+
+    .underline {
+      width: 200pt;
+      height: 2pt;
+      margin-top: 10pt;
+      background: var(--red);
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <img class="logo" src="sheet-logo.png" alt="Sleeves Up Hands On Auto Detailing">
+    <div class="hairline"></div>
+
+    <p class="header">MOBILE DETAILING&nbsp;&nbsp;/&nbsp;&nbsp;HOUSTON, TX</p>
+
+    <div class="cards">
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="title">AUTO REFRESH</h2>
+            <p class="subtitle">BASIC INTERIOR + EXTERIOR</p>
+          </div>
+          <p class="price">$65</p>
+        </div>
+        <ul class="features">
+          <li>Interior vacuum and surface wipe-down</li>
+          <li>Interior glass and basic exterior wash</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="title">MOTORCYCLE REFRESH</h2>
+            <p class="subtitle">BASIC WASH + DETAIL</p>
+          </div>
+          <p class="price">$50</p>
+        </div>
+        <ul class="features">
+          <li>Bodywork and accessible surfaces cleaned</li>
+          <li>Wheels, seat and finishing wipe-down</li>
+        </ul>
+      </section>
+    </div>
+
+    <p class="fine-print">Introductory pricing&nbsp;&nbsp;|&nbsp;&nbsp;Additional charges may apply for heavily soiled vehicles</p>
+    <p class="footer">DM TO BOOK&nbsp;&nbsp;•&nbsp;&nbsp;SLEEVES UP. HANDS ON.</p>
+    <div class="underline"></div>
+  </main>
+</body>
+</html>
