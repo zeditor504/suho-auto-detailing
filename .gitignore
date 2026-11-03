@@ -1,0 +1,56 @@
+# --- OS files ---
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# --- Editors / IDEs ---
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-workspace
+
+# --- Secrets and local config (never commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# --- Build and release output ---
+dist/
+build/
+*.zip
+
+# --- If tooling is ever added (Node, Python, local servers) ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.cache/
+__pycache__/
+*.py[cod]
+.venv/
+
+# --- Logs and temp files ---
+*.log
+*.tmp
+.tmp/
+
+# --- Unedited originals / working files for images ---
+assets/gallery/originals/
+*.psd
+*.ai
+*.xcf
+
+# --- Local preview / screenshot output ---
+screenshots/
+.lighthouseci/

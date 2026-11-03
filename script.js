@@ -172,4 +172,25 @@ const GALLERY = [
   document.querySelectorAll(".js-share").forEach((btn) => {
     btn.addEventListener("click", sharePage);
   });
+
+  /* ---- Scroll reveal (fade up as sections enter view) ---- */
+  const reveals = document.querySelectorAll(".reveal");
+  const reduceMotion =
+    window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!("IntersectionObserver" in window) || reduceMotion) {
+    reveals.forEach((el) => el.classList.add("in"));
+  } else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("in");
+            io.unobserve(entry.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+    );
+    reveals.forEach((el) => io.observe(el));
+  }
 })();

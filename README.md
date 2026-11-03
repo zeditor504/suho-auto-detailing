@@ -9,6 +9,9 @@ index.html        the page
 styles.css        all styles (brand colors are CSS variables at the top)
 script.js         config block at the top + small behaviors (links, share, gallery)
 CNAME             your custom domain, used by GitHub Pages
+CHANGELOG.md      what changed in each release
+.github/workflows/release.yml  builds a GitHub Release (with a zip of the site) when a version tag is pushed
+.gitignore        keeps OS junk, editor folders, secrets, and build output out of git
 .nojekyll         tells GitHub Pages to serve files as-is
 assets/logo.png   original square logo (used as the social preview image)
 assets/logo-wordmark.png  logo cropped to the artwork, used in the header and hero
@@ -147,6 +150,25 @@ dig +short suhodetailing.com
 - Paste your URL into the [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) to refresh the link preview.
 - Add the site link to your Instagram bio and your Square profile.
 - Optional: add the site in [Google Search Console](https://search.google.com/search-console) and create a Google Business Profile as a service-area business in Houston, TX.
+
+---
+
+## 5. Releases
+
+Each release is a snapshot of the site with a downloadable zip.
+
+1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
+2. Commit, then tag and push the tag:
+
+   ```bash
+   git tag -a v0.2.0 -m "v0.2.0"
+   ```
+
+   ```bash
+   git push origin v0.2.0
+   ```
+
+3. The **Release** workflow (Actions tab) creates the GitHub Release, using the changelog section as the notes and attaching `suho-detailing-site-v0.2.0.zip`. Versions starting with `v0.` are marked as pre-releases. Use `v1.0.0` for the first full launch.
 
 ---
 
