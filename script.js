@@ -7,7 +7,7 @@
 const CONFIG = {
   PHONE: "(346) 698-3058",                          // e.g. "(713) 555-0123"
   EMAIL: "uasarwar@icloud.com",                          // e.g. "hello@suhodetailing.com"
-  DOMAIN: "{{DOMAIN}}",                        // e.g. "suhodetailing.com" (no https://)
+  DOMAIN: "zeditor504.github.io/suho-auto-detailing", // site address, no https:// (swap for your own domain later)
   SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}" // e.g. "https://book.squareup.com/appointments/..."
 };
 

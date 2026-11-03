@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.1.1] - 2026-11-03
+
+### Changed
+- Site address set to the free GitHub Pages address, `zeditor504.github.io/suho-auto-detailing`, so link previews, the canonical link, and search data work as soon as Pages is on.
+- Removed the placeholder `CNAME` file (it would break the Pages build until a real domain exists). The README explains how to add one later.
+
+### Still to fill in
+- `{{SQUARE_BOOKING_URL}}`. Until set, Book buttons jump to the Contact section.
+
 ## [v0.1.0] - 2026-11-03
 
 First preview release of the SUHO Detailing one-page site.

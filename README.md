@@ -8,7 +8,6 @@ It's plain HTML, CSS, and a little vanilla JavaScript. There's no framework, no 
 index.html        the page
 styles.css        all styles (brand colors are CSS variables at the top)
 script.js         config block at the top + small behaviors (links, share, gallery)
-CNAME             your custom domain, used by GitHub Pages
 CHANGELOG.md      what changed in each release
 .github/workflows/release.yml  builds a GitHub Release (with a zip of the site) when a version tag is pushed
 .gitignore        keeps OS junk, editor folders, secrets, and build output out of git
@@ -24,11 +23,14 @@ assets/gallery/   drop gallery photos here
 
 ## 1. Fill in the placeholders
 
-Phone `(346) 698-3058` and email `uasarwar@icloud.com` are already filled in. Two placeholders remain:
+Already set:
+- Phone `(346) 698-3058` and email `uasarwar@icloud.com`.
+- Site address `zeditor504.github.io/suho-auto-detailing` (the free GitHub Pages address). To switch to your own domain later, see [Moving to a custom domain](#moving-to-a-custom-domain).
+
+One placeholder remains:
 
 | Placeholder | What to put | Example |
 |---|---|---|
-| `{{DOMAIN}}` | Your domain, without `https://` or a trailing slash | `suhodetailing.com` |
 | `{{SQUARE_BOOKING_URL}}` | Your Square Appointments booking page link | `https://book.squareup.com/appointments/...` |
 
 ### The main place: `script.js`
@@ -39,31 +41,19 @@ Until a value is filled in, the site handles it safely:
 - **Book buttons** jump to the Contact section.
 - **Call, text, and email** stay hidden.
 
-### For link previews and the domain: replace everywhere at once
-
-Facebook, iMessage, and X read link-preview tags straight from the HTML without running JavaScript. The `CNAME` file also needs the real domain. The easiest fix is to replace both placeholders in every file in one go.
-
-**Option A: your editor.** In VS Code or a similar editor, use *Find in Files* (Ctrl/Cmd+Shift+H). Replace `{{DOMAIN}}` and `{{SQUARE_BOOKING_URL}}` across the project.
-
-**Option B: one terminal command (Linux / Git Bash).** Put your real values in this command, then run it from the repo folder:
-
-```bash
-sed -i 's#{{DOMAIN}}#suhodetailing.com#g; s#{{SQUARE_BOOKING_URL}}#https://book.squareup.com/appointments/YOUR-ID#g' index.html script.js CNAME
-```
-
-On macOS, use `sed -i ''` in place of `sed -i`.
+Once you have the Square link, paste it as `SQUARE_BOOKING_URL` in `script.js`. That's the only place it's used.
 
 To confirm nothing was missed, run this. If it prints nothing, every placeholder is filled:
 
 ```bash
-grep -n "{{" index.html script.js CNAME
+grep -n "{{" index.html script.js
 ```
 
 ### Brand red
 
 The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Every price, card border, button, and divider uses it, so changing it there updates all of them.
 
-The site uses one font, **Inter Tight** (Google Fonts), set by `--font-head` and `--font-body` in the same place.
+The site uses one font, **Inter Tight** (Google Fonts), set by `--font` in the same place.
 
 ---
 
@@ -93,14 +83,22 @@ If you'd rather embed it, go to Square Dashboard → Appointments → Online Boo
 
 ---
 
-## 4. Deploy on GitHub Pages with a custom domain
+## 4. Deploy on GitHub Pages
 
 ### a. Publish the site
 
-1. Merge this branch into `main`. Make sure `CNAME` contains your real domain, not `{{DOMAIN}}`.
+1. Make `main` the default branch: **Settings → General → Default branch**, click the switch icon, pick `main`, then **Update**.
 2. On GitHub, open the repo → **Settings** → **Pages**.
 3. Under **Build and deployment**, set **Source** to *Deploy from a branch*. Set **Branch** to `main` and the folder to `/ (root)`, then click **Save**.
 4. Wait a minute or two. The site appears at `https://zeditor504.github.io/suho-auto-detailing/`.
+
+### Moving to a custom domain
+
+When you buy a domain (e.g. `suhodetailing.com`):
+
+1. Replace `zeditor504.github.io/suho-auto-detailing` with your domain in `index.html` and `script.js` (Find in Files in your editor works).
+2. Create a file named `CNAME` in the repo root containing only your domain, e.g. `suhodetailing.com`.
+3. Add the DNS records below, then connect the domain in GitHub (step c).
 
 ### b. Point your domain at GitHub (at your registrar)
 
