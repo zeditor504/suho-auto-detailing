@@ -5,8 +5,8 @@
    (Link previews and the CNAME file also need the domain; see README.)
    ===================================================================== */
 const CONFIG = {
-  PHONE: "{{PHONE}}",                          // e.g. "(713) 555-0123"
-  EMAIL: "{{EMAIL}}",                          // e.g. "hello@suhodetailing.com"
+  PHONE: "(346) 698-3058",                          // e.g. "(713) 555-0123"
+  EMAIL: "uasarwar@icloud.com",                          // e.g. "hello@suhodetailing.com"
   DOMAIN: "{{DOMAIN}}",                        // e.g. "suhodetailing.com" (no https://)
   SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}" // e.g. "https://book.squareup.com/appointments/..."
 };

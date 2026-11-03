@@ -10,23 +10,21 @@ styles.css        all styles (brand colors are CSS variables at the top)
 script.js         config block at the top + small behaviors (links, share, gallery)
 CNAME             your custom domain, used by GitHub Pages
 .nojekyll         tells GitHub Pages to serve files as-is
-assets/logo.png   logo (also used as favicon, apple-touch-icon, and social preview image)
+assets/logo.png   original square logo (used as the social preview image)
+assets/logo-wordmark.png  logo cropped to the artwork, used in the header and hero
+assets/favicon-48.png, assets/apple-touch-icon.png  icons cut from the logo
 assets/pricing.pdf  official price sheet, linked as "Download price sheet (PDF)"
 assets/gallery/   drop gallery photos here
 ```
-
-> **Before going live:** add `assets/logo.png` and `assets/pricing.pdf` to the repo if they aren't there yet. The page links to both files.
 
 ---
 
 ## 1. Fill in the placeholders
 
-There are four placeholders:
+Phone `(346) 698-3058` and email `uasarwar@icloud.com` are already filled in. Two placeholders remain:
 
 | Placeholder | What to put | Example |
 |---|---|---|
-| `{{PHONE}}` | Business phone, written the way you want it shown | `(713) 555-0123` |
-| `{{EMAIL}}` | Business email | `hello@suhodetailing.com` |
 | `{{DOMAIN}}` | Your domain, without `https://` or a trailing slash | `suhodetailing.com` |
 | `{{SQUARE_BOOKING_URL}}` | Your Square Appointments booking page link | `https://book.squareup.com/appointments/...` |
 
@@ -40,14 +38,14 @@ Until a value is filled in, the site handles it safely:
 
 ### For link previews and the domain: replace everywhere at once
 
-Facebook, iMessage, and X read link-preview tags straight from the HTML without running JavaScript. The `CNAME` file also needs the real domain. The easiest fix is to replace all four placeholders in every file in one go.
+Facebook, iMessage, and X read link-preview tags straight from the HTML without running JavaScript. The `CNAME` file also needs the real domain. The easiest fix is to replace both placeholders in every file in one go.
 
-**Option A: your editor.** In VS Code or a similar editor, use *Find in Files* (Ctrl/Cmd+Shift+H). Replace `{{PHONE}}`, `{{EMAIL}}`, `{{DOMAIN}}`, and `{{SQUARE_BOOKING_URL}}` across the project.
+**Option A: your editor.** In VS Code or a similar editor, use *Find in Files* (Ctrl/Cmd+Shift+H). Replace `{{DOMAIN}}` and `{{SQUARE_BOOKING_URL}}` across the project.
 
 **Option B: one terminal command (Linux / Git Bash).** Put your real values in this command, then run it from the repo folder:
 
 ```bash
-sed -i 's#{{PHONE}}#(713) 555-0123#g; s#{{EMAIL}}#hello@suhodetailing.com#g; s#{{DOMAIN}}#suhodetailing.com#g; s#{{SQUARE_BOOKING_URL}}#https://book.squareup.com/appointments/YOUR-ID#g' index.html script.js CNAME
+sed -i 's#{{DOMAIN}}#suhodetailing.com#g; s#{{SQUARE_BOOKING_URL}}#https://book.squareup.com/appointments/YOUR-ID#g' index.html script.js CNAME
 ```
 
 On macOS, use `sed -i ''` in place of `sed -i`.
@@ -60,7 +58,9 @@ grep -n "{{" index.html script.js CNAME
 
 ### Brand red
 
-The accent color is `--red` at the top of `styles.css`, currently `#e0262d`. To match the logo exactly, sample the red from `assets/logo.png` with any color picker and paste the hex value there. Every price, card border, button, and divider updates together.
+The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Every price, card border, button, and divider uses it, so changing it there updates all of them.
+
+The site uses one font, **Inter Tight** (Google Fonts), set by `--font-head` and `--font-body` in the same place.
 
 ---
 
