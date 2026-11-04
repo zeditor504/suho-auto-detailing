@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.5.0] - 2026-11-04
+
+### Changed
+- Service area: the 92 place names now ride a slowly turning globe instead of flat rows. Every name moves right to left at the same turn rate, curving along its latitude and narrowing toward the edges. Drawn by the new `area.js`; the long repeated name rows are gone from `index.html`.
+
+### Added
+- Terrain pulse: every 3.2 seconds one name on the front of the globe lights up in an earthy color for its terrain (blue water, green woods, silver city, sand prairie), with a 0.5 s fade in, 1 s hold and 0.5 s fade out. It never lands behind the headline. No pulses and no motion with "reduce motion".
+
 ## [v0.4.0] - 2026-11-04
 
 ### Added

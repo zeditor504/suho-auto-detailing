@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p dist
           zip -r "dist/suho-detailing-site-${VERSION}.zip" \
-            index.html styles.css script.js theme.js README.md CHANGELOG.md .nojekyll assets price-sheet \
+            index.html styles.css script.js theme.js area.js README.md CHANGELOG.md .nojekyll assets price-sheet \
             -x "assets/gallery/.gitkeep"
 
       - name: Extract release notes

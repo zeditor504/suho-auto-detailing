@@ -578,43 +578,61 @@ section[id] { scroll-margin-top: var(--nav-h); }
 #area .subhead { color: var(--label-2); }
 #area .callout { margin-top: 24px; }
 
-/* Place names drifting right to left behind the headline */
+/* Place names riding a slowly turning globe behind the headline (drawn by area.js) */
 .area {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   --names: rgba(29, 29, 31, 0.09);
+  /* terrain colors for the pulse: muted, earthy */
+  --t-woods: #4a8a5a;
+  --t-water: #3a7cb0;
+  --t-city: #8a939e;
+  --t-prairie: #b08a52;
 }
-[data-theme="dark"] .area { --names: rgba(245, 245, 247, 0.1); }
-.area-names {
+[data-theme="dark"] .area {
+  --names: rgba(245, 245, 247, 0.1);
+  --t-woods: #86c495;
+  --t-water: #86b9e2;
+  --t-city: #c9ced6;
+  --t-prairie: #dcbf8e;
+}
+.area-globe {
   position: absolute;
   inset: 0;
   z-index: -1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
   pointer-events: none;
   user-select: none;
-  /* fade out at the left and right edges */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
 }
-.area-row { overflow: hidden; white-space: nowrap; }
-.area-track {
-  display: inline-flex;
-  gap: 40px;
-  padding-right: 40px;
+.area-place {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  white-space: nowrap;
   color: var(--names);
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.2;
-  animation: area-drift calc(300s + var(--row) * 31s) linear infinite;
-  animation-delay: calc(var(--row) * -23s);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
 }
-@keyframes area-drift {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+.area-place[data-terrain="woods"] { --t: var(--t-woods); }
+.area-place[data-terrain="water"] { --t: var(--t-water); }
+.area-place[data-terrain="city"] { --t: var(--t-city); }
+.area-place[data-terrain="prairie"] { --t: var(--t-prairie); }
+/* 0.5s ease in, 1s hold, 0.5s ease out */
+.area-place.is-pulsing {
+  animation: area-pulse 2s ease-in-out;
+}
+@keyframes area-pulse {
+  0% { color: var(--names); text-shadow: 0 0 0 transparent; }
+  25%, 75% {
+    color: var(--t);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--t) 45%, transparent);
+  }
+  100% { color: var(--names); text-shadow: 0 0 0 transparent; }
 }
 /* keep the headline readable: soften the names directly behind the text */
 .area .tile-inner { position: relative; }
@@ -805,7 +823,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
   .section { padding: 96px 0; }
   .section-head { margin-bottom: 48px; }
   #area, #book { padding: 120px 0; }
-  .area-track { font-size: 28px; gap: 56px; padding-right: 56px; }
+  .area-place { font-size: 28px; }
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
   .price-card { padding: 40px 36px 36px 40px; }
   .price-card::before { top: 40px; }
@@ -841,7 +859,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
-  .area-track { animation: none; }
+  .area-place.is-pulsing { animation: none; }
   .how-scene * { animation: none !important; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }

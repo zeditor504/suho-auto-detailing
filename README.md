@@ -9,6 +9,7 @@ index.html        the page
 styles.css        all styles; light and dark theme colors are CSS variables at the top
 script.js         config block at the top + behaviors (links, share, gallery, theme button, animations)
 theme.js          picks light or dark mode from Houston's sunrise and sunset (loads first, before the page paints)
+area.js           service-area globe: the place names, their terrain colors, and the turning globe
 CHANGELOG.md      what changed in each release
 .github/workflows/release.yml  builds a GitHub Release (with a zip of the site) when a version tag is pushed
 .gitignore        keeps OS junk, editor folders, secrets, and build output out of git
@@ -58,7 +59,18 @@ The look follows apple.com and Apple's Human Interface Guidelines: content first
 
 ### Service area place names
 
-The faint names drifting behind "Houston, TX" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. The names are written directly into `index.html` (search for `area-names`), spread across 9 rows. Screen readers get the same list as one sentence, and the rows hold still for visitors who choose "reduce motion".
+The faint names behind "Houston, TX" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point.
+
+They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
+
+| Color | Terrain | Rule used |
+|---|---|---|
+| Blue | Water | On Galveston Bay, Clear Lake, Trinity Bay, the San Jacinto or Brazos River, or at least 6% water by Census area |
+| Green | Woods | Piney Woods north of Houston, and the wooded Memorial Villages |
+| Silver | City | Built-up Houston core, suburbs and the industrial east side |
+| Sand | Prairie | Coastal prairie, ranch and farm land to the west, south and east |
+
+Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. Screen readers get the full list as one sentence, and the globe holds still with no pulses for visitors who choose "reduce motion".
 
 ### Light and dark mode
 
@@ -199,7 +211,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.4.0`, `script.js?v=0.4.0` and `theme.js?v=0.4.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all three to the new version, e.g. `?v=0.4.0`.
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.5.0`, `script.js?v=0.5.0`, `theme.js?v=0.5.0` and `area.js?v=0.5.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.6.0`.
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
