@@ -8,7 +8,13 @@ const CONFIG = {
   PHONE: "(346) 698-3058",
   EMAIL: "uasarwar@icloud.com",
   DOMAIN: "zeditor504.github.io/suho-auto-detailing", // site address, no https:// (swap for your own domain later)
-  SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}"          // e.g. "https://book.squareup.com/appointments/..."
+  SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}",         // your Square Appointments booking page (see README, "Booking with Square")
+
+  // Optional: a Square link that opens straight to one service. Leave "" to use SQUARE_BOOKING_URL.
+  SQUARE_SERVICE_URLS: {
+    autoRefresh: "",        // AUTO REFRESH ($65)
+    motorcycleRefresh: ""   // MOTORCYCLE REFRESH ($50)
+  }
 };
 
 /* Gallery photos: put image files in assets/gallery/ and list them here.
@@ -44,8 +50,14 @@ const GALLERY = [
   const phoneText = isSet(CONFIG.PHONE) ? CONFIG.PHONE.trim() : "";
 
   /* ---- Links: booking, call, text, email ---- */
+  const serviceUrl = (key) => {
+    const v = CONFIG.SQUARE_SERVICE_URLS && CONFIG.SQUARE_SERVICE_URLS[key];
+    return isSet(v) ? v.trim() : booking;
+  };
   const LINKS = {
     booking: booking,
+    "booking-auto": serviceUrl("autoRefresh"),
+    "booking-motorcycle": serviceUrl("motorcycleRefresh"),
     call: tel ? "tel:" + tel : "",
     sms: tel ? "sms:" + tel : "",
     email: email ? "mailto:" + email : ""
@@ -56,7 +68,7 @@ const GALLERY = [
     const url = LINKS[kind];
     if (!url) return; // booking keeps href="#contact"; call/text/email stay hidden
     el.setAttribute("href", url);
-    if (kind === "booking") {
+    if (kind.indexOf("booking") === 0) {
       el.setAttribute("target", "_blank");
       el.setAttribute("rel", "noopener");
     }
@@ -197,6 +209,16 @@ const GALLERY = [
     }
   }
   document.querySelectorAll(".js-share").forEach((btn) => btn.addEventListener("click", sharePage));
+
+  /* ---- How-it-works scene: start when in view, pause when not ---- */
+  const how = document.getElementById("how");
+  if (how && !reduceMotion && "IntersectionObserver" in window) {
+    new IntersectionObserver((entries) => {
+      const visible = entries[0].isIntersecting;
+      if (visible) how.classList.add("how-playing"); // all parts start together
+      how.classList.toggle("how-paused", !visible);
+    }, { threshold: 0.2 }).observe(how);
+  }
 
   /* ---- Gentle fade-in as content comes into view ---- */
   const reveals = document.querySelectorAll(".reveal");

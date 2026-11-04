@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.4.0] - 2026-11-04
+
+### Added
+- How it works: one looping 8-second scene above the steps. A clock's hands turn, the clock becomes a red check mark, a location pin drops in, then a car drives in and pulls away. Step numbers 1, 2 and 3 light up red in sync. It starts when scrolled into view and pauses when off screen. With "reduce motion" it shows a still check mark.
+- Square booking wiring: optional per-service Square links (`SQUARE_SERVICE_URLS` in `script.js`) for the Book Auto Refresh and Book Motorcycle Refresh buttons. They fall back to the main booking link, then to the Contact section. README has step-by-step Square Appointments setup.
+
 ## [v0.3.2] - 2026-11-04
 
 ### Fixed

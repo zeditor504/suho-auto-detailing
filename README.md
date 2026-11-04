@@ -94,11 +94,36 @@ To show more than six photos, copy one more `<figure class="tile">...</figure>` 
 
 ---
 
-## 3. Booking (Square)
+## 3. Booking with Square
 
-The site links to your Square Appointments page instead of embedding it. Square's booking page isn't reliably embeddable in an iframe, and a link is faster and works on every phone. Every "Book" button opens it in a new tab.
+Bookings go through **Square Appointments**. The site is static (no server), so it can't hold a live calendar itself. Square handles the parts a form can't: real-time open slots, confirmations and reminders by text or email, rescheduling, an optional card on file or cancellation policy, and payment when the job is done.
 
-If you'd rather embed it, go to Square Dashboard → Appointments → Online Booking → *Add booking to your website* and copy the embed code. Then paste it inside the `<div class="book-panel">` in `index.html`, just below the Book button.
+### Set it up in Square (once)
+
+1. Sign up for or open [Square Appointments](https://squareup.com/appointments). Online booking works on the Free, Plus and Premium plans ([Square help](https://squareup.com/help/us/en/article/5355-booking-tools-for-square-appointments)).
+2. Add the two services **exactly** as on the site:
+   - **Auto Refresh**, $65. Description: "Basic interior + exterior. Interior vacuum and surface wipe-down; interior glass and basic exterior wash."
+   - **Motorcycle Refresh**, $50. Description: "Basic wash + detail. Bodywork and accessible surfaces cleaned; wheels, seat and finishing wipe-down."
+3. Tell Square you travel to customers: **Appointments → Settings → Calendar & Booking → "Where do you accept appointments?" → At the customer's location** ([Square Community](https://community.squareup.com/t5/Questions-How-To/How-can-I-set-it-up-to-take-appointments-at-the-customers/m-p/355746)). Set your business hours.
+   - Square doesn't add driving time on its own. On each service, turn on **Block extra time** to leave a gap *after* each job for the drive to the next one ([Square Community](https://community.squareup.com/t5/Questions-How-to/Appointment-apply-a-quot-travel-time-quot-buffer-between/m-p/207920)).
+   - Square has no automatic travel fee for at-location bookings ([Square Community](https://community.squareup.com/t5/Square-Appointments/How-do-I-add-a-travel-fee-for-appointments-when-customer-selects/m-p/723760)). If far-away jobs need one, say so in the service description.
+4. Turn on **text and email confirmations and reminders**. The site promises "You'll get a confirmation by text or email."
+5. Optional but recommended: a cancellation policy, and a note about the extra charge for heavily soiled vehicles in each service description.
+6. Turn on **Online Booking** and copy your booking page link (Square: Online Booking → booking site / "Share" or *Add booking to your website*).
+
+### Connect it to the site
+
+Open `script.js` and paste the link into the config block:
+
+```js
+SQUARE_BOOKING_URL: "https://book.squareup.com/appointments/....",
+```
+
+Every **Book Now** button then opens Square in a new tab. Until it's set, they jump to the Contact section.
+
+**Optional: one link per service.** If Square gives you a link that opens straight to one service, paste it under `SQUARE_SERVICE_URLS` (`autoRefresh` and `motorcycleRefresh`). The **Book Auto Refresh** and **Book Motorcycle Refresh** buttons then skip the service picker. Leave them `""` to use the main booking link.
+
+**Optional: embed instead of link.** Square's *Add booking to your website* page also gives embed code for a button or widget ([Square help](https://squareup.com/help/us/en/article/6458)). If you'd rather show Square's own widget, paste that code just below the Book Now button in the "Book your detail" section of `index.html`. The plain link is lighter, and it's what Apple-style pages do: one clear button that opens the booking flow.
 
 ---
 
@@ -174,7 +199,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.3.2`, `script.js?v=0.3.2` and `theme.js?v=0.3.2`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all three to the new version, e.g. `?v=0.4.0`.
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.4.0`, `script.js?v=0.4.0` and `theme.js?v=0.4.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all three to the new version, e.g. `?v=0.4.0`.
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:

@@ -460,6 +460,119 @@ section[id] { scroll-margin-top: var(--nav-h); }
   line-height: 1.19;
 }
 
+/* How-it-works scene: clock -> check -> pin -> car, one 8s loop.
+   Without JS, or with "reduce motion", it shows a still check mark. */
+#how { --cycle: 8s; }   /* shared by the scene and the step numbers */
+.how-scene {
+  display: flex;
+  justify-content: center;
+  margin: -8px auto 28px;
+}
+.scene { width: 190px; height: auto; overflow: visible; }
+.scene * {
+  fill: none;
+  stroke: var(--label);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.scene .s-hub { fill: var(--label); stroke: none; }
+.scene .s-check { stroke: var(--red); stroke-width: 3.5; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.scene .s-ring { stroke: var(--red); }
+.scene .s-pin-body { stroke: var(--red); }
+.scene .s-pin-dot { stroke: var(--red); }
+.scene .s-pin-shadow { fill: var(--label); stroke: none; opacity: 0; }
+.scene .s-speed path { stroke: var(--red); stroke-width: 2.5; }
+.scene .s-road { stroke: var(--separator); stroke-width: 2; }
+.s-clock, .s-pin, .s-car, .s-pin-shadow, .s-road { transform-box: fill-box; transform-origin: center; }
+.s-minute, .s-hour { transform-box: view-box; transform-origin: 120px 58px; }
+/* still frame (no animation) */
+.s-hands, .s-pin, .s-car, .s-road { opacity: 0; }
+
+/* playing: everything runs on the same clock */
+.how-playing .s-clock { animation: sc-clock var(--cycle) infinite; }
+.how-playing .s-ring { animation: sc-ring var(--cycle) infinite; }
+.how-playing .s-hands { animation: sc-hands var(--cycle) infinite; }
+.how-playing .s-minute { animation: sc-minute var(--cycle) infinite; }
+.how-playing .s-hour { animation: sc-hour var(--cycle) infinite; }
+.how-playing .s-check { animation: sc-check var(--cycle) infinite; }
+.how-playing .s-pin { animation: sc-pin var(--cycle) infinite; }
+.how-playing .s-pin-shadow { animation: sc-shadow var(--cycle) infinite; }
+.how-playing .s-car { animation: sc-car var(--cycle) infinite; }
+.how-playing .s-speed { animation: sc-speed var(--cycle) infinite; }
+.how-playing .s-road { animation: sc-road var(--cycle) infinite; }
+.how-playing .step:nth-child(1) .step-num { animation: sc-step-1 var(--cycle) infinite; }
+.how-playing .step:nth-child(2) .step-num { animation: sc-step-2 var(--cycle) infinite; }
+.how-playing .step:nth-child(3) .step-num { animation: sc-step-3 var(--cycle) infinite; }
+.how-paused * { animation-play-state: paused !important; }
+
+@keyframes sc-clock {
+  0% { opacity: 0; transform: scale(0.85); animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+  6%, 36% { opacity: 1; transform: none; animation-timing-function: ease-in; }
+  41%, 100% { opacity: 0; transform: scale(0.85); }
+}
+@keyframes sc-ring {
+  0%, 25% { stroke: var(--label); }
+  31%, 100% { stroke: var(--red); }
+}
+@keyframes sc-hands {
+  0%, 24% { opacity: 1; }
+  28%, 100% { opacity: 0; }
+}
+@keyframes sc-minute {
+  0%, 5% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  24%, 100% { transform: rotate(360deg); }
+}
+@keyframes sc-hour {
+  0%, 5% { transform: rotate(0deg); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  24%, 100% { transform: rotate(30deg); }
+}
+@keyframes sc-check {
+  0%, 26% { stroke-dashoffset: 1; animation-timing-function: cubic-bezier(0.3, 0, 0, 1); }
+  33%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes sc-pin {
+  0%, 41% { opacity: 0; transform: translateY(-26px); animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  46% { opacity: 1; transform: translateY(2px); animation-timing-function: ease-out; }
+  49%, 61% { opacity: 1; transform: none; animation-timing-function: ease-in; }
+  65%, 100% { opacity: 0; transform: scale(0.9); }
+}
+@keyframes sc-shadow {
+  0%, 43% { opacity: 0; transform: scale(0.3); }
+  48%, 61% { opacity: 0.18; transform: none; }
+  65%, 100% { opacity: 0; transform: none; }
+}
+@keyframes sc-car {
+  0%, 64% { opacity: 0; transform: translateX(-80px); animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+  72%, 82% { opacity: 1; transform: none; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  94%, 100% { opacity: 0; transform: translateX(130px); }
+}
+@keyframes sc-speed {
+  0%, 81% { opacity: 0; }
+  85% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+@keyframes sc-road {
+  0%, 63% { opacity: 0; transform: scaleX(0.4); animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+  71%, 90% { opacity: 1; transform: none; }
+  97%, 100% { opacity: 0; transform: none; }
+}
+@keyframes sc-step-1 {
+  0%, 38% { color: var(--red); }
+  42%, 97% { color: var(--label-3); }
+  100% { color: var(--red); }
+}
+@keyframes sc-step-2 {
+  0%, 38% { color: var(--label-3); }
+  42%, 63% { color: var(--red); }
+  67%, 100% { color: var(--label-3); }
+}
+@keyframes sc-step-3 {
+  0%, 63% { color: var(--label-3); }
+  67%, 96% { color: var(--red); }
+  100% { color: var(--label-3); }
+}
+
 /* ---------- Service area ---------- */
 #area { padding: 80px 0; }
 #area .subhead { color: var(--label-2); }
@@ -700,6 +813,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
   .price { font-size: 48px; }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
   .step-num { font-size: 64px; }
+  .scene { width: 230px; }
   .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
   .photo { border-radius: var(--radius); }
   .why-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
@@ -728,6 +842,7 @@ section[id] { scroll-margin-top: var(--nav-h); }
   html { scroll-behavior: auto; }
   .js .reveal { opacity: 1; transform: none; transition: none; }
   .area-track { animation: none; }
+  .how-scene * { animation: none !important; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }
 }

@@ -10,7 +10,7 @@
   <meta name="color-scheme" content="light dark">
 
   <!-- Sets light/dark (Houston sunrise to sunset) before first paint -->
-  <script src="theme.js?v=0.3.2"></script>
+  <script src="theme.js?v=0.4.0"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -38,8 +38,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap">
 
-  <link rel="stylesheet" href="styles.css?v=0.3.2">
-  <script src="script.js?v=0.3.2" defer></script>
+  <link rel="stylesheet" href="styles.css?v=0.4.0">
+  <script src="script.js?v=0.4.0" defer></script>
 
   <script type="application/ld+json">
   {
@@ -136,7 +136,7 @@
               <li>Interior glass and basic exterior wash</li>
             </ul>
             <div class="card-cta">
-              <a class="btn btn-primary" href="#contact" data-link="booking">Book Auto Refresh</a>
+              <a class="btn btn-primary" href="#contact" data-link="booking-auto">Book Auto Refresh</a>
             </div>
           </article>
 
@@ -153,7 +153,7 @@
               <li>Wheels, seat and finishing wipe-down</li>
             </ul>
             <div class="card-cta">
-              <a class="btn btn-primary" href="#contact" data-link="booking">Book Motorcycle Refresh</a>
+              <a class="btn btn-primary" href="#contact" data-link="booking-motorcycle">Book Motorcycle Refresh</a>
             </div>
           </article>
         </div>
@@ -202,6 +202,39 @@
         <header class="section-head reveal">
           <h2 class="headline" id="how-title">How it works.</h2>
         </header>
+        <!-- One looping scene: clock, check mark, location pin, car driving off.
+             The step numbers below light up in sync with it. -->
+        <div class="how-scene reveal" aria-hidden="true">
+          <svg class="scene" viewBox="56 18 128 82" width="230" height="147">
+            <g class="s-clock">
+              <circle class="s-ring" cx="120" cy="58" r="30"/>
+              <g class="s-hands">
+                <line class="s-hour" x1="120" y1="58" x2="120" y2="44"/>
+                <line class="s-minute" x1="120" y1="58" x2="120" y2="36"/>
+                <circle class="s-hub" cx="120" cy="58" r="2.2"/>
+              </g>
+              <path class="s-check" d="M106 59 l9.5 9.5 L135 49" pathLength="1"/>
+            </g>
+            <g class="s-pin">
+              <path class="s-pin-body" d="M120 86s-19-17.5-19-33a19 19 0 0 1 38 0c0 15.5-19 33-19 33z"/>
+              <circle class="s-pin-dot" cx="120" cy="53" r="6.5"/>
+            </g>
+            <ellipse class="s-pin-shadow" cx="120" cy="94" rx="14" ry="3"/>
+            <g class="s-car">
+              <g class="s-car-body">
+                <path d="M92 82v-6.5c0-1.6 1-2.8 2.6-3.1l9.4-1.7 9.6-8.2c1.4-1.2 3.2-1.9 5-1.9h18.6c2.3 0 4.5 1 6 2.8l6.6 7.4 9.4 1.6c2.3.4 3.8 2.3 3.8 4.6V82"/>
+                <path d="M106 70.5h45M118 62v8.5"/>
+                <circle cx="104" cy="83" r="6"/>
+                <circle cx="152" cy="83" r="6"/>
+                <path d="M110 83h36"/>
+              </g>
+              <g class="s-speed">
+                <path d="M70 66h12M64 74h16M72 82h8"/>
+              </g>
+            </g>
+            <line class="s-road" x1="40" y1="95" x2="200" y2="95"/>
+          </svg>
+        </div>
         <ol class="steps">
           <li class="step reveal">
             <span class="step-num" aria-hidden="true">1</span>
