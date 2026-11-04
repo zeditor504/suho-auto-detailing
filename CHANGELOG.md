@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.2] - 2026-11-04
+
+### Fixed
+- Stale styles after an update. GitHub Pages lets browsers keep files for 10 minutes, so a visitor could get the new page with the old stylesheet. The service-area names then showed as plain text. `styles.css`, `script.js` and `theme.js` are now linked with a version number (`?v=0.3.2`) that changes with each release, so browsers fetch the matching files.
+
 ## [v0.3.1] - 2026-11-04
 
 ### Added

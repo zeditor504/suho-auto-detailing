@@ -174,6 +174,8 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.3.2`, `script.js?v=0.3.2` and `theme.js?v=0.3.2`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all three to the new version, e.g. `?v=0.4.0`.
+
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
 
