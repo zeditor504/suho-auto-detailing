@@ -73,11 +73,13 @@
     root.setAttribute("data-theme", theme);
     root.setAttribute("data-theme-mode", mode);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#f5f5f3");
+    if (meta) meta.setAttribute("content", theme === "dark" ? "#161617" : "#fafafc");
     return theme;
   }
 
   apply(currentMode);
+  // Lets the stylesheet know scripts are running (used for the fade-in on scroll).
+  document.documentElement.classList.add("js");
 
   window.SUHOTheme = {
     sunTimes: sunTimes,

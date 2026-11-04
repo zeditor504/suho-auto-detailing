@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.3.0] - 2026-11-04
+
+A simpler, cleaner design modeled on apple.com and Apple's Human Interface Guidelines.
+
+### Changed
+- Full-width black and soft-gray tiles with centered headlines, Apple's type scale (hero 56, headline 48, subhead 28, body 17, small 12), semantic light/dark colors, and pill buttons (filled + outlined). Thin translucent global nav, and a small gray Apple-style footer.
+- Pricing cards: flat gray cards with hairline-separated features. The red left edge and large red right-aligned prices stay.
+- Light by day / dark after sunset stays. The appearance button now shows Automatic, Light or Dark with a single icon, and theme changes use a plain crossfade.
+- Motion reduced to a short fade-in as content scrolls into view (none with "reduce motion"). The fade-in now actually runs: in v0.2.0 a missing class meant it never did.
+
+### Removed
+- Floating tags, moving outlines, glows, cursor spotlights, card tilt, magnetic buttons, marquee, radar animation, rotating border, grain and ambient background, scroll progress bar, and the floating phone action bar.
+
 ## [v0.2.0] - 2026-11-03
 
 A full visual redesign, plus automatic light and dark mode.

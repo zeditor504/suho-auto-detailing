@@ -52,17 +52,21 @@ To confirm nothing was missed, run this. If it prints nothing, every placeholder
 grep -n "{{" index.html script.js
 ```
 
+### Design approach
+
+The look follows apple.com and Apple's Human Interface Guidelines: content first, full-width black and soft-gray tiles, centered headlines (weight 600), 17px body text, pill buttons (filled red for the main action, outlined for the second), small gray footer text, and no decorative effects. The only motion is a short fade as content scrolls into view, and it's turned off for visitors who choose "reduce motion" on their device.
+
 ### Light and dark mode
 
 The site is light from sunrise to sunset in Houston and dark after sunset. `theme.js` works out the sun times in the browser from Houston's coordinates, with no outside service. It switches by itself at sunrise and sunset if the page is open.
 
-Visitors can override it with the sun/moon button in the header, which cycles **Auto → Light → Dark**. The small red "A" means automatic. Their choice is remembered on their device.
+Visitors can override it with the appearance button in the header, which cycles **Automatic → Light → Dark**. The icon shows the current setting (half-filled circle = automatic, sun = light, moon = dark), and the footer says when the next switch happens. The choice is remembered on their device.
 
 To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js`.
 
 ### Brand red
 
-The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Each theme block (`[data-theme="dark"]` and `[data-theme="light"]`) also has `--red-ink` (a red tuned for small text) and `--red-btn` (a slightly deeper button red so white text stays readable).
+The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Each theme block (`[data-theme="light"]` and `[data-theme="dark"]`) also has `--red-text` (a red tuned for links and small text) and `--red-button` (a slightly deeper button red so white text stays readable).
 
 The site uses one font, **Inter Tight** (Google Fonts), set by `--font` in the same place.
 
