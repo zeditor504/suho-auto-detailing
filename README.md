@@ -56,6 +56,10 @@ grep -n "{{" index.html script.js
 
 The look follows apple.com and Apple's Human Interface Guidelines: content first, full-width black and soft-gray tiles, centered headlines (weight 600), 17px body text, pill buttons (filled red for the main action, outlined for the second), small gray footer text, and no decorative effects. The only motion is a short fade as content scrolls into view, and it's turned off for visitors who choose "reduce motion" on their device.
 
+### Service area place names
+
+The faint names drifting behind "Houston, TX" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. The names are written directly into `index.html` (search for `area-names`), spread across 9 rows. Screen readers get the same list as one sentence, and the rows hold still for visitors who choose "reduce motion".
+
 ### Light and dark mode
 
 The site is light from sunrise to sunset in Houston and dark after sunset. `theme.js` works out the sun times in the browser from Houston's coordinates, with no outside service. It switches by itself at sunrise and sunset if the page is open.

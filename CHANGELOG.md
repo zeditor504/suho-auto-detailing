@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.1] - 2026-11-04
+
+### Added
+- Service Area tile: the 92 Census places within 35 miles of downtown Houston (23 Census Designated Places and 69 incorporated cities, towns and villages, from the 2024 U.S. Census Gazetteer) drift slowly right to left in faint rows behind the headline. They fade at the edges and behind the text, are listed once for screen readers, and hold still with "reduce motion".
+
 ## [v0.3.0] - 2026-11-04
 
 A simpler, cleaner design modeled on apple.com and Apple's Human Interface Guidelines.
