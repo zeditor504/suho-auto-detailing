@@ -232,33 +232,60 @@
     }
   }
 
+  // Can this copy of a name light up when the globe has turned to `turn`?
+  // Same rules as the loosest pulse: facing you, inside the band, and
+  // mostly faded in (clear of the text).
+  function litAt(it, turn) {
+    var th = it.lon - turn;
+    var st = Math.sin(th), ct = Math.cos(th);
+    if (ct < 0.25) return false;
+    var y0 = it.sl, z0 = it.cl * ct;
+    var z = y0 * sinT + z0 * cosT;
+    if (z <= 0.02) return false;
+    var X = W / 2 + RX * it.cl * st, Y = H / 2 - RY * (y0 * cosT - z0 * sinT);
+    var halfW = it.w * ct / 2;
+    if (X - halfW < 8 || X + halfW > W - 8) return false;
+    var ny = it.cl * cosT + it.sl * ct * sinT;
+    return smooth(z / 0.45) * smooth(textGap(X, Y, halfW, it.h * Math.max(ny, 0.05) / 2) / TEXT_FADE) >= 0.4;
+  }
+
   // Which names can ever light up at this size? A name whose every copy
   // rides a row that stays behind the text (common on phones) never shows,
-  // so it sits out the rounds instead of holding them up. Each copy is
-  // tried at points across the front of the globe, with the same rules
-  // as the loosest pulse (see pick()).
-  var reachable = {}, reachableCount = 0;
+  // so it sits out the rounds instead of holding them up.
+  var reachable = {}, reachableCount = 0, copies = {};
   function findReachable() {
     reachable = {};
     reachableCount = 0;
-    var cx = W / 2, cy = H / 2;
+    copies = {};
     for (var i = 0; i < items.length; i++) {
-      var it = items[i], name = it.el.getAttribute("data-name");
-      if (reachable[name]) continue;
-      for (var s = -17; s <= 17; s++) {
-        var th = (s / 18) * (Math.PI / 2);
-        var st = Math.sin(th), ct = Math.cos(th);
-        var y0 = it.sl, z0 = it.cl * ct;
-        var z = y0 * sinT + z0 * cosT;
-        if (z <= 0.02 || ct < 0.25) continue;
-        var X = cx + RX * it.cl * st, Y = cy - RY * (y0 * cosT - z0 * sinT);
-        var halfW = it.w * ct / 2;
-        if (X - halfW < 8 || X + halfW > W - 8) continue;
-        var ny = it.cl * cosT + it.sl * ct * sinT;
-        var o = smooth(z / 0.45) * smooth(textGap(X, Y, halfW, it.h * Math.max(ny, 0.05) / 2) / TEXT_FADE);
-        if (o >= 0.4) { reachable[name] = true; reachableCount++; break; }
-      }
+      var name = items[i].el.getAttribute("data-name");
+      (copies[name] = copies[name] || []).push(items[i]);
     }
+    Object.keys(copies).forEach(function (name) {
+      for (var s = 0; s < 72 && !reachable[name]; s++) {
+        var turn = (s / 72) * 2 * Math.PI;
+        for (var c = 0; c < copies[name].length; c++) {
+          if (litAt(copies[name][c], turn)) { reachable[name] = true; reachableCount++; break; }
+        }
+      }
+    });
+  }
+
+  // How long until this name has to light up or miss its chance for a
+  // while: the rest of its time in view, unless another copy of it comes
+  // into view soon after. Looks ahead in 0.4 s steps, up to one turn.
+  var STEP = 400;
+  function urgency(name) {
+    var list = copies[name] || [], horizon = (2 * Math.PI) / omega, t = 0, end = -1;
+    function lit(t) {
+      for (var c = 0; c < list.length; c++) if (litAt(list[c], spin + omega * t)) return true;
+      return false;
+    }
+    for (t = STEP; t < horizon; t += STEP) {
+      if (end < 0) { if (!lit(t)) end = t; }
+      else if (lit(t)) return t - end < 2 * PULSE_EVERY ? t + horizon : end; // back soon: not urgent
+    }
+    return end < 0 ? horizon * 2 : end;
   }
 
   function frame(now) {
@@ -304,23 +331,35 @@
     }
     return left === 0 || (!reachableCount && usedCount >= PLACES.length);
   }
-  // Among the names in view, light up one that is about to turn out of
-  // view (the globe turns right to left, so: toward the left), keeping
-  // the ones just coming in for later. That way the last names of a round
-  // are rarely all around the back of the globe at once.
-  function soonest(list) {
-    list.sort(function (a, b) { return a.X - b.X; });
-    var n = Math.max(1, Math.ceil(list.length / 3));
-    return list[Math.floor(Math.random() * n)];
-  }
+  // Pick the next name: one that is about to turn out of view for a long
+  // while goes first, so the last names of a round aren't all at the back
+  // of the globe when their turn comes. Otherwise the terrain colors take
+  // turns, and among those the name leaving soonest goes first.
   function pick() {
     var want = ORDER[pulseIndex % ORDER.length];
+    var all = candidates(0.4, 0.25, want);
+    var pool = all[0].concat(all[1]);
+    if (!pool.length) return null;
+    var score = {};
+    pool.forEach(function (it) {
+      var n = it.el.getAttribute("data-name");
+      if (!(n in score)) score[n] = urgency(n);
+    });
+    var by = function (a, b) { return score[a.el.getAttribute("data-name")] - score[b.el.getAttribute("data-name")]; };
+    pool.sort(by);
+    if (score[pool[0].el.getAttribute("data-name")] <= 2 * PULSE_EVERY) return pool[0];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
     var loose = candidates(0.6, 0.35, want);
-    var looser = candidates(0.4, 0.25, want);   // late in a round, take what's in view
-    var lists = [strict[0], loose[0], strict[1], loose[1], looser[0], looser[1]];
+    var lists = [strict[0], loose[0], strict[1], loose[1], pool];
     for (var k = 0; k < lists.length; k++) {
-      if (lists[k].length) return soonest(lists[k]);
+      if (lists[k].length) {
+        lists[k].forEach(function (it) {
+          var n = it.el.getAttribute("data-name");
+          if (!(n in score)) score[n] = urgency(n);
+        });
+        lists[k].sort(by);
+        return lists[k][Math.floor(Math.random() * Math.ceil(lists[k].length / 3))];
+      }
     }
     return null;
   }
