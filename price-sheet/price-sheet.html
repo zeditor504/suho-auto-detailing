@@ -4,10 +4,17 @@
   <meta charset="utf-8">
   <title>SUHO Detailing Price Sheet</title>
   <!-- Source for assets/pricing.pdf. To rebuild the PDF, see price-sheet/README.md. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=block">
   <style>
+    /* Archivo, the same font file as the website (SIL OFL 1.1, see ../assets/fonts/OFL.txt).
+       It loads from the site's assets folder, so no internet is needed to rebuild the PDF. */
+    @font-face {
+      font-family: "Archivo";
+      src: url("../assets/fonts/archivo-latin-var.woff2") format("woff2");
+      font-weight: 400 700;
+      font-stretch: 100% 112.5%;
+      font-display: block;
+    }
+
     @page { size: letter; margin: 0; }
 
     :root {
@@ -31,7 +38,8 @@
     }
 
     body {
-      font-family: "Inter Tight", sans-serif;
+      font-family: "Archivo", Arial, sans-serif;
+      font-synthesis: none;
       color: var(--text);
       overflow: hidden;
     }
@@ -80,14 +88,6 @@
       padding: 28pt 24pt 0 25pt;
       background: var(--card);
       border-radius: 11pt;
-    }
-    .card::before {
-      content: "";
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 4pt;
-      background: var(--red);
-      border-radius: 2pt;
     }
 
     .card-head {

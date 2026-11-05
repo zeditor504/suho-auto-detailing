@@ -1,14 +1,19 @@
 /* =====================================================================
    SUHO Detailing: site config. EDIT THIS BLOCK.
-   Everything on the page that uses the phone, email, site address, or
-   booking link reads from here. Values still written as "{{...}}" are
-   treated as not set yet.
+   index.html already carries the phone number and email as plain links, so
+   the page works with scripts off. This block is the source of truth:
+   script.js rewrites those links from it. Values still written as "{{...}}"
+   are treated as not set yet.
    ===================================================================== */
 const CONFIG = {
   PHONE: "(346) 698-3058",
   EMAIL: "uasarwar@icloud.com",
   DOMAIN: "zeditor504.github.io/suho-auto-detailing", // site address, no https:// (swap for your own domain later)
-  SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}",         // your Square Appointments booking page (see README, "Booking with Square")
+
+  // Your Square Appointments booking page (see README, "Booking with Square").
+  // Until it is set, every booking button says "Text to book" and opens a text
+  // message with a short note already written.
+  SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}",
 
   // Optional: a Square link that opens straight to one service. Leave "" to use SQUARE_BOOKING_URL.
   SQUARE_SERVICE_URLS: {
@@ -17,10 +22,11 @@ const CONFIG = {
   }
 };
 
-/* Gallery photos: put image files in assets/gallery/ and list them here.
-   They fill the 6 tiles in order; empty tiles keep "Photo coming soon".
+/* Recent work: put photo files in assets/gallery/ and list them here.
+   The "Recent work" section appears once at least one photo is listed.
+   Captions: plain facts written by Umair (vehicle and service).
    Example:
-     { file: "01-sedan-exterior.jpg", alt: "Black sedan after an exterior wash" },
+     { file: "01-sedan-exterior.jpg", alt: "Black sedan after an exterior wash", caption: "Sedan, Auto Refresh" },
 */
 const GALLERY = [
 ];
@@ -62,18 +68,28 @@ const GALLERY = [
     sms: tel ? "sms:" + tel : "",
     email: email ? "mailto:" + email : ""
   };
+  // "?&body=" is the form both iPhone and Android Messages accept.
+  const smsWithBody = (body) => (LINKS.sms ? LINKS.sms + "?&body=" + encodeURIComponent(body) : "");
 
   document.querySelectorAll("[data-link]").forEach((el) => {
     const kind = el.getAttribute("data-link");
-    const url = LINKS[kind];
-    if (!url) return; // booking keeps href="#contact"; call/text/email stay hidden
-    el.setAttribute("href", url);
-    if (kind.indexOf("booking") === 0) {
+    const isBooking = kind.indexOf("booking") === 0;
+    if (isBooking && booking) {
+      el.setAttribute("href", LINKS[kind]);
       el.setAttribute("target", "_blank");
       el.setAttribute("rel", "noopener");
+      if (el.dataset.bookLabel) el.textContent = el.dataset.bookLabel;
+      return;
     }
+    const url = el.dataset.smsBody ? smsWithBody(el.dataset.smsBody) : LINKS[kind];
+    if (url) {
+      el.setAttribute("href", url);
+      return;
+    }
+    // Not set: drop the row, or send booking buttons to the contact list.
     const optional = el.closest("[data-optional]");
-    if (optional) optional.hidden = false;
+    if (optional) optional.hidden = true;
+    else if (isBooking) el.setAttribute("href", "#contact");
   });
 
   document.querySelectorAll("[data-text]").forEach((el) => {
@@ -82,17 +98,39 @@ const GALLERY = [
     if (kind === "email" && email) el.textContent = email;
   });
 
-  /* ---- Gallery ---- */
-  const tiles = document.querySelectorAll("#gallery-grid .photo");
-  GALLERY.slice(0, tiles.length).forEach((photo, i) => {
-    if (!photo || !photo.file) return;
-    const img = document.createElement("img");
-    img.src = "assets/gallery/" + photo.file;
-    img.alt = photo.alt || "SUHO Detailing work in Houston, TX";
-    img.loading = "lazy";
-    img.decoding = "async";
-    tiles[i].replaceChildren(img);
-  });
+  // Copy that only makes sense with (or without) online booking.
+  document.querySelectorAll("[data-when-booking]").forEach((el) => { el.hidden = !booking; });
+  document.querySelectorAll("[data-when-no-booking]").forEach((el) => { el.hidden = !!booking; });
+
+  /* ---- Recent work ---- */
+  const gallerySection = document.getElementById("gallery");
+  const grid = document.getElementById("gallery-grid");
+  let photos = 0;
+  if (grid) {
+    GALLERY.forEach((photo) => {
+      if (!photo || !photo.file) return;
+      const fig = document.createElement("figure");
+      fig.className = "photo";
+      const img = document.createElement("img");
+      img.src = "assets/gallery/" + photo.file;
+      img.alt = photo.alt || "SUHO Detailing work in Houston, TX";
+      img.loading = "lazy";
+      img.decoding = "async";
+      fig.appendChild(img);
+      if (photo.caption) {
+        const cap = document.createElement("figcaption");
+        cap.textContent = photo.caption;
+        fig.appendChild(cap);
+      }
+      grid.appendChild(fig);
+      photos++;
+    });
+  }
+  if (photos && gallerySection) {
+    gallerySection.hidden = false;
+    const empty = gallerySection.querySelector("[data-gallery-empty]");
+    if (empty) empty.hidden = true;
+  }
 
   /* ---- Footer year ---- */
   const year = document.querySelector("[data-year]");
@@ -115,9 +153,9 @@ const GALLERY = [
      ================================================================= */
   const Theme = window.SUHOTheme;
   const toggle = document.querySelector(".theme-toggle");
-  const themeNote = document.querySelector("[data-theme-note]");
   const MODES = ["auto", "light", "dark"];
   const NAMES = { auto: "Automatic", light: "Light", dark: "Dark" };
+  const TOASTS = { auto: "Automatic: dark after sunset in Houston", light: "Light mode", dark: "Dark mode" };
   const timeFmt = (d) =>
     d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
 
@@ -136,7 +174,6 @@ const GALLERY = [
       toggle.setAttribute("aria-label", ["Appearance: " + NAMES[mode] + ".", detail, "Switch to " + NAMES[next] + "."].filter(Boolean).join(" "));
       toggle.title = "Appearance: " + NAMES[mode];
     }
-    if (themeNote) themeNote.textContent = "Appearance: " + NAMES[mode] + (detail ? ". " + detail : "");
   }
 
   function setMode(mode) {
@@ -149,7 +186,7 @@ const GALLERY = [
     toggle.addEventListener("click", () => {
       const next = MODES[(MODES.indexOf(Theme.mode()) + 1) % MODES.length];
       setMode(next);
-      toast("Appearance: " + NAMES[next]);
+      toast(TOASTS[next]);
     });
   }
 
@@ -208,30 +245,51 @@ const GALLERY = [
       else window.prompt("Copy this link:", url);
     }
   }
-  document.querySelectorAll(".js-share").forEach((btn) => btn.addEventListener("click", sharePage));
+  document.querySelectorAll(".js-share").forEach((btn) => {
+    btn.hidden = false;
+    btn.addEventListener("click", sharePage);
+  });
 
-  /* ---- How-it-works scene: start when in view, pause when not ---- */
+  /* =================================================================
+     Motion: the how-it-works loop and the service-area globe.
+     Both stop off screen, with "reduce motion", and with the
+     "Pause animations" button (remembered on this device).
+     ================================================================= */
+  const root = document.documentElement;
+  const MOTION_KEY = "suho-motion";
+  let motion = "on";
+  try { if (localStorage.getItem(MOTION_KEY) === "paused") motion = "paused"; } catch (e) { /* storage blocked */ }
+  root.dataset.motion = motion;
+
   const how = document.getElementById("how");
+  let howVisible = false;
+  function syncHow() {
+    if (!how || reduceMotion) return;
+    if (root.dataset.motion === "paused") how.classList.remove("how-playing"); // still check-mark frame
+    else if (howVisible) how.classList.add("how-playing"); // all parts start together
+    how.classList.toggle("how-paused", !howVisible);
+  }
   if (how && !reduceMotion && "IntersectionObserver" in window) {
     new IntersectionObserver((entries) => {
-      const visible = entries[0].isIntersecting;
-      if (visible) how.classList.add("how-playing"); // all parts start together
-      how.classList.toggle("how-paused", !visible);
+      howVisible = entries[0].isIntersecting;
+      syncHow();
     }, { threshold: 0.2 }).observe(how);
   }
 
-  /* ---- Gentle fade-in as content comes into view ---- */
-  const reveals = document.querySelectorAll(".reveal");
-  if (!("IntersectionObserver" in window) || reduceMotion) {
-    reveals.forEach((el) => el.classList.add("in"));
-  } else {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("in");
-        io.unobserve(entry.target);
-      });
-    }, { rootMargin: "0px 0px -8% 0px", threshold: 0.1 });
-    reveals.forEach((el) => io.observe(el));
+  const motionBtn = document.querySelector(".js-motion");
+  const motionLabel = () => (root.dataset.motion === "paused" ? "Play animations" : "Pause animations");
+  if (motionBtn && !reduceMotion) {
+    motionBtn.textContent = motionLabel();
+    motionBtn.hidden = false;
+    motionBtn.addEventListener("click", () => {
+      root.dataset.motion = root.dataset.motion === "paused" ? "on" : "paused";
+      try {
+        if (root.dataset.motion === "paused") localStorage.setItem(MOTION_KEY, "paused");
+        else localStorage.removeItem(MOTION_KEY);
+      } catch (e) { /* storage blocked: the choice lasts for this visit only */ }
+      motionBtn.textContent = motionLabel();
+      syncHow();
+      document.dispatchEvent(new CustomEvent("suho:motion"));
+    });
   }
 })();

@@ -2,12 +2,12 @@
 
 One-page site for **Sleeves-Up Hands-On Auto Detailing** (SUHO Detailing): mobile car and motorcycle detailing in Houston, TX.
 
-It's plain HTML, CSS, and vanilla JavaScript. There's no framework, no build step, no backend, and nothing to install. To preview it, open `index.html` in a browser. (Opened straight from disk, the light sweep across the hero logo doesn't run because browsers block it on `file://` pages. Everything else works, and the live site shows it all.)
+It's plain HTML, CSS, and vanilla JavaScript. There's no framework, no build step, no backend, and nothing to install. To preview it, open `index.html` in a browser.
 
 ```
 index.html        the page
 styles.css        all styles; light and dark theme colors are CSS variables at the top
-script.js         config block at the top + behaviors (links, share, gallery, theme button, animations)
+script.js         config block at the top + behaviors (links, share, recent work, theme button, pause button)
 theme.js          picks light or dark mode from Houston's sunrise and sunset (loads first, before the page paints)
 area.js           service-area globe: the place names, their terrain colors, and the turning globe
 CHANGELOG.md      what changed in each release
@@ -16,11 +16,12 @@ CHANGELOG.md      what changed in each release
 .nojekyll         tells GitHub Pages to serve files as-is
 assets/logo.png   original square logo (used as the social preview image)
 assets/logo-wordmark-white.png  logo artwork on a transparent background, white (dark mode)
-assets/logo-wordmark-ink.png    the same in near-black (light mode)
+assets/logo-wordmark-ink.png    the same in black (light mode)
 assets/favicon-48.png, assets/apple-touch-icon.png  icons cut from the logo
 assets/pricing.pdf  official price sheet, linked as "Download price sheet (PDF)"
 price-sheet/       HTML source for the price sheet PDF, with rebuild steps
-assets/gallery/   drop gallery photos here
+assets/gallery/   drop photos of real jobs here (see section 2)
+assets/fonts/     Archivo, the site's one font (self-hosted), and its license OFL.txt
 ```
 
 ---
@@ -39,11 +40,11 @@ One placeholder remains:
 
 ### The main place: `script.js`
 
-Open `script.js` and edit the `CONFIG` block at the top. That alone sets up every Book button, the tap-to-call, tap-to-text, and email links, and the structured data (JSON-LD).
+Open `script.js` and edit the `CONFIG` block at the top. That sets every booking button and the call, text, and email links. `index.html` also carries the phone number and email as plain links, so the page works even with scripts off; `script.js` rewrites them from `CONFIG` when the page loads. If you change the phone number, change it in `CONFIG` and in `index.html` (and the `telephone` line of the JSON-LD in `<head>`).
 
 Until a value is filled in, the site handles it safely:
-- **Book buttons** jump to the Contact section.
-- **Call, text, and email** stay hidden.
+- **Booking buttons** say "Text to book" and open a text message to the business number with a short note already written ("Hi, I'd like to book an Auto Refresh."). Step 1 of How it works reads "Text or call with your vehicle, your location and a time that works." Nothing on the page mentions Square or online booking.
+- **Call, text, and email** rows are dropped if their value is removed.
 
 Once you have the Square link, paste it as `SQUARE_BOOKING_URL` in `script.js`. That's the only place it's used.
 
@@ -55,11 +56,19 @@ grep -n "{{" index.html script.js
 
 ### Design approach
 
-The look follows apple.com and Apple's Human Interface Guidelines: content first, full-width black and soft-gray tiles, centered headlines (weight 600), 17px body text, pill buttons (filled red for the main action, outlined for the second), small gray footer text, and no decorative effects. The only motion is a short fade as content scrolls into view, and it's turned off for visitors who choose "reduce motion" on their device.
+The page reads like a printed rate card from a one-person trade. The rules are written at the top of `styles.css`; in short:
+
+- **One column.** Everything sits in a 640px left-aligned column (16px side margins on phones). The service-area band is the only full-width, tinted, centered block.
+- **The logo's colors.** White page by day, black after sunset, black or near-white text. Red (`#ff0005`, sampled from the logo) marks only the logo, the booking button, the short footer rule and the check mark in the how-it-works drawing. Links are underlined in their own text color.
+- **One font, two weights.** Archivo at 400 and 700. The headline and the two prices use its wider 112.5% width; everything else is normal width. Five sizes in all (36/48, 26/32, 20, 17 and 15 px), no letter-spacing anywhere, and no small caps labels above headings.
+- **Nothing decorative.** No cards, shadows, blur, stripes or sticky bars. Thin lines appear only between the price features and between contact rows. One 4px corner radius, one button style.
+- **Motion** is the how-it-works loop, the globe and a short crossfade when the theme changes. Both scenes stop when scrolled off screen, with the **Pause animations** button in the footer (remembered on the device), and for visitors who choose "reduce motion".
+
+Copy rules: sentence case, no periods on headings or buttons, no rhetorical questions, and every line states something a customer can check (price, what's included, where, how to book, how to reach).
 
 ### Service area place names
 
-The faint names behind "Houston, TX" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point.
+The faint names behind "Houston, TX and surrounding areas" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point.
 
 They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
 
@@ -70,39 +79,41 @@ They ride around a slowly turning globe, right to left, all at the same turn rat
 | Silver | City | Built-up Houston core, suburbs and the industrial east side |
 | Sand | Prairie | Coastal prairie, ranch and farm land to the west, south and east |
 
-Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. Screen readers get the full list as one sentence, and the globe holds still with no pulses for visitors who choose "reduce motion".
+Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration, so screen readers skip it; the visible sentence below the heading names nine well-known places (Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land). It holds still with no pulses for visitors who choose "reduce motion" or press **Pause animations**.
 
 ### Light and dark mode
 
 The site is light from sunrise to sunset in Houston and dark after sunset. `theme.js` works out the sun times in the browser from Houston's coordinates, with no outside service. It switches by itself at sunrise and sunset if the page is open.
 
-Visitors can override it with the appearance button in the header, which cycles **Automatic → Light → Dark**. The icon shows the current setting (half-filled circle = automatic, sun = light, moon = dark), and the footer says when the next switch happens. The choice is remembered on their device.
+Visitors can override it with the appearance button in the header, which cycles **Automatic → Light → Dark**. The icon shows the current setting (half-filled circle = automatic, sun = light, moon = dark), and the button's tooltip and screen-reader label say when the next switch happens. The choice is remembered on their device.
 
 To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js`.
 
-### Brand red
+### Colors and font
 
-The accent color is `--red` at the top of `styles.css`: `#ff0005`, sampled from the logo. Each theme block (`[data-theme="light"]` and `[data-theme="dark"]`) also has `--red-text` (a red tuned for links and small text) and `--red-button` (a slightly deeper button red so white text stays readable).
+The colors are CSS variables at the top of `styles.css`, one block per theme (`[data-theme="light"]` and `[data-theme="dark"]`): `--bg`, `--tint` (the service-area band), `--label` (all text), `--label-2` (fine print and footer only), `--separator` (thin lines), `--red` and `--red-hover` (the button). The booking button's label is 20px bold so white text on the logo red stays readable.
 
-The site uses one font, **Inter Tight** (Google Fonts), set by `--font` in the same place.
+The site uses one font, **Archivo** (SIL Open Font License 1.1), self-hosted from `assets/fonts/archivo-latin-var.woff2`, so there's no request to Google Fonts. The license, `assets/fonts/OFL.txt`, has to stay next to the font file. If you ever swap the file, give the new one a new name, because browsers keep fonts for a long time.
 
 ---
 
-## 2. Add gallery photos
+## 2. Add photos of real jobs (Recent work)
 
-1. Put photos in `assets/gallery/`. Use JPG or WebP, about 1200px wide and under 300 KB each so the page stays fast. Landscape (4:3) fits the tiles best.
+The **Recent work** section stays hidden until it has a photo, so the page never shows empty "coming soon" boxes.
+
+1. Put photos in `assets/gallery/`. Use JPG or WebP, about 1200px wide and under 300 KB each so the page stays fast. Landscape (4:3) fits best.
 2. List them in the `GALLERY` array in `script.js`, in the order you want them shown:
 
    ```js
    const GALLERY = [
-     { file: "01-truck-interior.jpg", alt: "Pickup truck interior after vacuum and wipe-down" },
-     { file: "02-motorcycle.jpg",     alt: "Motorcycle after a wash and detail" },
+     { file: "01-truck-interior.jpg", alt: "Pickup truck interior after vacuum and wipe-down", caption: "Pickup, Auto Refresh" },
+     { file: "02-motorcycle.jpg",     alt: "Motorcycle after a wash and detail",               caption: "Motorcycle Refresh" },
    ];
    ```
 
-3. Photos fill the six tiles in order. Any tile without a photo keeps "Photo coming soon". Write a short, real description for each `alt`, since screen readers and search engines use it.
+3. The section appears with the first photo listed. Write a short, real description for each `alt` (screen readers and search engines use it). `caption` is optional: plain facts only, the vehicle and the service.
 
-To show more than six photos, copy one more `<figure class="tile">...</figure>` line inside `#gallery-grid` in `index.html` for each extra photo.
+To show the section before there are photos, with a line pointing to Instagram, delete the word `hidden` from `<section id="gallery" ... hidden>` in `index.html`. Only do that once the Instagram account shows real jobs.
 
 ---
 
@@ -119,7 +130,7 @@ Bookings go through **Square Appointments**. The site is static (no server), so 
 3. Tell Square you travel to customers: **Appointments → Settings → Calendar & Booking → "Where do you accept appointments?" → At the customer's location** ([Square Community](https://community.squareup.com/t5/Questions-How-To/How-can-I-set-it-up-to-take-appointments-at-the-customers/m-p/355746)). Set your business hours.
    - Square doesn't add driving time on its own. On each service, turn on **Block extra time** to leave a gap *after* each job for the drive to the next one ([Square Community](https://community.squareup.com/t5/Questions-How-to/Appointment-apply-a-quot-travel-time-quot-buffer-between/m-p/207920)).
    - Square has no automatic travel fee for at-location bookings ([Square Community](https://community.squareup.com/t5/Square-Appointments/How-do-I-add-a-travel-fee-for-appointments-when-customer-selects/m-p/723760)). If far-away jobs need one, say so in the service description.
-4. Turn on **text and email confirmations and reminders**. The site promises "You'll get a confirmation by text or email."
+4. Turn on **text and email confirmations and reminders**. Once they're on, you can add a line saying so inside the Square-only block in the Contact section of `index.html` (`<div class="contact-book" data-when-booking hidden>`).
 5. Optional but recommended: a cancellation policy, and a note about the extra charge for heavily soiled vehicles in each service description.
 6. Turn on **Online Booking** and copy your booking page link (Square: Online Booking → booking site / "Share" or *Add booking to your website*).
 
@@ -131,11 +142,11 @@ Open `script.js` and paste the link into the config block:
 SQUARE_BOOKING_URL: "https://book.squareup.com/appointments/....",
 ```
 
-Every **Book Now** button then opens Square in a new tab. Until it's set, they jump to the Contact section.
+Every booking button then opens Square in a new tab: "Text to book" becomes **Book now**, and the per-service links become **Book Auto Refresh** and **Book Motorcycle Refresh**. Step 1 of How it works switches to "Pick a service and time online.", and a **Book now** button with one line about the Square booking page appears in the Contact section. Until it's set, booking works by text message.
 
-**Optional: one link per service.** If Square gives you a link that opens straight to one service, paste it under `SQUARE_SERVICE_URLS` (`autoRefresh` and `motorcycleRefresh`). The **Book Auto Refresh** and **Book Motorcycle Refresh** buttons then skip the service picker. Leave them `""` to use the main booking link.
+**Optional: one link per service.** If Square gives you a link that opens straight to one service, paste it under `SQUARE_SERVICE_URLS` (`autoRefresh` and `motorcycleRefresh`). The **Book Auto Refresh** and **Book Motorcycle Refresh** links then skip the service picker. Leave them `""` to use the main booking link.
 
-**Optional: embed instead of link.** Square's *Add booking to your website* page also gives embed code for a button or widget ([Square help](https://squareup.com/help/us/en/article/6458)). If you'd rather show Square's own widget, paste that code just below the Book Now button in the "Book your detail" section of `index.html`. The plain link is lighter, and it's what Apple-style pages do: one clear button that opens the booking flow.
+**Optional: embed instead of link.** Square's *Add booking to your website* page also gives embed code for a button or widget ([Square help](https://squareup.com/help/us/en/article/6458)). If you'd rather show Square's own widget, paste that code inside the Square-only block in the Contact section of `index.html`. The plain link is lighter: one clear button that opens the booking flow.
 
 ---
 
@@ -211,7 +222,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.5.0`, `script.js?v=0.5.0`, `theme.js?v=0.5.0` and `area.js?v=0.5.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.6.0`.
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.6.0`, `script.js?v=0.6.0`, `theme.js?v=0.6.0` and `area.js?v=0.6.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.7.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
@@ -234,3 +245,5 @@ Each release is a snapshot of the site with a downloadable zip.
 
 - Prices and services come from the official price sheet. Don't change, round, or add prices or services.
 - No reviews, testimonials, ratings, customer counts, years in business, or guarantees until they actually exist.
+- The price list keeps the price sheet's wording exactly, including the line "MOBILE DETAILING / HOUSTON, TX", which is the heading of the price list.
+- Only add facts Umair has confirmed (hours, payment, vehicle sizes, service radius). Add each as one plain sentence; never as a new price.

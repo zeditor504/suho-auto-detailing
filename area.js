@@ -1,6 +1,6 @@
 /* SUHO Detailing: service-area globe.
    The 92 Census places within 35 miles of downtown Houston ride around a
-   slowly turning globe behind "Houston, TX". Every few seconds one name
+   slowly turning globe behind "Houston, TX and surrounding areas". Every few seconds one name
    lights up in the color of its terrain.
 
    Terrain is a general read of each place's geography:
@@ -48,7 +48,7 @@
   var area = document.getElementById("area");
   var layer = area && area.querySelector(".area-globe");
   if (!layer) return;
-  var heading = area.querySelector(".tile-inner");
+  var heading = area.querySelector(".area-inner");
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var items = [];          // { el, w, h, lat, lon, sl, cl, terrain }
@@ -220,8 +220,9 @@
     e.target.classList.remove("is-pulsing");
   });
 
+  function paused() { return document.documentElement.dataset.motion === "paused"; } // "Pause animations" (script.js)
   function start() {
-    if (running || reduceMotion || !visible || document.hidden) return;
+    if (running || reduceMotion || paused() || !visible || document.hidden) return;
     running = true;
     last = 0;
     raf = requestAnimationFrame(frame);
@@ -246,6 +247,9 @@
   });
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) stop(); else start();
+  });
+  document.addEventListener("suho:motion", function () {
+    if (paused()) stop(); else start(); // names stay where they are while stopped
   });
 
   rebuild();

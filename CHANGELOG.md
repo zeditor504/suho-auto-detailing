@@ -1,5 +1,31 @@
 # Changelog
 
+## [v0.6.0] - 2026-11-05
+
+A plainer page: one column that reads like a printed rate card, in a new font, with the stock "landing page" parts taken out.
+
+### Changed
+- Font: **Archivo** (SIL OFL 1.1), self-hosted from `assets/fonts/` and preloaded, replacing Inter Tight from Google Fonts. Two weights (400 and 700); the headline and the two prices use Archivo's wider 112.5% width. Five type sizes, no letter-spacing anywhere. The price sheet PDF is set in the same file; its wording is unchanged word for word.
+- Layout: one 640px left-aligned column on a plain white (day) or black (night) page. The service-area globe is the only full-width, tinted, centered block. One 4px radius, one red button with a 20px bold label.
+- Colors now come straight from the logo: pure black and white, gray with no tint, and the logo red `#ff0005`. Red marks only the logo, the booking button, the footer rule and the check mark in the how-it-works drawing. The light-mode wordmark is recolored to pure black.
+- Top of the page: the logo and the theme button, with no sticky nav bar. The hero is left-aligned with one button and the phone number beside it.
+- Prices: "MOBILE DETAILING / HOUSTON, TX" is now the heading of the price list (text unchanged). The two services are stacked rows with thin lines between the features, not cards; the red edge stripe is gone. Each has its own booking link.
+- Booking before Square is set up: every booking button says "Text to book" and opens a text message with a note already written (for example "Hi, I'd like to book an Auto Refresh."). Step 1 of How it works matches. Once `SQUARE_BOOKING_URL` is set, they switch to "Book now" / "Book Auto Refresh" / "Book Motorcycle Refresh" and open Square, and the Square line and button appear in Contact.
+- How it works: one column; the step numbers darken in turn with the scene, and the drawing is black except for the red check mark.
+- Service area: one heading, "Houston, TX and surrounding areas", a visible sentence naming nine nearby places, and "To check your address, text us or send a DM on Instagram." The pulse no longer glows.
+- Contact: one plain list (Call, Text, Email, Instagram) that also takes over the old "Book your detail" block.
+- Footer: "SLEEVES UP. HANDS ON." with its short red rule, the copyright line, and Share this site.
+- JSON-LD telephone is written in international form (`+1-346-698-3058`). Browser theme color is now pure white or black.
+
+### Added
+- Pause animations button in the footer. It stops the how-it-works loop and the globe, and the choice is remembered on the device. Hidden for visitors who choose "reduce motion" (nothing moves for them anyway).
+- `assets/fonts/OFL.txt`, the font license.
+
+### Removed
+- The "Why SUHO" icon cards, the sticky nav bar and its links, the "See Pricing" button, the black "Book your detail" tile and its confirmation line, the six "Photo coming soon" boxes, the footer link columns and theme note, the small caps "SERVICE AREA" and "SLEEVES UP. HANDS ON." labels above headings, periods on headings, and the fade-in on scroll.
+- Recent work (the old gallery) is hidden until the first photo is listed in `script.js`.
+- The hidden 92-name sentence for screen readers; the visible sentence replaces it.
+
 ## [v0.5.0] - 2026-11-04
 
 ### Changed
