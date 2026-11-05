@@ -56,8 +56,7 @@
   var pulseTimer = 0, pulseKick = 0, pulseIndex = 0;
   var lastName = "";       // the name that lit up last: never lights up twice in a row
   var used = {};           // names that have lit up this round (each place once per round)
-  var usedCount = 0, skipped = 0;
-  var MAX_SKIPS = 4;       // pulses to wait for an unused name to turn into view before starting a new round
+  var usedCount = 0, waitingSince = 0;
   var textBoxes = [];      // the text's line boxes, relative to the band, padded by TEXT_PAD
   var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
 
@@ -259,18 +258,20 @@
   }
   // Every place lights up once per round, in no fixed order, and the same
   // name never lights up twice in a row (other copies of it included).
-  // If no unused name is in view, wait for the globe to turn one in; after
-  // a few empty tries (or once every place has had its turn), start a new round.
+  // A new round starts once all the places have had a turn. If no unused
+  // name is in view, the pulse waits for the globe to turn one in; only if
+  // a whole turn of the globe goes by without one does a new round start.
   function newRound() {
     used = {};
     usedCount = 0;
-    skipped = 0;
+    waitingSince = 0;
   }
   function pick() {
     var want = ORDER[pulseIndex % ORDER.length];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
     var loose = candidates(0.6, 0.35, want);
-    var lists = [strict[0], loose[0], strict[1], loose[1]];
+    var looser = candidates(0.4, 0.25, want);   // late in a round, take what's in view
+    var lists = [strict[0], loose[0], strict[1], loose[1], looser[0], looser[1]];
     for (var k = 0; k < lists.length; k++) {
       if (lists[k].length) return lists[k][Math.floor(Math.random() * lists[k].length)];
     }
@@ -281,13 +282,15 @@
     if (usedCount >= PLACES.length) newRound();
     var it = pick();
     if (!it) {
-      if (++skipped < MAX_SKIPS) return;
+      var now = Date.now();
+      if (!waitingSince) waitingSince = now;
+      if (now - waitingSince < (2 * Math.PI) / omega) return; // one full turn
       newRound();
       it = pick();
       if (!it) return;
     }
     pulseIndex++;
-    skipped = 0;
+    waitingSince = 0;
     lastName = it.el.getAttribute("data-name");
     used[lastName] = true;
     usedCount++;
