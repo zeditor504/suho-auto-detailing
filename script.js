@@ -216,7 +216,7 @@ const GALLERY = [
   /* =================================================================
      Motion: the how-it-works loop and the service-area globe.
      Both stop off screen, with "reduce motion", and with the
-     "Pause animations" button (remembered on this device).
+     play/pause button in the service-area band (remembered on this device).
      ================================================================= */
   const root = document.documentElement;
   const MOTION_KEY = "suho-motion";

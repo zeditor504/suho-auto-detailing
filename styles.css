@@ -102,7 +102,7 @@ h1 {
 }
 h2 { font-size: var(--fs-2); line-height: var(--lh-2); }
 p { text-wrap: pretty; }
-h1, h2, .lead { text-wrap: balance; }
+h1, h2, .lead, .area-radius { text-wrap: balance; }
 a { color: inherit; }
 
 :focus-visible {
@@ -288,7 +288,7 @@ main > .hero { padding: var(--s-6) 0 var(--s-4); }
 }
 
 /* How-it-works scene: clock -> check -> pin -> car, one 8s loop.
-   Without JS, with "reduce motion" or "Pause animations", it shows a still check mark. */
+   Without JS, with "reduce motion" or when paused, it shows a still check mark. */
 #how { --cycle: 8s; }   /* shared by the scene and the step numbers */
 .how-scene {
   display: flex;

@@ -36,6 +36,7 @@
   var TILT = 0.14;         // radians: the globe leans toward you a little, so rows curve like latitudes
   var LAT_MAX = 1.08;      // radians: top and bottom rows (about 62 degrees)
   var PULSE_EVERY = 3200;  // ms between pulses; each pulse is 0.5s in, 1s hold, 0.5s out (see styles.css)
+  var COPIES = 2.5;        // at most about this many copies of each name around the whole globe
   var TEXT_PAD = 12;       // px of clear space kept around each line of the service-area text
   var TEXT_FADE = 32;      // px beyond that over which a name fades back in
                            // (both smaller on phones, where the text fills more of the band)
@@ -59,6 +60,7 @@
   function build() {
     layer.textContent = "";
     items = [];
+    widths = {};             // fonts may have changed since the last build
     W = area.clientWidth;
     H = area.clientHeight;
     if (!W || !H) return;
@@ -81,6 +83,14 @@
     // Rows evenly spaced in latitude. Text shrinks vertically toward the poles,
     // so the rows never touch.
     var rows = Math.max(3, Math.floor((2 * LAT_MAX * RY) / (lineH * 1.55)) + 1);
+
+    // With a short list, spread the names out instead of repeating them:
+    // widen the gap so the rings hold about COPIES copies of each name.
+    var totalRing = 0, sumW = 0;
+    for (var q = 0; q < rows; q++) totalRing += 2 * Math.PI * RX * Math.cos(-LAT_MAX + (2 * LAT_MAX * q) / (rows - 1));
+    PLACES.forEach(function (p) { sumW += measure(p[0]); });
+    gap = Math.max(gap, totalRing / (COPIES * PLACES.length) - sumW / PLACES.length);
+
     var frag = document.createDocumentFragment();
     var spans = [], next = 0;
 
@@ -123,18 +133,19 @@
     draw();
   }
 
-  var measurer;
+  var measurer, widths = {};
   function measure(text) {
     if (!measurer) {
       measurer = document.createElement("span");
       measurer.className = "area-place";
       measurer.style.visibility = "hidden";
     }
+    if (widths[text]) return widths[text];
     measurer.setAttribute("data-name", text);
     layer.appendChild(measurer);
     var w = measurer.offsetWidth;
     layer.removeChild(measurer);
-    return w;
+    return (widths[text] = w);
   }
 
   // Line boxes of the heading and paragraphs (links included) and the
@@ -249,9 +260,9 @@
     e.target.classList.remove("is-pulsing");
   });
 
-  // script.js sets data-motion ("on" or "paused", from the Pause animations
+  // script.js sets data-motion ("on" or "paused", from the play/pause
   // button) before this file runs. If it is missing, script.js failed and
-  // there is no Pause button, so the globe holds still.
+  // there is no play/pause button, so the globe holds still.
   function motionAllowed() { return document.documentElement.dataset.motion === "on"; }
   function start() {
     if (running || reduceMotion || !motionAllowed() || !visible || document.hidden) return;
@@ -288,6 +299,7 @@
   // "Reduce motion" switched on or off during the visit.
   function onMotionPref() {
     reduceMotion = motionQuery.matches;
+    textBoxes = measureText(); // the play/pause button shows or hides with this setting
     if (reduceMotion) stop(); else start();
   }
   if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotionPref);

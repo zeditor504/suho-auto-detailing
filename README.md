@@ -7,7 +7,7 @@ It's plain HTML, CSS, and vanilla JavaScript. There's no framework, no build ste
 ```
 index.html        the page
 styles.css        all styles; light and dark theme colors are CSS variables at the top
-script.js         config block at the top + behaviors (links, share, recent work, theme button, pause button)
+script.js         config block at the top + behaviors (links, share, recent work, sunrise/sunset theme switch, play/pause button)
 theme.js          picks light or dark mode from Houston's sunrise and sunset (loads first, before the page paints)
 area.js           service-area globe: the place names, their terrain colors, and the turning globe
 CHANGELOG.md      what changed in each release
@@ -70,7 +70,7 @@ Copy rules: sentence case, no periods on headings or buttons, no rhetorical ques
 
 The service radius is **25 miles from downtown Houston**, stated on the page as "We travel up to 25 miles from downtown Houston." and in the JSON-LD as a 25-mile circle (`areaServed`, 40,234 m).
 
-The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius: Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
+The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius (each shows up about two or three times around the whole globe, so few names repeat on the visible side): Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
 
 They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
 
@@ -93,7 +93,7 @@ To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js
 
 ### Colors and font
 
-The colors are CSS variables at the top of `styles.css`, one block per theme (`[data-theme="light"]` and `[data-theme="dark"]`): `--bg`, `--tint` (the service-area band), `--label` (all text), `--label-2` (fine print and footer only), `--separator` (thin lines), `--red` and `--red-hover` (the button). The booking button's label is 20px bold so white text on the logo red stays readable.
+The colors are CSS variables at the top of `styles.css`, one block per theme (`[data-theme="light"]` and `[data-theme="dark"]`): `--bg`, `--tint` (the service-area band), `--label` (all text), `--label-2` (fine print, footer meta and the dimmed how-it-works steps), `--separator` (thin lines), `--red` and `--red-hover` (the button). The booking button's label is 20px bold so white text on the logo red stays readable.
 
 The site uses one font, **Archivo** (SIL Open Font License 1.1), self-hosted from `assets/fonts/archivo-latin-var.woff2`, so there's no request to Google Fonts. The license, `assets/fonts/OFL.txt`, has to stay next to the font file. If you ever swap the file, give the new one a new name, because browsers keep fonts for a long time.
 
@@ -224,7 +224,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.6.0`, `script.js?v=0.6.0`, `theme.js?v=0.6.0` and `area.js?v=0.6.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.7.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.7.0`, `script.js?v=0.7.0`, `theme.js?v=0.7.0` and `area.js?v=0.7.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.8.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
