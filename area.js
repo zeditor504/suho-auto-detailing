@@ -53,7 +53,10 @@
   var omega = 0;           // radians per ms
   var spin = 0;            // current rotation
   var last = 0, raf = 0, running = false, visible = false;
-  var pulseTimer = 0, pulseKick = 0, pulseIndex = 0, lastPulse = null;
+  var pulseTimer = 0, pulseKick = 0, pulseIndex = 0;
+  var litOrder = {};       // name -> number of the pulse it last lit up on
+  var pulseCount = 0;
+  var SPARE = 8;           // names kept free to choose from (see memory())
   var textBoxes = [];      // the text's line boxes, relative to the band, padded by TEXT_PAD
   var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
 
@@ -65,10 +68,10 @@
     H = area.clientHeight;
     if (!W || !H) return;
     RX = W * 0.49;
-    RY = H * 0.42;
+    RY = H * (W < 834 ? 0.47 : 0.42); // phones and tablets: reach nearer the top and bottom, where the names show
     omega = SPEED / RX / 1000;
-    TEXT_PAD = W < 600 ? 8 : 12;
-    TEXT_FADE = W < 600 ? 24 : 32;
+    TEXT_PAD = W < 600 ? 4 : 12;
+    TEXT_FADE = W < 600 ? 16 : 32;
     textBoxes = measureText();
 
     // Measure each name once at its natural size.
@@ -77,12 +80,14 @@
     probe.setAttribute("data-name", "Mg");
     layer.appendChild(probe);
     var lineH = probe.offsetHeight;
-    var gap = parseFloat(getComputedStyle(probe).fontSize) * 2;
+    // Space between names: two letter-heights, a little tighter on phones and tablets,
+    // where the band is narrow and the names would otherwise look sparse.
+    var gap = parseFloat(getComputedStyle(probe).fontSize) * (W < 834 ? 1.4 : 2);
     layer.removeChild(probe);
 
     // Rows evenly spaced in latitude. Text shrinks vertically toward the poles,
     // so the rows never touch.
-    var rows = Math.max(3, Math.floor((2 * LAT_MAX * RY) / (lineH * 1.55)) + 1);
+    var rows = Math.max(3, Math.floor((2 * LAT_MAX * RY) / (lineH * (W < 834 ? 1.2 : 1.55))) + 1);
 
     // With a short list, spread the names out instead of repeating them:
     // widen the gap so the rings hold about COPIES copies of each name.
@@ -130,6 +135,7 @@
       });
     }
     layer.appendChild(frag);
+    findReachable();
     draw();
   }
 
@@ -157,10 +163,19 @@
       boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,
                   r.top - base.top - TEXT_PAD, r.bottom - base.top + TEXT_PAD]);
     }
-    heading.querySelectorAll("p, h2").forEach(function (el) {
+    heading.querySelectorAll("p:not(.check-result):not(.check-credit), h2").forEach(function (el) {
       var range = document.createRange();
       range.selectNodeContents(el);
       [].forEach.call(range.getClientRects(), add);
+    });
+    // The address check: its box, the location button and the answer line.
+    [].forEach.call(heading.querySelectorAll(".check-label, .check-box, .check-locate, .check-result, .check-credit"), function (el) {
+      if (el.offsetParent === null) return; // hidden
+      if (!el.classList.contains("check-box") && !el.classList.contains("check-locate")) {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        [].forEach.call(range.getClientRects(), add);
+      } else add(el.getBoundingClientRect());
     });
     var btn = area.querySelector(".area-motion");
     if (btn && !btn.hidden) add(btn.getBoundingClientRect());
@@ -217,6 +232,62 @@
     }
   }
 
+  // Can this copy of a name light up when the globe has turned to `turn`?
+  // Same rules as the loosest pulse: facing you, inside the band, and
+  // mostly faded in (clear of the text).
+  function litAt(it, turn) {
+    var th = it.lon - turn;
+    var st = Math.sin(th), ct = Math.cos(th);
+    if (ct < 0.25) return false;
+    var y0 = it.sl, z0 = it.cl * ct;
+    var z = y0 * sinT + z0 * cosT;
+    if (z <= 0.02) return false;
+    var X = W / 2 + RX * it.cl * st, Y = H / 2 - RY * (y0 * cosT - z0 * sinT);
+    var halfW = it.w * ct / 2;
+    if (X - halfW < 8 || X + halfW > W - 8) return false;
+    var ny = it.cl * cosT + it.sl * ct * sinT;
+    return smooth(z / 0.45) * smooth(textGap(X, Y, halfW, it.h * Math.max(ny, 0.05) / 2) / TEXT_FADE) >= 0.4;
+  }
+
+  // Which names can ever light up at this size? A name whose every copy
+  // rides a row that stays behind the text (common on phones) never shows,
+  // so it sits out the rounds instead of holding them up.
+  var reachable = {}, reachableCount = 0, copies = {};
+  function findReachable() {
+    reachable = {};
+    reachableCount = 0;
+    copies = {};
+    for (var i = 0; i < items.length; i++) {
+      var name = items[i].el.getAttribute("data-name");
+      (copies[name] = copies[name] || []).push(items[i]);
+    }
+    Object.keys(copies).forEach(function (name) {
+      for (var s = 0; s < 72 && !reachable[name]; s++) {
+        var turn = (s / 72) * 2 * Math.PI;
+        for (var c = 0; c < copies[name].length; c++) {
+          if (litAt(copies[name][c], turn)) { reachable[name] = true; reachableCount++; break; }
+        }
+      }
+    });
+  }
+
+  // How long until this name has to light up or miss its chance for a
+  // while: the rest of its time in view, unless another copy of it comes
+  // into view soon after. Looks ahead in 0.4 s steps, up to one turn.
+  var STEP = 400;
+  function urgency(name) {
+    var list = copies[name] || [], horizon = (2 * Math.PI) / omega, t = 0, end = -1;
+    function lit(t) {
+      for (var c = 0; c < list.length; c++) if (litAt(list[c], spin + omega * t)) return true;
+      return false;
+    }
+    for (t = STEP; t < horizon; t += STEP) {
+      if (end < 0) { if (!lit(t)) end = t; }
+      else if (lit(t)) return t - end < 2 * PULSE_EVERY ? t + horizon : end; // back soon: not urgent
+    }
+    return end < 0 ? horizon * 2 : end;
+  }
+
   function frame(now) {
     if (!running) return;
     if (last) spin += Math.min(now - last, 100) * omega;
@@ -234,27 +305,72 @@
     var pool = [], other = [];
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
-      if (!it.shown || it === lastPulse || it.o < minO || it.ct < minCt) continue;
+      var name = it.el.getAttribute("data-name");
+      if (!it.shown || recent(name) || it.o < minO || it.ct < minCt) continue;
       var halfW = it.w * it.ct / 2;
       if (it.X - halfW < 8 || it.X + halfW > W - 8) continue;
       (it.el.getAttribute("data-terrain") === want ? pool : other).push(it);
     }
     return [pool, other];
   }
-  function pulse() {
-    if (!running) return;
-    var want = ORDER[pulseIndex++ % ORDER.length];
+  // No place lights up again until most of the others have had a turn:
+  // a name that lit up within the last memory() pulses is skipped, so any
+  // run of that many highlights in a row is all different places (44 of
+  // the 52 on a wide screen; on phones, all but 8 of the names that can
+  // show there). The 8 left free mean there is nearly always a fresh name
+  // in view, so the highlights keep coming instead of stalling while the
+  // last unused names are around the back of the globe.
+  function memory() {
+    return Math.max(1, (reachableCount || PLACES.length) - SPARE);
+  }
+  function recent(name) {
+    return name in litOrder && pulseCount - litOrder[name] <= memory();
+  }
+
+  // Pick the next name: one that is about to turn out of view for a long
+  // while goes first, so the last names of a round aren't all at the back
+  // of the globe when their turn comes. Otherwise the terrain colors take
+  // turns, and among those the name leaving soonest goes first.
+  function pick() {
+    var want = ORDER[pulseIndex % ORDER.length];
+    var all = candidates(0.4, 0.25, want);
+    var pool = all[0].concat(all[1]);
+    if (!pool.length) return null;
+    var score = {};
+    pool.forEach(function (it) {
+      var n = it.el.getAttribute("data-name");
+      if (!(n in score)) score[n] = urgency(n);
+    });
+    var by = function (a, b) { return score[a.el.getAttribute("data-name")] - score[b.el.getAttribute("data-name")]; };
+    var age = function (it) { var n = it.el.getAttribute("data-name"); return n in litOrder ? litOrder[n] : -1; };
+    pool.sort(by);
+    if (score[pool[0].el.getAttribute("data-name")] <= 2 * PULSE_EVERY) return pool[0];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
     var loose = candidates(0.6, 0.35, want);
-    var lists = [strict[0], loose[0], strict[1], loose[1]];
-    var list = null;
-    for (var k = 0; k < lists.length && !list; k++) if (lists[k].length) list = lists[k];
-    if (!list) return;
-    var pick = list[Math.floor(Math.random() * list.length)];
-    lastPulse = pick;
-    pick.el.classList.remove("is-pulsing");
-    void pick.el.offsetWidth; // restart the animation if it ran before
-    pick.el.classList.add("is-pulsing");
+    var lists = [strict[0], loose[0], strict[1], loose[1], pool];
+    for (var k = 0; k < lists.length; k++) {
+      if (lists[k].length) {
+        lists[k].forEach(function (it) {
+          var n = it.el.getAttribute("data-name");
+          if (!(n in score)) score[n] = urgency(n);
+        });
+        // never lit, or lit longest ago, first; then the one leaving soonest
+        lists[k].sort(function (a, b) { return age(a) - age(b) || by(a, b); });
+        return lists[k][0];
+      }
+    }
+    return null;
+  }
+  function pulse() {
+    if (!running) return;
+    var it = pick();
+    if (!it) return; // nothing fresh in view: wait for the globe to turn one in
+    pulseIndex++;
+    pulseCount++;
+    litOrder[it.el.getAttribute("data-name")] = pulseCount;
+    it.el.classList.remove("is-pulsing");
+    void it.el.offsetWidth; // restart the animation if it ran before
+    it.el.classList.add("is-pulsing");
   }
   layer.addEventListener("animationend", function (e) {
     e.target.classList.remove("is-pulsing");
@@ -293,6 +409,12 @@
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) stop(); else start();
   });
+  // The address check's answer line changed the text's shape (script.js).
+  document.addEventListener("suho:area-layout", function () {
+    textBoxes = measureText();
+    findReachable();
+    if (!running) draw();
+  });
   document.addEventListener("suho:motion", function () {
     if (motionAllowed()) start(); else stop(); // names stay where they are while stopped
   });
@@ -300,6 +422,7 @@
   function onMotionPref() {
     reduceMotion = motionQuery.matches;
     textBoxes = measureText(); // the play/pause button shows or hides with this setting
+    findReachable();
     if (reduceMotion) stop(); else start();
   }
   if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotionPref);

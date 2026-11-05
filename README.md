@@ -7,7 +7,7 @@ It's plain HTML, CSS, and vanilla JavaScript. There's no framework, no build ste
 ```
 index.html        the page
 styles.css        all styles; light and dark theme colors are CSS variables at the top
-script.js         config block at the top + behaviors (links, share, recent work, sunrise/sunset theme switch, play/pause button)
+script.js         config block at the top + behaviors (links, address check, recent work and before/after, reviews, header and phone dock, share, sunrise/sunset theme switch, play/pause button)
 theme.js          picks light or dark mode from Houston's sunrise and sunset (loads first, before the page paints)
 area.js           service-area globe: the place names, their terrain colors, and the turning globe
 CHANGELOG.md      what changed in each release
@@ -44,7 +44,7 @@ Open `script.js` and edit the `CONFIG` block at the top. That sets every booking
 
 Until a value is filled in, the site handles it safely:
 - **Booking buttons** say "Text to book" and open a text message to the business number with a short note already written ("Hi, I'd like to book an Auto Refresh."). Step 1 of How it works reads "Text or call with your vehicle, your location and a time that works." Nothing on the page mentions Square or online booking.
-- **Call, text, and email** rows are dropped if their value is removed. Keep `PHONE` filled in until Square is set up, because booking by text depends on it. Without a phone number, the "or call" line, the per-service booking links and "text us" are dropped, and the main button reads "Contact" and jumps to the contact list.
+- **Call, text, and email** rows are dropped if their value is removed. Keep `PHONE` filled in until Square is set up, because booking by text depends on it. Without a phone number, the Call buttons (hero, header, phone dock), the per-service booking buttons and the "text" links are dropped, and the main buttons read "Contact" and jump to the contact list.
 
 Once you have the Square link, paste it as `SQUARE_BOOKING_URL` in `script.js`. That's the only place it's used.
 
@@ -56,15 +56,32 @@ grep -nE '"\{\{[A-Z_]+\}\}"' index.html script.js
 
 ### Design approach
 
-The page reads like a printed rate card from a one-person trade. The rules are written at the top of `styles.css`; in short:
+v0.8.0 follows what the best-run detailing sites have in common: the offer readable in the first few seconds, a booking button always in reach, prices in full, a quick way to check the service area, and answers to the usual questions. The rules are at the top of `styles.css`; in short:
 
-- **One column.** Everything sits in a 640px left-aligned column (16px side margins on phones). The service-area band is the only full-width, tinted, centered block.
-- **The logo's colors.** White page by day, black after sunset, black or near-white text. Red (`#ff0005`, sampled from the logo) marks only the logo, the booking button, the short footer rule and the check mark in the how-it-works drawing. Links are underlined in their own text color.
-- **One font, two weights.** Archivo at 400 and 700. The headline and the two prices use its wider 112.5% width; everything else is normal width. Five sizes in all (36/48, 26/32, 20, 17 and 15 px), no letter-spacing anywhere, and no small caps labels above headings.
-- **Nothing decorative.** No cards, shadows, blur, stripes or sticky bars. Thin lines appear only between the price features and between contact rows. One 4px corner radius, one button style.
-- **Motion** is the how-it-works loop (each step brightens in turn with the drawing), the globe and a short crossfade at sunrise and sunset. Both scenes stop when scrolled off screen, with the **play/pause button** at the bottom center of the service-area band (one button for both; remembered on the device), and for visitors who choose "reduce motion".
+- **Showroom framing.** The header, hero, the closing "Book your detail" band and the footer are always black with white text, like the logo. The sections between them follow Houston's sun: white by day, black after sunset.
+- **Order a customer needs.** Hero (what, where, the two prices, Text to book and Call) → four quick facts → prices → Recent work and reviews (hidden until real ones exist) → how it works → service area with the **address check** → questions → book your detail → footer.
+- **Booking always in reach.** The header stays at the top with the phone number and the booking button. On phones, a dock with **Call** and **Text to book** slides up once the hero is scrolled past, and hides again over the "Book your detail" band, which has the same buttons.
+- **The logo's colors.** Black, white, untinted gray and the logo red `#ff0005` (buttons, check marks, the car's tail light, short accent rules). White on red is 18.66px+ bold on `#ff0005`, or on the deeper `#d70015` when smaller, so it passes WCAG AA.
+- **One font.** Archivo, 400 to 700. Headings are bold, upper case (by CSS, so the page text stays in sentence case) and 112.5% wide.
+- **Cards** for the prices and reviews: 16px radius, hairline border, soft shadow by day.
+- **Motion.** The hero car (the logo's line drawing, drawn large) draws itself in once and a band of light passes over it every few seconds; the how-it-works loop; the globe; the sunset crossfade. The **play/pause button** at the bottom of the service-area band stops all of it (remembered on the device). Nothing moves for visitors who choose "reduce motion".
 
-Copy rules: sentence case, no periods on headings or buttons, no rhetorical questions, and every line states something a customer can check (price, what's included, where, how to book, how to reach).
+Copy rules: sentence case, no rhetorical questions in the copy (the FAQ headings are the customer's questions), and every line states something a customer can check (price, what's included, where, how to book, how to reach).
+
+### Address check ("Do you come to me?")
+
+In the service-area band, visitors type their address and get an answer right under the field: **green** "Yes, we come to you. Pearland is 14 miles from downtown Houston." with a **Text to book at this address** link (the text message already includes the address; it becomes **Book now** once Square is set up), or **red** "Sorry, that's outside our area. Katy is 27 miles from downtown Houston."
+
+- **Suggestions while typing** come from [Photon](https://photon.komoot.io) by komoot: free, no account or API key, built on OpenStreetMap data. Results lean toward Houston and stay within about 100 miles of it. Arrow keys, Enter and tapping all work; pressing Enter without picking uses the top match, and ZIP codes and neighborhood names work too.
+- **Use my current location** asks the phone or computer for its location (GPS or Wi-Fi) instead, then names the street with Photon. The browser asks the visitor first.
+- **The rule** is a straight line from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W), 25 miles or less: the same circle as the JSON-LD. Change `AREA` in `script.js` to move the center or the radius (and update the page text and JSON-LD to match).
+- **Privacy:** what a visitor types is sent to Photon to find matches; nothing goes to SUHO until they choose to text. The attribution line under the field is required by the OpenStreetMap license; keep it.
+- **If Photon is down** the answer line says it couldn't look the address up. Without JavaScript, the old "To check your address, text us or send a DM on Instagram" line shows instead.
+- Photon's public server is shared and meant for fair use. A one-business site is well within it. If the site ever gets heavy traffic, the same code can point at a paid Photon-compatible host by changing `PHOTON` in `script.js`. (Google's address autocomplete is the other common choice, but it needs a Google Cloud billing account and an API key.)
+
+### Questions (FAQ)
+
+The five answers use only facts already on the page (prices, what's included, the radius, how to book). The same answers are in the `FAQPage` JSON-LD in `<head>`, which lets search engines show them. **If you change an answer, change it in both places.** Add a question only for a fact Umair has confirmed (hours, payment, water and power needs, and so on).
 
 ### Service area place names
 
@@ -72,7 +89,9 @@ The service radius is **25 miles from downtown Houston**, stated on the page as 
 
 The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius (each shows up about two or three times around the whole globe, so few names repeat on the visible side): Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
 
-They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
+They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up. No place lights up again until 44 others have had a turn (on phones, where some rows stay behind the text the whole way round, all but 8 of the names that can show there), so any run of highlights that long is all different places, and the same name never lights up twice in a row. Places that have never lit up, or lit up longest ago, go first, and a name about to turn out of view for a while jumps the queue. Keeping 8 names free means a fresh one is nearly always in view, so the highlights keep coming. (Strict rounds of all 52 stalled for up to half a minute while the last few were around the back of the globe.) The numbers are `SPARE` and `memory()` in `area.js`.
+
+Names are 21px on phones, 24px from 600px wide and 28px from 834px. Below 834px the globe also spaces them closer and reaches nearer the top and bottom of the band, where the text leaves room for them.
 
 | Color | Terrain | Rule used |
 |---|---|---|
@@ -93,7 +112,7 @@ To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js
 
 ### Colors and font
 
-The colors are CSS variables at the top of `styles.css`, one block per theme (`[data-theme="light"]` and `[data-theme="dark"]`): `--bg`, `--tint` (the service-area band), `--label` (all text), `--label-2` (fine print, footer meta and the dimmed how-it-works steps), `--separator` (thin lines), `--red` and `--red-hover` (the button). The booking button's label is 20px bold so white text on the logo red stays readable.
+The colors are CSS variables at the top of `styles.css`, one block per theme (`[data-theme="light"]` and `[data-theme="dark"]`): `--bg`, `--bg-2` (the tinted How it works and Questions bands), `--card`, `--label` (text), `--label-2` (secondary text and the dimmed how-it-works steps), `--separator` (thin lines). The always-dark parts (header, hero, Book your detail, footer, phone dock) use `--ink` and white text in both themes. `--red`/`--red-hover` color the large buttons, `--red-deep`/`--red-deep-hover` the smaller ones. The address check's green and red answers are `--ok` and `--no` in the `.check` block.
 
 The site uses one font, **Archivo** (SIL Open Font License 1.1), self-hosted from `assets/fonts/archivo-latin-var.woff2`, so there's no request to Google Fonts. The license, `assets/fonts/OFL.txt`, has to stay next to the font file. If you ever swap the file, give the new one a new name, because browsers keep fonts for a long time.
 
@@ -115,7 +134,27 @@ The **Recent work** section stays hidden until it has a photo, so the page never
 
 3. The section appears with the first photo listed. Write a short, real description for each `alt` (screen readers and search engines use it). `caption` is optional: plain facts only, the vehicle and the service.
 
+**Before/after sliders.** Before/after shots are what sell detailing. Take the "before" and "after" from the same spot and angle, then add `before` to the entry:
+
+```js
+{ file: "03-seats-after.jpg", before: "03-seats-before.jpg", alt: "Front seats of an SUV", caption: "SUV, Auto Refresh" },
+```
+
+That photo then shows as a slider: visitors drag (or use the arrow keys) to wipe between before and after.
+
 To show the section before there are photos, with a line pointing to Instagram, delete the word `hidden` from `<section id="gallery" ... hidden>` in `index.html`. Only do that once the Instagram account shows real jobs.
+
+### Reviews
+
+The **What customers say** section stays hidden until a review is listed. Add only real reviews, copied word for word with the customer's OK (for example from Google, once there's a Google Business Profile), to `REVIEWS` in `script.js`:
+
+```js
+const REVIEWS = [
+  { name: "Maria G.", text: "Showed up on time and the car looks new inside.", stars: 5, source: "Google" },
+];
+```
+
+`stars` (1 to 5) and `source` are optional.
 
 ---
 
@@ -224,7 +263,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.7.0`, `script.js?v=0.7.0`, `theme.js?v=0.7.0` and `area.js?v=0.7.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.8.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.8.0`, `script.js?v=0.8.0`, `theme.js?v=0.8.0` and `area.js?v=0.8.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.9.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
