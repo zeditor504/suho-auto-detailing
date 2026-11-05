@@ -17,14 +17,15 @@
 
     @page { size: letter; margin: 0; }
 
+    /* Same colors and rules as the website (v0.6.0): the logo's black, white
+       and red, no letter-spacing, no cards. Red is only the short rule at the bottom. */
     :root {
-      --bg: #08090b;
-      --card: #151619;
-      --red: #e5222d;
+      --bg: #000000;
+      --red: #ff0005;
       --white: #ffffff;
-      --text: #d4d4d8;
-      --muted: #9b9ca3;
-      --hairline: #2a2b30;
+      --text: #ededed;
+      --muted: #a6a6a6;      /* fine print only */
+      --hairline: #333333;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -68,14 +69,13 @@
 
     .header {
       margin-top: 24pt;
-      color: var(--muted);
+      color: var(--text);
       font-size: 11pt;
       font-weight: 700;
-      letter-spacing: 0.02em;
     }
 
     .cards {
-      width: 100%;
+      width: 472pt;
       margin-top: 22pt;
       display: flex;
       flex-direction: column;
@@ -83,11 +83,9 @@
     }
 
     .card {
-      position: relative;
       height: 155pt;
-      padding: 28pt 24pt 0 25pt;
-      background: var(--card);
-      border-radius: 11pt;
+      padding-top: 27pt;
+      border-top: 1pt solid var(--hairline);
     }
 
     .card-head {
@@ -100,24 +98,23 @@
       color: var(--white);
       font-size: 20pt;
       font-weight: 700;
-      letter-spacing: -0.005em;
       line-height: 1.15;
     }
 
     .subtitle {
       margin-top: 7pt;
-      color: var(--muted);
+      color: var(--text);
       font-size: 9pt;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+      font-weight: 400;
     }
 
     .price {
-      color: var(--red);
+      color: var(--white);
       font-size: 29pt;
       font-weight: 700;
+      font-stretch: 112.5%;
+      font-variant-numeric: tabular-nums;
       line-height: 1;
-      letter-spacing: -0.01em;
       margin-top: -1pt;
     }
 
@@ -141,7 +138,6 @@
       color: var(--white);
       font-size: 12pt;
       font-weight: 700;
-      letter-spacing: 0.01em;
     }
 
     .underline {

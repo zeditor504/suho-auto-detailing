@@ -12,7 +12,7 @@ const CONFIG = {
 
   // Your Square Appointments booking page (see README, "Booking with Square").
   // Until it is set, every booking button says "Text to book" and opens a text
-  // message with a short note already written.
+  // message with a short note already written, so keep PHONE filled in until then.
   SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}",
 
   // Optional: a Square link that opens straight to one service. Leave "" to use SQUARE_BOOKING_URL.
@@ -35,7 +35,8 @@ const GALLERY = [
 (function () {
   "use strict";
 
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let reduceMotion = motionQuery.matches; // kept current below if the setting changes mid-visit
 
   // A value counts as "set" once it is no longer a {{PLACEHOLDER}}.
   const isSet = (v) =>
@@ -86,10 +87,13 @@ const GALLERY = [
       el.setAttribute("href", url);
       return;
     }
-    // Not set: drop the row, or send booking buttons to the contact list.
+    // Not set: drop the line it sits in, or send booking buttons to the contact list.
     const optional = el.closest("[data-optional]");
     if (optional) optional.hidden = true;
-    else if (isBooking) el.setAttribute("href", "#contact");
+    else if (isBooking) {
+      el.setAttribute("href", "#contact");
+      if (el.dataset.contactLabel) el.textContent = el.dataset.contactLabel;
+    }
   });
 
   document.querySelectorAll("[data-text]").forEach((el) => {
@@ -129,7 +133,7 @@ const GALLERY = [
   if (photos && gallerySection) {
     gallerySection.hidden = false;
     const empty = gallerySection.querySelector("[data-gallery-empty]");
-    if (empty) empty.hidden = true;
+    if (empty) empty.remove(); // so the photos sit the usual 24px below the heading
   }
 
   /* ---- Footer year ---- */
@@ -183,6 +187,7 @@ const GALLERY = [
   }
 
   if (Theme && toggle) {
+    toggle.hidden = false; // ships hidden, so it never shows without this handler
     toggle.addEventListener("click", () => {
       const next = MODES[(MODES.indexOf(Theme.mode()) + 1) % MODES.length];
       setMode(next);
@@ -264,12 +269,12 @@ const GALLERY = [
   const how = document.getElementById("how");
   let howVisible = false;
   function syncHow() {
-    if (!how || reduceMotion) return;
-    if (root.dataset.motion === "paused") how.classList.remove("how-playing"); // still check-mark frame
+    if (!how) return;
+    if (reduceMotion || root.dataset.motion === "paused") how.classList.remove("how-playing"); // still check-mark frame
     else if (howVisible) how.classList.add("how-playing"); // all parts start together
     how.classList.toggle("how-paused", !howVisible);
   }
-  if (how && !reduceMotion && "IntersectionObserver" in window) {
+  if (how && "IntersectionObserver" in window) {
     new IntersectionObserver((entries) => {
       howVisible = entries[0].isIntersecting;
       syncHow();
@@ -278,9 +283,9 @@ const GALLERY = [
 
   const motionBtn = document.querySelector(".js-motion");
   const motionLabel = () => (root.dataset.motion === "paused" ? "Play animations" : "Pause animations");
-  if (motionBtn && !reduceMotion) {
+  if (motionBtn) {
     motionBtn.textContent = motionLabel();
-    motionBtn.hidden = false;
+    motionBtn.hidden = reduceMotion; // nothing moves with "reduce motion", so there is nothing to pause
     motionBtn.addEventListener("click", () => {
       root.dataset.motion = root.dataset.motion === "paused" ? "on" : "paused";
       try {
@@ -292,4 +297,13 @@ const GALLERY = [
       document.dispatchEvent(new CustomEvent("suho:motion"));
     });
   }
+
+  // "Reduce motion" switched on or off during the visit (area.js listens too).
+  function onMotionPref() {
+    reduceMotion = motionQuery.matches;
+    if (motionBtn) motionBtn.hidden = reduceMotion;
+    syncHow();
+  }
+  if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotionPref);
+  else if (motionQuery.addListener) motionQuery.addListener(onMotionPref);
 })();

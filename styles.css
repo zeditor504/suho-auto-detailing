@@ -8,8 +8,9 @@
    - Archivo (self-hosted, SIL OFL 1.1), weights 400 and 700. 112.5% width on
      the h1 and prices only. Five sizes: 36/48, 26/32, 20, 17, 15 px.
      No letter-spacing anywhere. No eyebrows.
-   - No cards, shadows, gradients (except the area text fade), blur, stripes
-     or sticky bars. Hairlines only between price rows and contact rows.
+   - No cards, shadows, gradients, blur, stripes or sticky bars. Hairlines
+     only between price rows and contact rows. (Globe names near the
+     service-area text fade out in area.js, not with a CSS gradient.)
    - One radius: 4px. One button: red, 20px bold label, 48px tall, natural width.
    - Motion: the how-it-works loop, the globe and the theme crossfade only.
      Both scenes pause off screen, with "Pause animations", and with reduce motion. */
@@ -214,7 +215,6 @@ section h2 + * { margin-top: var(--s-6); }
 [data-theme-mode="auto"] .ic-auto,
 [data-theme-mode="light"] .ic-light,
 [data-theme-mode="dark"] .ic-dark { display: block; }
-html:not([data-theme-mode]) .theme-toggle { display: none; }
 
 /* ---------- Hero ---------- */
 main > .hero { padding: var(--s-6) 0 var(--s-4); }
@@ -242,8 +242,8 @@ main > .hero { padding: var(--s-6) 0 var(--s-4); }
 }
 .price {
   margin-top: var(--s-3);
-  font-size: var(--fs-2);
-  line-height: var(--lh-2);
+  font-size: var(--fs-1);    /* as big as the headline: the h1 and the prices read first */
+  line-height: var(--lh-1);
   font-weight: 700;
   font-stretch: var(--wide);
   font-variant-numeric: tabular-nums;
@@ -416,7 +416,7 @@ main > .area {
   display: grid;
   align-content: center;
   min-height: 400px;
-  padding-block: var(--s-24);
+  padding-block: calc(var(--s-24) + var(--s-8));   /* 128px on phones: room for the globe above and below the text */
   background: var(--tint);
   text-align: center;
   /* terrain colors for the pulse: muted, earthy */
@@ -437,15 +437,6 @@ main > .area {
   margin-inline: auto;
 }
 .area-inner p { margin-top: var(--s-4); }
-.area-inner p + p { margin-top: var(--s-3); }
-/* keep the text readable: soften the names directly behind it */
-.area-inner::before {
-  content: "";
-  position: absolute;
-  inset: -30% -14%;
-  z-index: -1;
-  background: radial-gradient(closest-side, var(--tint) 62%, transparent);
-}
 
 /* Place names riding a slowly turning globe behind the text (drawn by area.js) */
 .area-globe {
@@ -455,6 +446,7 @@ main > .area {
   pointer-events: none;
   user-select: none;
 }
+.area-place::before { content: attr(data-name); } /* names come from data-name (area.js) */
 .area-place {
   position: absolute;
   top: 0;
@@ -567,15 +559,21 @@ main > .area {
   .logo { width: 280px; margin-left: -6px; }
   .how-scene { margin-left: -24px; }
   .scene { width: 230px; }
-  main > .area { min-height: 480px; }
+  main > .area { min-height: 480px; padding-block: var(--s-24); }
   .area-place { font-size: 28px; }
   .footer { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* ---------- Very narrow windows (heavy zoom, split screen) ---------- */
+@media (max-width: 279px) {
+  .nowrap,
+  .link { white-space: normal; }
 }
 
 /* ---------- Reduce motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   .area-place.is-pulsing { animation: none; }
-  .how-scene * { animation: none !important; }
+  #how * { animation: none !important; }
   .js-motion { display: none !important; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }

@@ -44,19 +44,24 @@
   var TILT = 0.14;         // radians: the globe leans toward you a little, so rows curve like latitudes
   var LAT_MAX = 1.08;      // radians: top and bottom rows (about 62 degrees)
   var PULSE_EVERY = 3200;  // ms between pulses; each pulse is 0.5s in, 1s hold, 0.5s out (see styles.css)
+  var TEXT_PAD = 12;       // px of clear space kept around each line of the service-area text
+  var TEXT_FADE = 32;      // px beyond that over which a name fades back in
+                           // (both smaller on phones, where the text fills more of the band)
 
   var area = document.getElementById("area");
   var layer = area && area.querySelector(".area-globe");
   if (!layer) return;
   var heading = area.querySelector(".area-inner");
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var reduceMotion = motionQuery.matches;
 
   var items = [];          // { el, w, h, lat, lon, sl, cl, terrain }
   var W = 0, H = 0, RX = 0, RY = 0;
   var omega = 0;           // radians per ms
   var spin = 0;            // current rotation
   var last = 0, raf = 0, running = false, visible = false;
-  var pulseTimer = 0, pulseIndex = 0, lastPulse = null;
+  var pulseTimer = 0, pulseKick = 0, pulseIndex = 0, lastPulse = null;
+  var textBoxes = [];      // the text's line boxes, relative to the band, padded by TEXT_PAD
   var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
 
   function build() {
@@ -68,11 +73,14 @@
     RX = W * 0.49;
     RY = H * 0.42;
     omega = SPEED / RX / 1000;
+    TEXT_PAD = W < 600 ? 8 : 12;
+    TEXT_FADE = W < 600 ? 24 : 32;
+    textBoxes = measureText();
 
     // Measure each name once at its natural size.
     var probe = document.createElement("span");
     probe.className = "area-place";
-    probe.textContent = "Mg";
+    probe.setAttribute("data-name", "Mg");
     layer.appendChild(probe);
     var lineH = probe.offsetHeight;
     var gap = parseFloat(getComputedStyle(probe).fontSize) * 2;
@@ -103,7 +111,9 @@
       row.forEach(function (it) {
         var el = document.createElement("span");
         el.className = "area-place";
-        el.textContent = it.place[0];
+        // The name is drawn by CSS (::before) from this attribute, so the globe's
+        // 100+ names don't read as a block of page text to search engines.
+        el.setAttribute("data-name", it.place[0]);
         el.setAttribute("data-terrain", TERRAIN[it.place[1]]);
         var center = at + (it.w + gap + spare) / 2;
         at += it.w + gap + spare;
@@ -128,15 +138,45 @@
       measurer.className = "area-place";
       measurer.style.visibility = "hidden";
     }
-    measurer.textContent = text;
+    measurer.setAttribute("data-name", text);
     layer.appendChild(measurer);
     var w = measurer.offsetWidth;
     layer.removeChild(measurer);
     return w;
   }
 
+  // Line boxes of the heading and paragraphs (links included), relative to the band.
+  function measureText() {
+    var base = area.getBoundingClientRect(), boxes = [];
+    heading.querySelectorAll("p, h2").forEach(function (el) {
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      [].forEach.call(range.getClientRects(), function (r) {
+        if (!r.width || !r.height) return;
+        boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,
+                    r.top - base.top - TEXT_PAD, r.bottom - base.top + TEXT_PAD]);
+      });
+    });
+    return boxes;
+  }
+  // Distance from a name's box to the nearest line of text (0 if they overlap).
+  function textGap(X, Y, hw, hh) {
+    var best = Infinity;
+    for (var j = 0; j < textBoxes.length; j++) {
+      var q = textBoxes[j];
+      var dx = Math.max(q[0] - (X + hw), (X - hw) - q[1], 0);
+      var dy = Math.max(q[2] - (Y + hh), (Y - hh) - q[3], 0);
+      var dd = Math.sqrt(dx * dx + dy * dy);
+      if (dd < best) best = dd;
+      if (!best) break;
+    }
+    return best;
+  }
+  function smooth(t) { t = Math.min(1, Math.max(0, t)); return t * t * (3 - 2 * t); }
+
   // Orthographic view of a sphere tilted toward the viewer. Each name is
-  // placed on its latitude and turned to follow the surface.
+  // placed on its latitude and turned to follow the surface. Names fade out
+  // near the text instead of passing behind it.
   function draw() {
     var cx = W / 2, cy = H / 2, k = RY / RX;
     for (var i = 0; i < items.length; i++) {
@@ -150,6 +190,7 @@
       it.z = z;
       if (z <= 0.02 || ct <= 0) {
         if (it.shown) { it.el.style.visibility = "hidden"; it.shown = false; }
+        it.o = 0;
         continue;
       }
       // east and south directions on the surface, after the tilt
@@ -159,14 +200,13 @@
       // text's x axis follows east, its y axis follows south (slant softened so it doesn't read as italics)
       var a = ex, b = -ey * k, c = -nx * 0.3, d = Math.max(ny, 0.05);
       var X = cx + RX * x, Y = cy - RY * y;
-      var o = Math.min(1, z / 0.45);
-      o = o * o * (3 - 2 * o);
+      var o = smooth(z / 0.45) * smooth(textGap(X, Y, it.w * Math.abs(a) / 2, it.h * d / 2) / TEXT_FADE);
       it.el.style.transform =
         "translate(" + (X - it.w / 2).toFixed(1) + "px," + (Y - it.h / 2).toFixed(1) + "px) " +
         "matrix(" + a.toFixed(4) + "," + b.toFixed(4) + "," + c.toFixed(4) + "," + d.toFixed(4) + ",0,0)";
       it.el.style.opacity = o.toFixed(3);
       if (!it.shown) { it.el.style.visibility = "visible"; it.shown = true; }
-      it.X = X; it.Y = Y; it.ct = ct;
+      it.X = X; it.Y = Y; it.ct = ct; it.o = o;
     }
   }
 
@@ -180,36 +220,29 @@
 
   // One name at a time lights up in its terrain color. Colors take turns
   // so all four show up; the name is picked from the front of the globe,
-  // away from the headline.
+  // clear of the text. On small phones the text covers more of the band, so
+  // if no name is fully clear, a slightly faded one near the edge will do.
   var ORDER = ["woods", "water", "city", "prairie"];
-  function pulse() {
-    // Keep clear of the headline's actual lines of text.
-    var base = area.getBoundingClientRect(), pad = 16, blocks = [];
-    heading.querySelectorAll("p, h2").forEach(function (el) {
-      if (el.classList.contains("visually-hidden")) return;
-      var range = document.createRange();
-      range.selectNodeContents(el);
-      [].forEach.call(range.getClientRects(), function (r) {
-        blocks.push([r.left - base.left - pad, r.right - base.left + pad, r.top - base.top - pad, r.bottom - base.top + pad]);
-      });
-    });
-    var want = ORDER[pulseIndex++ % ORDER.length];
-    var pool = [], fallback = [];
+  function candidates(minO, minCt, want) {
+    var pool = [], other = [];
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
-      // facing you (fully faded in) and not squeezed at the globe's edge
-      if (it.z < 0.45 || it.ct < 0.6 || it === lastPulse) continue;
-      var halfW = it.w / 2, halfH = it.h / 2, behind = false;
-      for (var j = 0; j < blocks.length && !behind; j++) {
-        var q = blocks[j];
-        behind = it.X + halfW > q[0] && it.X - halfW < q[1] && it.Y + halfH > q[2] && it.Y - halfH < q[3];
-      }
-      if (behind) continue;
+      if (!it.shown || it === lastPulse || it.o < minO || it.ct < minCt) continue;
+      var halfW = it.w * it.ct / 2;
       if (it.X - halfW < 8 || it.X + halfW > W - 8) continue;
-      (it.el.getAttribute("data-terrain") === want ? pool : fallback).push(it);
+      (it.el.getAttribute("data-terrain") === want ? pool : other).push(it);
     }
-    var list = pool.length ? pool : fallback;
-    if (!list.length) return;
+    return [pool, other];
+  }
+  function pulse() {
+    if (!running) return;
+    var want = ORDER[pulseIndex++ % ORDER.length];
+    var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
+    var loose = candidates(0.6, 0.35, want);
+    var lists = [strict[0], loose[0], strict[1], loose[1]];
+    var list = null;
+    for (var k = 0; k < lists.length && !list; k++) if (lists[k].length) list = lists[k];
+    if (!list) return;
     var pick = list[Math.floor(Math.random() * list.length)];
     lastPulse = pick;
     pick.el.classList.remove("is-pulsing");
@@ -220,19 +253,24 @@
     e.target.classList.remove("is-pulsing");
   });
 
-  function paused() { return document.documentElement.dataset.motion === "paused"; } // "Pause animations" (script.js)
+  // script.js sets data-motion ("on" or "paused", from the Pause animations
+  // button) before this file runs. If it is missing, script.js failed and
+  // there is no Pause button, so the globe holds still.
+  function motionAllowed() { return document.documentElement.dataset.motion === "on"; }
   function start() {
-    if (running || reduceMotion || paused() || !visible || document.hidden) return;
+    if (running || reduceMotion || !motionAllowed() || !visible || document.hidden) return;
     running = true;
     last = 0;
     raf = requestAnimationFrame(frame);
     pulseTimer = setInterval(pulse, PULSE_EVERY);
-    setTimeout(pulse, 600);
+    pulseKick = setTimeout(pulse, 600);
   }
   function stop() {
     running = false;
     cancelAnimationFrame(raf);
     clearInterval(pulseTimer);
+    clearTimeout(pulseKick);
+    [].forEach.call(layer.querySelectorAll(".is-pulsing"), function (el) { el.classList.remove("is-pulsing"); });
   }
 
   var resizeTimer, lastW = 0;
@@ -249,8 +287,15 @@
     if (document.hidden) stop(); else start();
   });
   document.addEventListener("suho:motion", function () {
-    if (paused()) stop(); else start(); // names stay where they are while stopped
+    if (motionAllowed()) start(); else stop(); // names stay where they are while stopped
   });
+  // "Reduce motion" switched on or off during the visit.
+  function onMotionPref() {
+    reduceMotion = motionQuery.matches;
+    if (reduceMotion) stop(); else start();
+  }
+  if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotionPref);
+  else if (motionQuery.addListener) motionQuery.addListener(onMotionPref);
 
   rebuild();
   if (document.fonts && document.fonts.ready) {

@@ -4,7 +4,7 @@
 
 ## Edit it
 
-Open `price-sheet.html` in any text editor. Prices, services, and wording live in the `<body>`; colors are at the top of the `<style>` block. Keep prices and services identical to the website's pricing section.
+Open `price-sheet.html` in any text editor. Prices, services, and wording live in the `<body>`; colors are at the top of the `<style>` block. Keep prices and services identical to the website's pricing section. The sheet follows the site's look: black page, white text, thin gray lines between the services, and red only for the short rule at the bottom.
 
 ## Rebuild the PDF (Chrome or Edge)
 

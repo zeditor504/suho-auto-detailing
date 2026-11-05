@@ -44,14 +44,14 @@ Open `script.js` and edit the `CONFIG` block at the top. That sets every booking
 
 Until a value is filled in, the site handles it safely:
 - **Booking buttons** say "Text to book" and open a text message to the business number with a short note already written ("Hi, I'd like to book an Auto Refresh."). Step 1 of How it works reads "Text or call with your vehicle, your location and a time that works." Nothing on the page mentions Square or online booking.
-- **Call, text, and email** rows are dropped if their value is removed.
+- **Call, text, and email** rows are dropped if their value is removed. Keep `PHONE` filled in until Square is set up, because booking by text depends on it. Without a phone number, the "or call" line, the per-service booking links and "text us" are dropped, and the main button reads "Contact" and jumps to the contact list.
 
 Once you have the Square link, paste it as `SQUARE_BOOKING_URL` in `script.js`. That's the only place it's used.
 
 To confirm nothing was missed, run this. If it prints nothing, every placeholder is filled:
 
 ```bash
-grep -n "{{" index.html script.js
+grep -nE '"\{\{[A-Z_]+\}\}"' index.html script.js
 ```
 
 ### Design approach
@@ -79,7 +79,7 @@ They ride around a slowly turning globe, right to left, all at the same turn rat
 | Silver | City | Built-up Houston core, suburbs and the industrial east side |
 | Sand | Prairie | Coastal prairie, ranch and farm land to the west, south and east |
 
-Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration, so screen readers skip it; the visible sentence below the heading names nine well-known places (Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land). It holds still with no pulses for visitors who choose "reduce motion" or press **Pause animations**.
+Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration: screen readers skip it, and the names are drawn by CSS from a `data-name` attribute, so they don't count as page text for search engines. Names near the heading and paragraphs fade out in `area.js` so they never pass behind the words. The visible sentence below the heading names nine well-known places (Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land). It holds still with no pulses for visitors who choose "reduce motion" or press **Pause animations**.
 
 ### Light and dark mode
 

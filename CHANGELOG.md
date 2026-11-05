@@ -6,13 +6,14 @@ A plainer page: one column that reads like a printed rate card, in a new font, w
 
 ### Changed
 - Font: **Archivo** (SIL OFL 1.1), self-hosted from `assets/fonts/` and preloaded, replacing Inter Tight from Google Fonts. Two weights (400 and 700); the headline and the two prices use Archivo's wider 112.5% width. Five type sizes, no letter-spacing anywhere. The price sheet PDF is set in the same file; its wording is unchanged word for word.
+- Price sheet PDF restyled to match the site: pure black page (the box behind the logo is gone), white prices, thin lines between the two services instead of rounded dark cards, no letter-spacing, and red only on the short rule at the bottom. Same text, same order.
 - Layout: one 640px left-aligned column on a plain white (day) or black (night) page. The service-area globe is the only full-width, tinted, centered block. One 4px radius, one red button with a 20px bold label.
 - Colors now come straight from the logo: pure black and white, gray with no tint, and the logo red `#ff0005`. Red marks only the logo, the booking button, the footer rule and the check mark in the how-it-works drawing. The light-mode wordmark is recolored to pure black.
 - Top of the page: the logo and the theme button, with no sticky nav bar. The hero is left-aligned with one button and the phone number beside it.
-- Prices: "MOBILE DETAILING / HOUSTON, TX" is now the heading of the price list (text unchanged). The two services are stacked rows with thin lines between the features, not cards; the red edge stripe is gone. Each has its own booking link.
+- Prices: "MOBILE DETAILING / HOUSTON, TX" is now the heading of the price list (text unchanged). The two services are stacked rows with thin lines between the features, not cards; the red edge stripe is gone. $65 and $50 are set as large as the headline so they read first. Each has its own booking link.
 - Booking before Square is set up: every booking button says "Text to book" and opens a text message with a note already written (for example "Hi, I'd like to book an Auto Refresh."). Step 1 of How it works matches. Once `SQUARE_BOOKING_URL` is set, they switch to "Book now" / "Book Auto Refresh" / "Book Motorcycle Refresh" and open Square, and the Square line and button appear in Contact.
 - How it works: one column; the step numbers darken in turn with the scene, and the drawing is black except for the red check mark.
-- Service area: one heading, "Houston, TX and surrounding areas", a visible sentence naming nine nearby places, and "To check your address, text us or send a DM on Instagram." The pulse no longer glows.
+- Service area: one heading, "Houston, TX and surrounding areas", a visible sentence naming nine nearby places, and "To check your address, text us or send a DM on Instagram." The pulse no longer glows. Names near the text now fade out on their own (no gradient patch behind the text), and the band is a little taller on phones, so the globe shows around the text there too, and pulses pick a slightly faded name when no fully clear one is free, so small phones get a pulse every 3.2 s again. The globe's names are drawn from a `data-name` attribute, so they no longer read as a long list of city names in the page text.
 - Contact: one plain list (Call, Text, Email, Instagram) that also takes over the old "Book your detail" block.
 - Footer: "SLEEVES UP. HANDS ON." with its short red rule, the copyright line, and Share this site.
 - JSON-LD telephone is written in international form (`+1-346-698-3058`). Browser theme color is now pure white or black.
@@ -20,6 +21,14 @@ A plainer page: one column that reads like a printed rate card, in a new font, w
 ### Added
 - Pause animations button in the footer. It stops the how-it-works loop and the globe, and the choice is remembered on the device. Hidden for visitors who choose "reduce motion" (nothing moves for them anyway).
 - `assets/fonts/OFL.txt`, the font license.
+
+### Fixed
+- No sideways scroll in very narrow windows (below 280px, such as heavy zoom or split screen).
+- If "reduce motion" is switched on during a visit, the globe and the step numbers now stop too.
+- A pulse could still light up just after pressing Pause animations.
+- The theme button and Pause button stay hidden if `script.js` fails to load, and the globe then holds still.
+- Removing the phone number from `CONFIG` now also drops the "or call" line, the per-service text links and "text us".
+- The README's placeholder check could never come back empty.
 
 ### Removed
 - The "Why SUHO" icon cards, the sticky nav bar and its links, the "See Pricing" button, the black "Book your detail" tile and its confirmation line, the six "Photo coming soon" boxes, the footer link columns and theme note, the small caps "SERVICE AREA" and "SLEEVES UP. HANDS ON." labels above headings, periods on headings, and the fade-in on scroll.
