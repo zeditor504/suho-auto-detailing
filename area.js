@@ -135,6 +135,7 @@
       });
     }
     layer.appendChild(frag);
+    findReachable();
     draw();
   }
 
@@ -231,6 +232,35 @@
     }
   }
 
+  // Which names can ever light up at this size? A name whose every copy
+  // rides a row that stays behind the text (common on phones) never shows,
+  // so it sits out the rounds instead of holding them up. Each copy is
+  // tried at points across the front of the globe, with the same rules
+  // as the loosest pulse (see pick()).
+  var reachable = {}, reachableCount = 0;
+  function findReachable() {
+    reachable = {};
+    reachableCount = 0;
+    var cx = W / 2, cy = H / 2;
+    for (var i = 0; i < items.length; i++) {
+      var it = items[i], name = it.el.getAttribute("data-name");
+      if (reachable[name]) continue;
+      for (var s = -17; s <= 17; s++) {
+        var th = (s / 18) * (Math.PI / 2);
+        var st = Math.sin(th), ct = Math.cos(th);
+        var y0 = it.sl, z0 = it.cl * ct;
+        var z = y0 * sinT + z0 * cosT;
+        if (z <= 0.02 || ct < 0.25) continue;
+        var X = cx + RX * it.cl * st, Y = cy - RY * (y0 * cosT - z0 * sinT);
+        var halfW = it.w * ct / 2;
+        if (X - halfW < 8 || X + halfW > W - 8) continue;
+        var ny = it.cl * cosT + it.sl * ct * sinT;
+        var o = smooth(z / 0.45) * smooth(textGap(X, Y, halfW, it.h * Math.max(ny, 0.05) / 2) / TEXT_FADE);
+        if (o >= 0.4) { reachable[name] = true; reachableCount++; break; }
+      }
+    }
+  }
+
   function frame(now) {
     if (!running) return;
     if (last) spin += Math.min(now - last, 100) * omega;
@@ -266,6 +296,23 @@
     usedCount = 0;
     waitingSince = 0;
   }
+  function roundDone() {
+    var left = 0;
+    for (var i = 0; i < PLACES.length; i++) {
+      var n = PLACES[i][0];
+      if (reachable[n] && !used[n]) left++;
+    }
+    return left === 0 || (!reachableCount && usedCount >= PLACES.length);
+  }
+  // Among the names in view, light up one that is about to turn out of
+  // view (the globe turns right to left, so: toward the left), keeping
+  // the ones just coming in for later. That way the last names of a round
+  // are rarely all around the back of the globe at once.
+  function soonest(list) {
+    list.sort(function (a, b) { return a.X - b.X; });
+    var n = Math.max(1, Math.ceil(list.length / 3));
+    return list[Math.floor(Math.random() * n)];
+  }
   function pick() {
     var want = ORDER[pulseIndex % ORDER.length];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
@@ -273,13 +320,13 @@
     var looser = candidates(0.4, 0.25, want);   // late in a round, take what's in view
     var lists = [strict[0], loose[0], strict[1], loose[1], looser[0], looser[1]];
     for (var k = 0; k < lists.length; k++) {
-      if (lists[k].length) return lists[k][Math.floor(Math.random() * lists[k].length)];
+      if (lists[k].length) return soonest(lists[k]);
     }
     return null;
   }
   function pulse() {
     if (!running) return;
-    if (usedCount >= PLACES.length) newRound();
+    if (roundDone()) newRound();
     var it = pick();
     if (!it) {
       var now = Date.now();
@@ -338,6 +385,7 @@
   // The address check's answer line changed the text's shape (script.js).
   document.addEventListener("suho:area-layout", function () {
     textBoxes = measureText();
+    findReachable();
     if (!running) draw();
   });
   document.addEventListener("suho:motion", function () {
@@ -347,6 +395,7 @@
   function onMotionPref() {
     reduceMotion = motionQuery.matches;
     textBoxes = measureText(); // the play/pause button shows or hides with this setting
+    findReachable();
     if (reduceMotion) stop(); else start();
   }
   if (motionQuery.addEventListener) motionQuery.addEventListener("change", onMotionPref);

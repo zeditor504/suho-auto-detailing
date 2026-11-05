@@ -26,7 +26,7 @@ A redesign after the layouts of well-run detailing sites (the offer readable in 
 - The play/pause button also stops the hero's band of light.
 - Version bumped to 0.8.0 in the asset links.
 - Service-area globe on phones and tablets: bigger names (21px on phones, 24px from 600px; was 16px), set closer together, slightly darker, and reaching nearer the top and bottom of the band, so it no longer looks sparse.
-- Globe highlights: each place lights up once per round (no repeats until all 52 have had a turn), and the same name, including its other copies on the globe, never lights up twice in a row. The "Check your address" label is kept clear of names too.
+- Globe highlights: each place lights up once per round (no repeats until every place that can show at that screen size has had a turn), and the same name, including its other copies on the globe, never lights up twice in a row. Names about to turn out of view go first, so rounds rarely stall waiting for the last few. The "Check your address" label is kept clear of names too.
 
 ## [v0.7.0] - 2026-11-05
 
