@@ -157,10 +157,19 @@
       boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,
                   r.top - base.top - TEXT_PAD, r.bottom - base.top + TEXT_PAD]);
     }
-    heading.querySelectorAll("p, h2").forEach(function (el) {
+    heading.querySelectorAll("p:not(.check-result):not(.check-credit), h2").forEach(function (el) {
       var range = document.createRange();
       range.selectNodeContents(el);
       [].forEach.call(range.getClientRects(), add);
+    });
+    // The address check: its box, the location button and the answer line.
+    [].forEach.call(heading.querySelectorAll(".check-box, .check-locate, .check-result, .check-credit"), function (el) {
+      if (el.offsetParent === null) return; // hidden
+      if (el.classList.contains("check-result") || el.classList.contains("check-credit")) {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        [].forEach.call(range.getClientRects(), add);
+      } else add(el.getBoundingClientRect());
     });
     var btn = area.querySelector(".area-motion");
     if (btn && !btn.hidden) add(btn.getBoundingClientRect());
@@ -292,6 +301,11 @@
   });
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) stop(); else start();
+  });
+  // The address check's answer line changed the text's shape (script.js).
+  document.addEventListener("suho:area-layout", function () {
+    textBoxes = measureText();
+    if (!running) draw();
   });
   document.addEventListener("suho:motion", function () {
     if (motionAllowed()) start(); else stop(); // names stay where they are while stopped

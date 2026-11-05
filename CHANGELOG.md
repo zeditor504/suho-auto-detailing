@@ -1,5 +1,31 @@
 # Changelog
 
+## [v0.8.0] - 2026-11-05
+
+A redesign after the layouts of well-run detailing sites (the offer readable in the first few seconds, a booking button always in reach, prices in full, a quick service-area check, answers to the usual questions), keeping SUHO's own pieces: the logo's line-drawn car, the globe of place names, Houston's sunrise and sunset theme and the how-it-works loop.
+
+### Added
+- **Address check** in the service-area band. Visitors type their address and see suggestions as they type (Photon by komoot, free and keyless, built on OpenStreetMap data, leaning toward Houston). The answer shows right under the field: green "Yes, we come to you" with the distance from downtown Houston and a **Text to book at this address** link that puts the address in the message, or red "Sorry, that's outside our area" with the distance. Enter, arrow keys, ZIP codes and neighborhood names all work. **Use my current location** checks from the device's location instead. The check is the same 25-mile circle as the JSON-LD.
+- **Header that stays at the top**: logo, section links (wider screens), the phone number and the booking button. The current section's link is underlined in red.
+- **Phone dock**: on phones, Call and Text to book slide up at the bottom once the hero is scrolled past, and step aside over the "Book your detail" band.
+- **Hero**: the logo's line-drawn car, drawn large on black. It draws itself in once, then a band of light passes over it every few seconds, and the tail light glows red. Both prices sit under the buttons and jump to the price cards.
+- **Quick facts** under the hero: We come to you, Cars and motorcycles, Prices up front, Book by text (Book online once Square is set up).
+- **Questions**: five answers from facts already on the page, also as `FAQPage` JSON-LD for search engines.
+- **Book your detail**: a closing black band with the booking button and the Call, Text, Email and Instagram rows.
+- **Before/after sliders** in Recent work: add `before` to a `GALLERY` entry and visitors drag, or use the arrow keys, to compare.
+- **Reviews** section, hidden until a real review is added to `REVIEWS` in `script.js`.
+- Footer with the logo, the tagline, section links and the price sheet.
+
+### Changed
+- Layout widens from one 640px column to a 1160px grid: two price cards side by side, how-it-works copy beside its scene, and questions beside their heading on wider screens.
+- Prices are cards with red check marks and a full-width booking button on phones. The text is unchanged word for word.
+- Headings are upper case (by CSS) in Archivo's wider 112.5% width. Section padding is 72px on phones and 112px on wider screens.
+- How it works: the step numbers sit in rings, and the scene sits on its own card.
+- The service-area band is untinted so the globe sits on the page color; the address check replaces "To check your address, text us or send a DM on Instagram" (that line still shows without JavaScript).
+- Browser theme color is black in both themes, to match the header.
+- The play/pause button also stops the hero's band of light.
+- Version bumped to 0.8.0 in the asset links.
+
 ## [v0.7.0] - 2026-11-05
 
 ### Changed

@@ -25,10 +25,22 @@ const CONFIG = {
 /* Recent work: put photo files in assets/gallery/ and list them here.
    The "Recent work" section appears once at least one photo is listed.
    Captions: plain facts written by Umair (vehicle and service).
-   Example:
+   Add "before" (a photo of the same spot, same angle, before the job) to
+   show the pair as a before/after slider that visitors can drag.
+   Examples:
      { file: "01-sedan-exterior.jpg", alt: "Black sedan after an exterior wash", caption: "Sedan, Auto Refresh" },
+     { file: "02-seats-after.jpg", before: "02-seats-before.jpg", alt: "Front seats of an SUV", caption: "SUV, Auto Refresh" },
 */
 const GALLERY = [
+];
+
+/* Reviews: real reviews only, copied word for word with the customer's OK.
+   The "What customers say" section appears once one is listed.
+   "stars" is optional (1 to 5). "source" is where it was posted, if anywhere.
+   Example:
+     { name: "Maria G.", text: "Showed up on time and the car looks new inside.", stars: 5, source: "Google" },
+*/
+const REVIEWS = [
 ];
 /* ======================== END OF CONFIG ============================= */
 
@@ -110,17 +122,56 @@ const GALLERY = [
   const gallerySection = document.getElementById("gallery");
   const grid = document.getElementById("gallery-grid");
   let photos = 0;
+  const photoImg = (file, alt) => {
+    const img = document.createElement("img");
+    img.src = "assets/gallery/" + file;
+    img.alt = alt;
+    img.loading = "lazy";
+    img.decoding = "async";
+    return img;
+  };
+  // Before/after: the "before" photo sits on top, cut off at the handle.
+  // A transparent range input on top does the dragging, so touch, mouse
+  // and the arrow keys all work, and screen readers announce the value.
+  function beforeAfter(photo, alt) {
+    const box = document.createElement("div");
+    box.className = "ba";
+    const after = photoImg(photo.file, alt + ", after");
+    const before = photoImg(photo.before, alt + ", before");
+    before.className = "ba-before";
+    const line = document.createElement("span");
+    line.className = "ba-line";
+    line.setAttribute("aria-hidden", "true");
+    const tagB = document.createElement("span");
+    tagB.className = "ba-tag ba-tag-before";
+    tagB.textContent = "Before";
+    tagB.setAttribute("aria-hidden", "true");
+    const tagA = document.createElement("span");
+    tagA.className = "ba-tag ba-tag-after";
+    tagA.textContent = "After";
+    tagA.setAttribute("aria-hidden", "true");
+    const range = document.createElement("input");
+    range.type = "range";
+    range.min = "0";
+    range.max = "100";
+    range.value = "50";
+    range.setAttribute("aria-label", "Before and after: slide to compare");
+    range.addEventListener("input", () => { box.style.setProperty("--pos", range.value + "%"); });
+    box.append(after, before, line, tagB, tagA, range);
+    return box;
+  }
   if (grid) {
     GALLERY.forEach((photo) => {
       if (!photo || !photo.file) return;
       const fig = document.createElement("figure");
       fig.className = "photo";
-      const img = document.createElement("img");
-      img.src = "assets/gallery/" + photo.file;
-      img.alt = photo.alt || "SUHO Detailing work in Houston, TX";
-      img.loading = "lazy";
-      img.decoding = "async";
-      fig.appendChild(img);
+      const alt = photo.alt || "SUHO Detailing work in Houston, TX";
+      if (photo.before) {
+        fig.classList.add("photo-ba");
+        fig.appendChild(beforeAfter(photo, alt));
+      } else {
+        fig.appendChild(photoImg(photo.file, alt));
+      }
       if (photo.caption) {
         const cap = document.createElement("figcaption");
         cap.textContent = photo.caption;
@@ -134,6 +185,363 @@ const GALLERY = [
     gallerySection.hidden = false;
     const empty = gallerySection.querySelector("[data-gallery-empty]");
     if (empty) empty.remove(); // so the photos sit the usual 24px below the heading
+  }
+
+  /* ---- Reviews ---- */
+  const reviewsSection = document.getElementById("reviews");
+  const reviewsList = document.getElementById("reviews-list");
+  let reviewCount = 0;
+  if (reviewsList) {
+    REVIEWS.forEach((r) => {
+      if (!r || !r.text || !r.name) return;
+      const fig = document.createElement("figure");
+      fig.className = "review";
+      const stars = Math.round(Number(r.stars));
+      if (stars >= 1 && stars <= 5) {
+        const s = document.createElement("p");
+        s.className = "review-stars";
+        s.textContent = "\u2605".repeat(stars);
+        s.setAttribute("aria-label", stars + " out of 5 stars");
+        s.setAttribute("role", "img");
+        fig.appendChild(s);
+      }
+      const q = document.createElement("blockquote");
+      q.textContent = r.text;
+      fig.appendChild(q);
+      const cap = document.createElement("figcaption");
+      const who = document.createElement("strong");
+      who.textContent = r.name;
+      cap.appendChild(who);
+      if (r.source) cap.appendChild(document.createTextNode(", " + r.source));
+      fig.appendChild(cap);
+      reviewsList.appendChild(fig);
+      reviewCount++;
+    });
+  }
+  if (reviewCount && reviewsSection) reviewsSection.hidden = false;
+
+  /* ---- Header line, section highlight, phone dock ---- */
+  const top = document.querySelector(".site-top");
+  const hero = document.querySelector(".hero");
+  const dock = document.querySelector("[data-dock]");
+  const contact = document.getElementById("contact");
+  if ("IntersectionObserver" in window && hero) {
+    let heroOut = false, contactIn = false;
+    const syncDock = () => {
+      if (!dock) return;
+      const show = heroOut && !contactIn; // the contact band has the same buttons
+      dock.classList.toggle("is-shown", show);
+      dock.inert = !show;
+    };
+    if (dock && Array.prototype.some.call(dock.querySelectorAll("a"), (a) => !a.hidden)) {
+      dock.hidden = false;
+      document.body.classList.add("has-dock");
+      dock.inert = true;
+    }
+    new IntersectionObserver((entries) => {
+      heroOut = !entries[0].isIntersecting;
+      if (top) top.classList.toggle("is-scrolled", entries[0].intersectionRatio < 1 || heroOut);
+      hero.classList.toggle("is-offscreen", heroOut);
+      syncDock();
+    }, { threshold: [0, 1] }).observe(hero);
+    if (contact) {
+      new IntersectionObserver((entries) => {
+        contactIn = entries[0].isIntersecting;
+        syncDock();
+      }, { threshold: 0.15 }).observe(contact);
+    }
+
+    // Highlight the header link of the section in the middle of the screen.
+    const navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav a[href^='#']"));
+    const bySection = new Map();
+    navLinks.forEach((a) => {
+      const sec = document.getElementById(a.getAttribute("href").slice(1));
+      if (sec) bySection.set(sec, a);
+    });
+    if (bySection.size) {
+      const navObserver = new IntersectionObserver((entries) => {
+        entries.forEach((e) => {
+          const a = bySection.get(e.target);
+          if (e.isIntersecting) {
+            navLinks.forEach((l) => l.removeAttribute("aria-current"));
+            a.setAttribute("aria-current", "true");
+          } else if (a.getAttribute("aria-current")) {
+            a.removeAttribute("aria-current");
+          }
+        });
+      }, { rootMargin: "-45% 0px -54% 0px" }); // a thin line across the middle of the screen
+      bySection.forEach((a, sec) => navObserver.observe(sec));
+    }
+  }
+
+  /* =================================================================
+     Address check: do we come to you?
+     Suggestions come from Photon (photon.komoot.io, free, no key), which
+     searches OpenStreetMap data. Results lean toward Houston and stay
+     within about 100 miles of it. The distance is a straight line from
+     downtown Houston (the same point as the JSON-LD service area), checked
+     against the 25-mile radius. "Use my current location" asks the device
+     (GPS or Wi-Fi) instead, and names the place with Photon's reverse lookup.
+     ================================================================= */
+  const AREA = { lat: 29.7604, lng: -95.3698, miles: 25 };
+  const PHOTON = "https://photon.komoot.io";
+  const BBOX = "-97.2,28.3,-93.5,31.3"; // roughly 100 miles around Houston
+  const checkForm = document.querySelector("[data-check]");
+  if (checkForm && window.fetch && window.Promise) {
+    const input = checkForm.querySelector(".check-input");
+    const list = checkForm.querySelector(".check-list");
+    const result = checkForm.querySelector(".check-result");
+    const clearBtn = checkForm.querySelector(".check-clear");
+    const locateBtn = checkForm.querySelector(".check-locate");
+    const fallback = document.querySelector("[data-check-fallback]");
+    checkForm.hidden = false;
+    if (fallback) fallback.hidden = true;
+    document.querySelectorAll("[data-check-link]").forEach((a) => { a.hidden = false; });
+    if (navigator.geolocation && window.isSecureContext !== false) locateBtn.hidden = false;
+
+    const cache = new Map();
+    let options = [], active = -1, timer = 0, ctrl = null, seq = 0, chosen = null;
+
+    const toRad = (d) => (d * Math.PI) / 180;
+    function milesFromDowntown(lat, lng) {
+      const dLat = toRad(lat - AREA.lat), dLng = toRad(lng - AREA.lng);
+      const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(AREA.lat)) * Math.cos(toRad(lat)) * Math.sin(dLng / 2) ** 2;
+      return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
+    }
+    // Whole miles, but one decimal near the edge so 25.4 never reads as "25".
+    const fmtMiles = (d) => {
+      const v = d < 10 || Math.abs(d - AREA.miles) < 1.5 ? Math.round(d * 10) / 10 : Math.round(d);
+      return v + (v === 1 ? " mile" : " miles");
+    };
+
+    const STATES = { Texas: "TX", Louisiana: "LA" };
+    function describe(f) {
+      const p = f.properties || {};
+      const street = [p.housenumber, p.street].filter(Boolean).join(" ");
+      const isPlace = /^(city|town|village|locality|district|county)$/.test(p.type || "");
+      const town = (isPlace && p.name) || p.city || p.town || p.village || p.district ||
+        (p.county ? p.county + " County" : "");
+      const region = [STATES[p.state] || p.state, p.postcode].filter(Boolean).join(" ");
+      let main, sub;
+      if (p.name && p.type !== "street" && p.name !== street && street) {
+        main = p.name;
+        sub = [street, town, region];
+      } else {
+        main = street || p.name || town;
+        sub = [main === town ? "" : town, region];
+      }
+      sub = sub.filter(Boolean).join(", ");
+      const c = f.geometry && f.geometry.coordinates;
+      return {
+        main: main,
+        sub: sub,
+        short: main === town || !town ? main : main + ", " + town,
+        full: sub ? main + ", " + sub : main,
+        lat: c ? c[1] : NaN,
+        lng: c ? c[0] : NaN
+      };
+    }
+    function parse(json) {
+      const seen = new Set(), out = [];
+      ((json && json.features) || []).forEach((f) => {
+        if (f.properties && f.properties.countrycode && f.properties.countrycode !== "US") return;
+        const d = describe(f);
+        if (!d.main || isNaN(d.lat) || seen.has(d.full)) return;
+        seen.add(d.full);
+        out.push(d);
+      });
+      return out.slice(0, 5);
+    }
+    function search(q) {
+      const key = q.toLowerCase();
+      if (cache.has(key)) return Promise.resolve(cache.get(key));
+      if (ctrl) ctrl.abort();
+      ctrl = "AbortController" in window ? new AbortController() : null;
+      const url = PHOTON + "/api/?q=" + encodeURIComponent(q) + "&limit=8&lang=en" +
+        "&lat=" + AREA.lat + "&lon=" + AREA.lng + "&bbox=" + BBOX;
+      return fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then((json) => { const out = parse(json); cache.set(key, out); return out; });
+    }
+
+    function setBusy(on) { checkForm.classList.toggle("is-busy", on); }
+    function closeList() {
+      list.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+      input.removeAttribute("aria-activedescendant");
+      active = -1;
+    }
+    function highlight(i) {
+      active = i;
+      [].forEach.call(list.children, (li, n) => li.setAttribute("aria-selected", n === i ? "true" : "false"));
+      if (i >= 0 && list.children[i]) {
+        input.setAttribute("aria-activedescendant", list.children[i].id);
+        list.children[i].scrollIntoView({ block: "nearest" });
+      } else input.removeAttribute("aria-activedescendant");
+    }
+    function render(items, q) {
+      options = items;
+      list.textContent = "";
+      if (!items.length) {
+        if (q.length >= 3) {
+          const li = document.createElement("li");
+          li.className = "check-empty";
+          li.setAttribute("role", "presentation");
+          li.textContent = "No matches yet. Keep typing, or add the city.";
+          list.appendChild(li);
+          list.hidden = false;
+          input.setAttribute("aria-expanded", "false");
+        } else closeList();
+        return;
+      }
+      items.forEach((it, i) => {
+        const li = document.createElement("li");
+        li.id = "check-opt-" + i;
+        li.className = "check-opt";
+        li.setAttribute("role", "option");
+        li.setAttribute("aria-selected", "false");
+        const m = document.createElement("span");
+        m.className = "check-opt-main";
+        m.textContent = it.main;
+        li.appendChild(m);
+        if (it.sub) {
+          const sub = document.createElement("span");
+          sub.className = "check-opt-sub";
+          sub.textContent = it.sub;
+          li.appendChild(sub);
+        }
+        // pointerdown, not click: picks before the input loses focus
+        li.addEventListener("pointerdown", (e) => { e.preventDefault(); choose(it); });
+        list.appendChild(li);
+      });
+      list.hidden = false;
+      input.setAttribute("aria-expanded", "true");
+      highlight(-1);
+    }
+
+    function show(kind, html) {
+      result.className = "check-result is-" + kind;
+      result.innerHTML = html;
+      document.dispatchEvent(new CustomEvent("suho:area-layout")); // area.js re-measures the text
+    }
+    const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const ICON_YES = '<svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16.5 9.5"/></svg>';
+    const ICON_NO = '<svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>';
+    function bookLink(address) {
+      if (booking) return '<a class="link-inline" href="' + esc(booking) + '" target="_blank" rel="noopener">Book now</a>';
+      const url = smsWithBody("Hi, I'd like to book a detail at " + address + ".");
+      return url ? '<a class="link-inline" href="' + esc(url) + '">Text to book at this address</a>' : "";
+    }
+    function verdict(place) {
+      chosen = place;
+      const d = milesFromDowntown(place.lat, place.lng);
+      const name = esc(place.short);
+      if (d <= AREA.miles) {
+        const book = bookLink(place.full);
+        show("yes", ICON_YES + '<span><strong>Yes, we come to you.</strong> ' + name + " is " + fmtMiles(d) +
+          " from downtown Houston." + (book ? " " + book : "") + "</span>");
+      } else {
+        show("no", ICON_NO + "<span><strong>Sorry, that's outside our area.</strong> " + name + " is " + fmtMiles(d) +
+          " from downtown Houston. We travel up to " + AREA.miles + " miles.</span>");
+      }
+    }
+    function choose(place) {
+      input.value = place.full;
+      clearBtn.hidden = false;
+      closeList();
+      verdict(place);
+    }
+    function failed() {
+      setBusy(false);
+      show("error", ICON_NO + "<span>We couldn't look that up right now. Check your connection and try again.</span>");
+    }
+
+    input.addEventListener("input", () => {
+      const q = input.value.trim();
+      clearBtn.hidden = !input.value;
+      chosen = null;
+      clearTimeout(timer);
+      if (q.length < 3) { closeList(); setBusy(false); return; }
+      const my = ++seq;
+      timer = setTimeout(() => {
+        setBusy(true);
+        search(q).then((items) => {
+          if (my !== seq) return;
+          setBusy(false);
+          if (document.activeElement === input) render(items, q);
+        }).catch((err) => { if (my === seq && !(err && err.name === "AbortError")) { setBusy(false); closeList(); } });
+      }, 220);
+    });
+    input.addEventListener("keydown", (e) => {
+      const open = !list.hidden && options.length;
+      if (e.key === "ArrowDown" && open) { e.preventDefault(); highlight((active + 1) % options.length); }
+      else if (e.key === "ArrowUp" && open) { e.preventDefault(); highlight(active <= 0 ? options.length - 1 : active - 1); }
+      else if (e.key === "Escape") { if (!list.hidden) { e.preventDefault(); closeList(); } }
+      else if (e.key === "Enter" && open && active >= 0) { e.preventDefault(); choose(options[active]); }
+    });
+    input.addEventListener("focus", () => { if (options.length && !chosen && input.value.trim().length >= 3) render(options, input.value.trim()); });
+    input.addEventListener("blur", () => { setTimeout(closeList, 120); });
+
+    // Enter or the arrow button: use the top suggestion (searching first if needed).
+    checkForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if (chosen && chosen.full === input.value) { verdict(chosen); return; }
+      if (q.length < 3) {
+        show("hint", "<span>Type a street address, a neighborhood or a ZIP code.</span>");
+        input.focus();
+        return;
+      }
+      clearTimeout(timer);
+      const my = ++seq;
+      setBusy(true);
+      search(q).then((items) => {
+        if (my !== seq) return;
+        setBusy(false);
+        if (items.length) choose(items[0]);
+        else { closeList(); show("no", ICON_NO + "<span>We couldn't find that address. Try adding the city or ZIP code.</span>"); }
+      }).catch((err) => { if (!(err && err.name === "AbortError")) failed(); });
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      clearBtn.hidden = true;
+      chosen = null;
+      options = [];
+      closeList();
+      result.className = "check-result";
+      result.textContent = "";
+      document.dispatchEvent(new CustomEvent("suho:area-layout"));
+      input.focus();
+    });
+
+    locateBtn.addEventListener("click", () => {
+      setBusy(true);
+      show("hint", "<span>Finding your location…</span>");
+      navigator.geolocation.getCurrentPosition((pos) => {
+        const lat = pos.coords.latitude, lng = pos.coords.longitude;
+        const here = { main: "Your location", sub: "", short: "Your location", full: "my current location", lat: lat, lng: lng };
+        fetch(PHOTON + "/reverse?lat=" + lat + "&lon=" + lng + "&lang=en")
+          .then((r) => (r.ok ? r.json() : null))
+          .then((json) => {
+            const found = json && json.features && json.features[0] ? describe(json.features[0]) : null;
+            setBusy(false);
+            if (found && found.main) {
+              found.lat = lat; found.lng = lng; // measure from where the device is, not the street's midpoint
+              input.value = found.full;
+              clearBtn.hidden = false;
+              verdict(found);
+            } else verdict(here);
+          })
+          .catch(() => { setBusy(false); verdict(here); });
+      }, (err) => {
+        setBusy(false);
+        show("error", ICON_NO + "<span>" + (err && err.code === 1
+          ? "Location is turned off for this site. Type your address instead."
+          : "We couldn't get your location. Type your address instead.") + "</span>");
+        input.focus();
+      }, { enableHighAccuracy: true, timeout: 12000, maximumAge: 300000 });
+    });
   }
 
   /* ---- Footer year ---- */

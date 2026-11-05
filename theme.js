@@ -59,7 +59,7 @@
     var theme = isDaytime(new Date()) ? "light" : "dark";
     root.setAttribute("data-theme", theme);
     var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#ffffff");
+    if (meta) meta.setAttribute("content", "#000000"); // the header is black in both themes
     return theme;
   }
 

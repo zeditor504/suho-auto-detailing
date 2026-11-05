@@ -6,11 +6,11 @@
   <title>SUHO Detailing | Mobile Car &amp; Motorcycle Detailing in Houston, TX</title>
   <meta name="description" content="Sleeves-Up Hands-On Auto Detailing: mobile car and motorcycle detailing, interior and exterior, in Houston, TX and surrounding areas. We come to you. Auto Refresh $65, Motorcycle Refresh $50.">
   <link rel="canonical" href="https://zeditor504.github.io/suho-auto-detailing/">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="light dark">
 
   <!-- Sets light/dark (Houston sunrise to sunset) before first paint -->
-  <script src="theme.js?v=0.7.0"></script>
+  <script src="theme.js?v=0.8.0"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -36,9 +36,9 @@
   <!-- Font: Archivo, self-hosted (SIL OFL 1.1, see assets/fonts/OFL.txt) -->
   <link rel="preload" href="assets/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=0.7.0">
-  <script src="script.js?v=0.7.0" defer></script>
-  <script src="area.js?v=0.7.0" defer></script>
+  <link rel="stylesheet" href="styles.css?v=0.8.0">
+  <script src="script.js?v=0.8.0" defer></script>
+  <script src="area.js?v=0.8.0" defer></script>
 
   <script type="application/ld+json">
   {
@@ -73,41 +73,159 @@
     "sameAs": ["https://www.instagram.com/suhodetailing"]
   }
   </script>
+  <!-- FAQ answers: keep word for word in step with the FAQ section below -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "Do you come to me?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SUHO Detailing is mobile: we come to your location. We travel up to 25 miles from downtown Houston. To check your address, type it into the address check in the service area section." } },
+      { "@type": "Question", "name": "How much does a detail cost?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Auto Refresh is $65 and Motorcycle Refresh is $50. These are introductory prices. Additional charges may apply for heavily soiled vehicles." } },
+      { "@type": "Question", "name": "What does the Auto Refresh include?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Basic interior + exterior: interior vacuum and surface wipe-down, interior glass and basic exterior wash." } },
+      { "@type": "Question", "name": "Do you detail motorcycles?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Motorcycle Refresh, $50, is a basic wash + detail: bodywork and accessible surfaces cleaned, wheels, seat and finishing wipe-down." } },
+      { "@type": "Question", "name": "How do I book?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Text or call (346) 698-3058 with your vehicle, your location and a time that works, or send a DM on Instagram at @suhodetailing." } }
+    ]
+  }
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <header class="site-top">
-    <div class="container site-top-row">
-      <img class="logo logo-light" src="assets/logo-wordmark-ink.png" alt="" width="1000" height="379" fetchpriority="high">
-      <img class="logo logo-dark" src="assets/logo-wordmark-white.png" alt="" width="1000" height="379">
+  <!-- Header: always dark, stays at the top while scrolling -->
+  <header class="site-top" id="top">
+    <div class="wrap site-top-row">
+      <a class="brand" href="#top" aria-label="SUHO Detailing, back to top">
+        <img class="logo" src="assets/logo-wordmark-white.png" alt="" width="1000" height="379" fetchpriority="high">
+      </a>
+      <nav class="nav" aria-label="Sections">
+        <a href="#pricing">Prices</a>
+        <a href="#how">How it works</a>
+        <a href="#area">Service area</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div class="top-actions">
+        <a class="top-phone" data-optional data-link="call" href="tel:+13466983058">
+          <svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+          <span data-text="phone">(346) 698-3058</span>
+        </a>
+        <a class="btn btn-sm" data-link="booking" data-book-label="Book now" data-contact-label="Contact"
+           data-sms-body="Hi, I'd like to book a detail."
+           href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text to book</a>
+      </div>
     </div>
   </header>
 
   <main id="main">
 
-    <!-- Hero -->
-    <section class="hero">
-      <div class="container">
-        <h1><span class="visually-hidden">Sleeves-Up Hands-On Auto Detailing. </span><span class="nowrap">Real Work.</span> <span class="nowrap">Real Detail.</span></h1>
-        <p class="lead">Mobile car and motorcycle detailing in <span class="nowrap">Houston, TX</span>. We come to you.</p>
-        <div class="actions">
-          <!-- Until Square is set up, booking buttons open a text message with a short note already written.
-               script.js swaps in the Square link and the "Book" label once CONFIG.SQUARE_BOOKING_URL is set. -->
-          <a class="btn" data-link="booking" data-book-label="Book now" data-contact-label="Contact"
-             data-sms-body="Hi, I'd like to book a detail."
-             href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text to book</a>
-          <span data-optional>or call <a class="link" data-link="call" data-text="phone" href="tel:+13466983058">(346) 698-3058</a></span>
+    <!-- Hero: always dark, like a studio with the lights on one car -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <p class="kicker">Mobile detailing in <span class="nowrap">Houston, TX</span></p>
+          <h1 id="hero-title"><span class="visually-hidden">Sleeves-Up Hands-On Auto Detailing. </span><span class="nowrap">Real Work.</span> <span class="nowrap">Real Detail.</span></h1>
+          <p class="lead">Car and motorcycle detailing, interior and exterior. We come to you.</p>
+          <div class="actions">
+            <!-- Until Square is set up, booking buttons open a text message with a short note already written.
+                 script.js swaps in the Square link and the "Book" label once CONFIG.SQUARE_BOOKING_URL is set. -->
+            <a class="btn" data-link="booking" data-book-label="Book now" data-contact-label="Contact"
+               data-sms-body="Hi, I'd like to book a detail."
+               href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text to book</a>
+            <a class="btn btn-ghost" data-optional data-link="call" href="tel:+13466983058">Call <span data-text="phone">(346) 698-3058</span></a>
+          </div>
+          <ul class="hero-prices" role="list">
+            <li><a href="#auto-refresh"><span>Auto Refresh</span> <strong>$65</strong></a></li>
+            <li><a href="#motorcycle-refresh"><span>Motorcycle Refresh</span> <strong>$50</strong></a></li>
+          </ul>
+        </div>
+
+        <!-- The logo's line-drawn car, drawn large. It draws itself in once,
+             then a band of light passes over it now and then. -->
+        <div class="hero-art" aria-hidden="true">
+          <svg class="car" viewBox="0 0 640 260" width="640" height="260">
+            <defs>
+              <linearGradient id="sheen" x1="0" x2="1" y1="0" y2="0">
+                <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+                <stop offset="0.5" stop-color="#fff" stop-opacity="1"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </linearGradient>
+              <radialGradient id="floor" cx="0.5" cy="0.5" r="0.5">
+                <stop offset="0" stop-color="#fff" stop-opacity="0.16"/>
+                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+              </radialGradient>
+              <mask id="car-lines" maskUnits="userSpaceOnUse" x="-20" y="-20" width="680" height="300">
+                <g class="car-mask" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+                  <use href="#car-body"/>
+                </g>
+              </mask>
+            </defs>
+            <ellipse class="car-floor" cx="320" cy="214" rx="300" ry="26" fill="url(#floor)"/>
+            <g id="car-body" class="car-lines">
+              <!-- roofline: tail to nose, like the logo's swoosh -->
+              <path class="cl cl-1" pathLength="1" d="M36 150 C 120 128, 210 70, 330 66 C 420 63, 470 92, 528 124 C 560 132, 596 140, 616 150"/>
+              <!-- side window -->
+              <path class="cl cl-2" pathLength="1" d="M214 118 C 262 90, 300 82, 336 82 C 384 82, 418 96, 452 120 Z"/>
+              <!-- B pillar -->
+              <path class="cl cl-3" pathLength="1" d="M346 82 L 342 120"/>
+              <!-- shoulder line -->
+              <path class="cl cl-4" pathLength="1" d="M150 136 L 560 132"/>
+              <!-- lower body with wheel arches -->
+              <path class="cl cl-5" pathLength="1" d="M40 152 C 40 168, 46 178, 70 182 L 104 182 A 52 52 0 0 1 206 182 L 432 182 A 52 52 0 0 1 534 182 L 590 182 C 608 180, 616 168, 616 152"/>
+              <!-- wheels -->
+              <circle class="cl cl-6" pathLength="1" cx="155" cy="186" r="40"/>
+              <circle class="cl cl-6" pathLength="1" cx="483" cy="186" r="40"/>
+              <circle class="cl cl-7" pathLength="1" cx="155" cy="186" r="22"/>
+              <circle class="cl cl-7" pathLength="1" cx="483" cy="186" r="22"/>
+              <!-- door line and handle -->
+              <path class="cl cl-8" pathLength="1" d="M338 136 C 340 156, 338 170, 334 182"/>
+              <path class="cl cl-8" pathLength="1" d="M372 146 L 396 146"/>
+              <!-- headlight -->
+              <path class="cl cl-9" pathLength="1" d="M584 140 L 612 147"/>
+            </g>
+            <!-- tail light: the logo's red streak -->
+            <path class="car-tail" pathLength="1" d="M40 146 L 92 140"/>
+            <!-- the moving band of light, seen only through the car's lines -->
+            <g mask="url(#car-lines)">
+              <rect class="car-sheen" x="-200" y="0" width="160" height="260" fill="url(#sheen)"/>
+            </g>
+          </svg>
         </div>
       </div>
     </section>
 
+    <!-- Quick facts: only things a customer can check -->
+    <section class="facts" aria-label="At a glance">
+      <ul class="wrap facts-grid" role="list">
+        <li class="fact">
+          <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <div><p class="fact-title">We come to you</p><p>At your location, up to 25 miles from downtown Houston. <a class="link-inline" href="#area-check" data-check-link hidden>Check your address</a></p></div>
+        </li>
+        <li class="fact">
+          <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 16v-3l2-5h9l4 5h1.5a1.5 1.5 0 0 1 1.5 1.5V16"/><circle cx="7" cy="16.5" r="2"/><circle cx="17" cy="16.5" r="2"/><path d="M9 16.5h6"/></svg>
+          <div><p class="fact-title">Cars and motorcycles</p><p>Auto Refresh $65. Motorcycle Refresh $50.</p></div>
+        </li>
+        <li class="fact">
+          <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 10h8M8 14h5"/></svg>
+          <div><p class="fact-title">Prices up front</p><p>The same as our printed price sheet.</p></div>
+        </li>
+        <li class="fact">
+          <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></svg>
+          <div><p class="fact-title"><span data-when-booking hidden>Book online</span><span data-when-no-booking>Book by text</span></p><p><span data-when-booking hidden>Pick a time online, or text, call or DM us.</span><span data-when-no-booking>Text, call or send a DM on Instagram.</span></p></div>
+        </li>
+      </ul>
+    </section>
+
     <!-- Prices: same text as the printed price sheet (assets/pricing.pdf) -->
-    <section id="pricing" aria-labelledby="pricing-title">
-      <div class="container">
-        <h2 id="pricing-title">MOBILE <span class="nowrap">DETAILING /</span> <span class="nowrap">HOUSTON, TX</span></h2>
+    <section class="section" id="pricing" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <h2 class="section-title" id="pricing-title">MOBILE <span class="nowrap">DETAILING /</span> <span class="nowrap">HOUSTON, TX</span></h2>
         <div class="price-list">
-          <article class="price-item">
+          <article class="price-card" id="auto-refresh">
             <div class="price-head">
               <div>
                 <h3 class="service">AUTO REFRESH</h3>
@@ -116,14 +234,14 @@
               <p class="price"><span class="visually-hidden">Price: </span>$65</p>
             </div>
             <ul class="features" role="list">
-              <li>Interior vacuum and surface wipe-down</li>
-              <li>Interior glass and basic exterior wash</li>
+              <li><svg class="ic tick" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Interior vacuum and surface wipe-down</li>
+              <li><svg class="ic tick" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Interior glass and basic exterior wash</li>
             </ul>
-            <p class="service-book" data-optional><a class="link" data-link="booking-auto" data-book-label="Book Auto Refresh"
+            <p class="service-book" data-optional><a class="btn btn-outline" data-link="booking-auto" data-book-label="Book Auto Refresh"
                data-sms-body="Hi, I'd like to book an Auto Refresh."
                href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20an%20Auto%20Refresh.">Text to book Auto Refresh</a></p>
           </article>
-          <article class="price-item">
+          <article class="price-card" id="motorcycle-refresh">
             <div class="price-head">
               <div>
                 <h3 class="service">MOTORCYCLE REFRESH</h3>
@@ -132,10 +250,10 @@
               <p class="price"><span class="visually-hidden">Price: </span>$50</p>
             </div>
             <ul class="features" role="list">
-              <li>Bodywork and accessible surfaces cleaned</li>
-              <li>Wheels, seat and finishing wipe-down</li>
+              <li><svg class="ic tick" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Bodywork and accessible surfaces cleaned</li>
+              <li><svg class="ic tick" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>Wheels, seat and finishing wipe-down</li>
             </ul>
-            <p class="service-book" data-optional><a class="link" data-link="booking-motorcycle" data-book-label="Book Motorcycle Refresh"
+            <p class="service-book" data-optional><a class="btn btn-outline" data-link="booking-motorcycle" data-book-label="Book Motorcycle Refresh"
                data-sms-body="Hi, I'd like to book a Motorcycle Refresh."
                href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20Motorcycle%20Refresh.">Text to book Motorcycle Refresh</a></p>
           </article>
@@ -146,21 +264,47 @@
     </section>
 
     <!-- Recent work: stays hidden until a photo is listed in GALLERY (script.js).
+         An entry with a "before" photo shows as a before/after slider.
          To show the Instagram line before the first photo, delete "hidden" below. -->
-    <section id="gallery" aria-labelledby="gallery-title" hidden>
-      <div class="container">
-        <h2 id="gallery-title">Recent work</h2>
+    <section class="section" id="gallery" aria-labelledby="gallery-title" hidden>
+      <div class="wrap">
+        <h2 class="section-title" id="gallery-title">Recent work</h2>
         <p class="gallery-empty" data-gallery-empty>Recent jobs are posted on <a class="link" href="https://www.instagram.com/suhodetailing" target="_blank" rel="noopener">Instagram at @suhodetailing</a>.</p>
         <div class="gallery" id="gallery-grid"></div>
+        <p class="gallery-more"><a class="link" href="https://www.instagram.com/suhodetailing" target="_blank" rel="noopener">More on Instagram at @suhodetailing</a></p>
+      </div>
+    </section>
+
+    <!-- Reviews: stays hidden until a real review is listed in REVIEWS (script.js) -->
+    <section class="section" id="reviews" aria-labelledby="reviews-title" hidden>
+      <div class="wrap">
+        <h2 class="section-title" id="reviews-title">What customers say</h2>
+        <div class="reviews" id="reviews-list"></div>
       </div>
     </section>
 
     <!-- How it works -->
-    <section id="how" aria-labelledby="how-title">
-      <div class="container">
-        <h2 id="how-title">How it works</h2>
+    <section class="section section-tint" id="how" aria-labelledby="how-title">
+      <div class="wrap how-grid">
+        <div class="how-copy">
+          <h2 class="section-title" id="how-title">How it works</h2>
+          <ol class="steps" role="list">
+            <li class="step">
+              <span class="step-num" aria-hidden="true">1</span>
+              <p><span data-when-booking hidden>Pick a service and time online.</span><span data-when-no-booking>Text or call with your vehicle, your location and a time that works.</span></p>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">2</span>
+              <p>We come to your location.</p>
+            </li>
+            <li class="step">
+              <span class="step-num" aria-hidden="true">3</span>
+              <p>Drive off clean.</p>
+            </li>
+          </ol>
+        </div>
         <!-- One looping scene: clock, check mark, location pin, car driving off.
-             Each step below brightens in turn, in sync with it. -->
+             Each step brightens in turn, in sync with it. -->
         <div class="how-scene" aria-hidden="true">
           <svg class="scene" viewBox="56 18 128 82" width="230" height="147">
             <g class="s-clock">
@@ -192,20 +336,6 @@
             <line class="s-road" x1="40" y1="95" x2="200" y2="95"/>
           </svg>
         </div>
-        <ol class="steps" role="list">
-          <li class="step">
-            <span class="step-num" aria-hidden="true">1</span>
-            <p><span data-when-booking hidden>Pick a service and time online.</span><span data-when-no-booking>Text or call with your vehicle, your location and a time that works.</span></p>
-          </li>
-          <li class="step">
-            <span class="step-num" aria-hidden="true">2</span>
-            <p>We come to your location.</p>
-          </li>
-          <li class="step">
-            <span class="step-num" aria-hidden="true">3</span>
-            <p>Drive off clean.</p>
-          </li>
-        </ol>
       </div>
     </section>
 
@@ -217,12 +347,38 @@
     <section class="area" id="area" aria-labelledby="area-title">
       <div class="area-globe" aria-hidden="true"></div>
       <div class="area-inner">
-        <h2 id="area-title"><span class="nowrap">Houston, TX</span> and surrounding areas</h2>
+        <h2 class="section-title" id="area-title"><span class="nowrap">Houston, TX</span> and surrounding areas</h2>
         <p class="area-radius">We travel up to 25 miles from downtown Houston.</p>
         <p>Nearby places include Spring, Humble, Kingwood, Pasadena, Clear Lake, Pearland, Missouri City, Sugar Land and Jersey Village.</p>
-        <p>To check your address, <span class="nowrap"><span data-optional><a class="link" data-link="sms" data-sms-body="Hi, do you come to my area?" href="sms:+13466983058?&amp;body=Hi%2C%20do%20you%20come%20to%20my%20area%3F">text us</a> or </span><a class="link" href="https://www.instagram.com/suhodetailing" target="_blank" rel="noopener">send a DM on Instagram</a>.</span></p>
+        <!-- Address check: suggestions as you type (Photon, OpenStreetMap data), or the
+             device's location. Straight-line distance from downtown Houston, against the
+             25-mile radius. Built by script.js; without scripts the fallback line shows. -->
+        <form class="check" id="area-check" data-check hidden novalidate autocomplete="off">
+          <label class="check-label" for="check-input">Check your address</label>
+          <div class="check-box">
+            <svg class="ic check-pin" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            <input class="check-input" id="check-input" type="text" inputmode="search" enterkeyhint="search"
+                   placeholder="Start typing your street address" spellcheck="false" autocapitalize="off" autocorrect="off"
+                   role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="check-list" aria-describedby="check-result">
+            <span class="check-spin" aria-hidden="true"></span>
+            <button type="button" class="check-clear" aria-label="Clear address" hidden>
+              <svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            </button>
+            <button type="submit" class="check-go" aria-label="Check address">
+              <svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+            <ul class="check-list" id="check-list" role="listbox" aria-label="Address suggestions" hidden></ul>
+          </div>
+          <button type="button" class="check-locate link-button" hidden>
+            <svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7.5"/></svg>
+            Use my current location
+          </button>
+          <p class="check-result" id="check-result" role="status" aria-live="polite"></p>
+          <p class="check-credit">Address suggestions: <a class="link-inline" href="https://photon.komoot.io" target="_blank" rel="noopener">Photon</a>, map data &copy; <a class="link-inline" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</p>
+        </form>
+        <p data-check-fallback>To check your address, <span class="nowrap"><span data-optional><a class="link" data-link="sms" data-sms-body="Hi, do you come to my area?" href="sms:+13466983058?&amp;body=Hi%2C%20do%20you%20come%20to%20my%20area%3F">text us</a> or </span><a class="link" href="https://www.instagram.com/suhodetailing" target="_blank" rel="noopener">send a DM on Instagram</a>.</span></p>
       </div>
-      <!-- Play/pause for the moving parts of the page (this globe and the how-it-works loop).
+      <!-- Play/pause for the moving parts of the page (the hero light, this globe and the how-it-works loop).
            Hidden until script.js wires it up, and for visitors who choose "reduce motion". -->
       <button type="button" class="area-motion js-motion" aria-label="Pause animations" title="Pause animations" hidden>
         <svg class="ic ic-pause" aria-hidden="true" viewBox="0 0 24 24"><rect class="fill" x="6.5" y="5" width="3.75" height="14" rx="1"/><rect class="fill" x="13.75" y="5" width="3.75" height="14" rx="1"/></svg>
@@ -230,14 +386,47 @@
       </button>
     </section>
 
-    <!-- Contact (old #book links land here too) -->
-    <section id="contact" aria-labelledby="contact-title">
-      <div class="container" id="book">
-        <h2 id="contact-title">Contact</h2>
-        <!-- Shown only once CONFIG.SQUARE_BOOKING_URL is set -->
-        <div class="contact-book" data-when-booking hidden>
-          <p>Choose your service and an open time on our Square booking page.</p>
-          <a class="btn" data-link="booking" data-book-label="Book now" href="#contact">Book now</a>
+    <!-- FAQ: facts from the price sheet and the service area only.
+         Keep the answers in step with the FAQPage JSON-LD in <head>. -->
+    <section class="section" id="faq" aria-labelledby="faq-title">
+      <div class="wrap faq-grid">
+        <h2 class="section-title" id="faq-title">Questions</h2>
+        <div class="faq">
+          <details>
+            <summary>Do you come to me?</summary>
+            <p>Yes. SUHO Detailing is mobile: we come to your location. We travel up to 25 miles from downtown Houston. To check your address, type it into <a class="link-inline" href="#area-check">the address check</a> in the service area section.</p>
+          </details>
+          <details>
+            <summary>How much does a detail cost?</summary>
+            <p>Auto Refresh is $65 and Motorcycle Refresh is $50. These are introductory prices. Additional charges may apply for heavily soiled vehicles.</p>
+          </details>
+          <details>
+            <summary>What does the Auto Refresh include?</summary>
+            <p>Basic interior + exterior: interior vacuum and surface wipe-down, interior glass and basic exterior wash.</p>
+          </details>
+          <details>
+            <summary>Do you detail motorcycles?</summary>
+            <p>Yes. Motorcycle Refresh, $50, is a basic wash + detail: bodywork and accessible surfaces cleaned, wheels, seat and finishing wipe-down.</p>
+          </details>
+          <details>
+            <summary>How do I book?</summary>
+            <p><span data-when-booking hidden>Pick a service and an open time on our <a class="link-inline" data-link="booking" href="#contact">Square booking page</a>, or text or call us. </span><span data-when-no-booking><span data-optional><a class="link-inline" data-link="sms" data-sms-body="Hi, I'd like to book a detail." href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text</a> or <a class="link-inline" data-link="call" href="tel:+13466983058">call <span data-text="phone">(346) 698-3058</span></a> with your vehicle, your location and a time that works, or </span>send a DM on <a class="link-inline" href="https://www.instagram.com/suhodetailing" target="_blank" rel="noopener">Instagram at @suhodetailing</a>.</span></p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact: the closing call to action (old #book links land here too) -->
+    <section class="cta" id="contact" aria-labelledby="contact-title">
+      <div class="wrap cta-grid" id="book">
+        <div class="cta-copy">
+          <h2 class="section-title" id="contact-title">Book your detail</h2>
+          <p class="cta-lead"><span data-when-booking hidden>Choose your service and an open time on our Square booking page.</span><span data-when-no-booking>Text or call with your vehicle, your location and a time that works.</span></p>
+          <div class="actions">
+            <a class="btn" data-link="booking" data-book-label="Book now" data-contact-label="Contact"
+               data-sms-body="Hi, I'd like to book a detail."
+               href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text to book</a>
+          </div>
         </div>
         <ul class="contact-list" role="list">
           <li data-optional><a class="contact-row" data-link="call" href="tel:+13466983058"><span class="contact-label">Call</span><span class="contact-value" data-text="phone">(346) 698-3058</span></a></li>
@@ -251,15 +440,40 @@
   </main>
 
   <footer class="footer">
-    <div class="container">
-      <p class="footer-tag">SLEEVES UP. HANDS ON.</p>
-      <span class="divider" aria-hidden="true"></span>
-      <p>&copy; <span data-year>2026</span> Sleeves-Up Hands-On Auto Detailing</p>
-      <p class="footer-tools">
-        <button type="button" class="link-button js-share" hidden>Share this site</button>
-      </p>
+    <div class="wrap footer-grid">
+      <div class="footer-brand">
+        <img class="footer-logo" src="assets/logo-wordmark-white.png" alt="" width="1000" height="379" loading="lazy">
+        <p class="footer-tag">SLEEVES UP. HANDS ON.</p>
+        <span class="divider" aria-hidden="true"></span>
+        <p>Mobile car and motorcycle detailing in <span class="nowrap">Houston, TX</span> and surrounding areas.</p>
+      </div>
+      <nav class="footer-nav" aria-label="Footer">
+        <a href="#pricing">Prices</a>
+        <a href="#how">How it works</a>
+        <a href="#area">Service area</a>
+        <a href="#faq">Questions</a>
+        <a href="#contact">Contact</a>
+        <a href="assets/pricing.pdf" target="_blank" rel="noopener" type="application/pdf">Price sheet (PDF)</a>
+      </nav>
+      <div class="footer-meta">
+        <p>&copy; <span data-year>2026</span> Sleeves-Up Hands-On Auto Detailing</p>
+        <p class="footer-tools">
+          <button type="button" class="link-button js-share" hidden>Share this site</button>
+        </p>
+      </div>
     </div>
   </footer>
+
+  <!-- Phones: call and book stay one tap away once the hero is scrolled past -->
+  <div class="dock" data-dock hidden>
+    <a class="dock-btn" data-optional data-link="call" href="tel:+13466983058">
+      <svg class="ic" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+      Call
+    </a>
+    <a class="dock-btn dock-book" data-link="booking" data-book-label="Book now" data-contact-label="Contact"
+       data-sms-body="Hi, I'd like to book a detail."
+       href="sms:+13466983058?&amp;body=Hi%2C%20I'd%20like%20to%20book%20a%20detail.">Text to book</a>
+  </div>
 
   <div class="toast" role="status" aria-live="polite" hidden></div>
 </body>
