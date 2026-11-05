@@ -89,7 +89,9 @@ The service radius is **25 miles from downtown Houston**, stated on the page as 
 
 The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius (each shows up about two or three times around the whole globe, so few names repeat on the visible side): Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
 
-They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
+They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up. Each place lights up once per round, so every highlight is a different place until all 52 have had a turn, and the same name never lights up twice in a row. If no new name is in view, the globe waits a beat for one to turn into view instead of repeating one.
+
+Names are 21px on phones, 24px from 600px wide and 28px from 834px. Below 834px the globe also spaces them closer and reaches nearer the top and bottom of the band, where the text leaves room for them.
 
 | Color | Terrain | Rule used |
 |---|---|---|

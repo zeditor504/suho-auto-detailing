@@ -53,7 +53,11 @@
   var omega = 0;           // radians per ms
   var spin = 0;            // current rotation
   var last = 0, raf = 0, running = false, visible = false;
-  var pulseTimer = 0, pulseKick = 0, pulseIndex = 0, lastPulse = null;
+  var pulseTimer = 0, pulseKick = 0, pulseIndex = 0;
+  var lastName = "";       // the name that lit up last: never lights up twice in a row
+  var used = {};           // names that have lit up this round (each place once per round)
+  var usedCount = 0, skipped = 0;
+  var MAX_SKIPS = 4;       // pulses to wait for an unused name to turn into view before starting a new round
   var textBoxes = [];      // the text's line boxes, relative to the band, padded by TEXT_PAD
   var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
 
@@ -65,10 +69,10 @@
     H = area.clientHeight;
     if (!W || !H) return;
     RX = W * 0.49;
-    RY = H * 0.42;
+    RY = H * (W < 834 ? 0.47 : 0.42); // phones and tablets: reach nearer the top and bottom, where the names show
     omega = SPEED / RX / 1000;
-    TEXT_PAD = W < 600 ? 8 : 12;
-    TEXT_FADE = W < 600 ? 24 : 32;
+    TEXT_PAD = W < 600 ? 4 : 12;
+    TEXT_FADE = W < 600 ? 16 : 32;
     textBoxes = measureText();
 
     // Measure each name once at its natural size.
@@ -77,12 +81,14 @@
     probe.setAttribute("data-name", "Mg");
     layer.appendChild(probe);
     var lineH = probe.offsetHeight;
-    var gap = parseFloat(getComputedStyle(probe).fontSize) * 2;
+    // Space between names: two letter-heights, a little tighter on phones and tablets,
+    // where the band is narrow and the names would otherwise look sparse.
+    var gap = parseFloat(getComputedStyle(probe).fontSize) * (W < 834 ? 1.4 : 2);
     layer.removeChild(probe);
 
     // Rows evenly spaced in latitude. Text shrinks vertically toward the poles,
     // so the rows never touch.
-    var rows = Math.max(3, Math.floor((2 * LAT_MAX * RY) / (lineH * 1.55)) + 1);
+    var rows = Math.max(3, Math.floor((2 * LAT_MAX * RY) / (lineH * (W < 834 ? 1.2 : 1.55))) + 1);
 
     // With a short list, spread the names out instead of repeating them:
     // widen the gap so the rings hold about COPIES copies of each name.
@@ -163,9 +169,9 @@
       [].forEach.call(range.getClientRects(), add);
     });
     // The address check: its box, the location button and the answer line.
-    [].forEach.call(heading.querySelectorAll(".check-box, .check-locate, .check-result, .check-credit"), function (el) {
+    [].forEach.call(heading.querySelectorAll(".check-label, .check-box, .check-locate, .check-result, .check-credit"), function (el) {
       if (el.offsetParent === null) return; // hidden
-      if (el.classList.contains("check-result") || el.classList.contains("check-credit")) {
+      if (!el.classList.contains("check-box") && !el.classList.contains("check-locate")) {
         var range = document.createRange();
         range.selectNodeContents(el);
         [].forEach.call(range.getClientRects(), add);
@@ -243,27 +249,51 @@
     var pool = [], other = [];
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
-      if (!it.shown || it === lastPulse || it.o < minO || it.ct < minCt) continue;
+      var name = it.el.getAttribute("data-name");
+      if (!it.shown || name === lastName || used[name] || it.o < minO || it.ct < minCt) continue;
       var halfW = it.w * it.ct / 2;
       if (it.X - halfW < 8 || it.X + halfW > W - 8) continue;
       (it.el.getAttribute("data-terrain") === want ? pool : other).push(it);
     }
     return [pool, other];
   }
-  function pulse() {
-    if (!running) return;
-    var want = ORDER[pulseIndex++ % ORDER.length];
+  // Every place lights up once per round, in no fixed order, and the same
+  // name never lights up twice in a row (other copies of it included).
+  // If no unused name is in view, wait for the globe to turn one in; after
+  // a few empty tries (or once every place has had its turn), start a new round.
+  function newRound() {
+    used = {};
+    usedCount = 0;
+    skipped = 0;
+  }
+  function pick() {
+    var want = ORDER[pulseIndex % ORDER.length];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
     var loose = candidates(0.6, 0.35, want);
     var lists = [strict[0], loose[0], strict[1], loose[1]];
-    var list = null;
-    for (var k = 0; k < lists.length && !list; k++) if (lists[k].length) list = lists[k];
-    if (!list) return;
-    var pick = list[Math.floor(Math.random() * list.length)];
-    lastPulse = pick;
-    pick.el.classList.remove("is-pulsing");
-    void pick.el.offsetWidth; // restart the animation if it ran before
-    pick.el.classList.add("is-pulsing");
+    for (var k = 0; k < lists.length; k++) {
+      if (lists[k].length) return lists[k][Math.floor(Math.random() * lists[k].length)];
+    }
+    return null;
+  }
+  function pulse() {
+    if (!running) return;
+    if (usedCount >= PLACES.length) newRound();
+    var it = pick();
+    if (!it) {
+      if (++skipped < MAX_SKIPS) return;
+      newRound();
+      it = pick();
+      if (!it) return;
+    }
+    pulseIndex++;
+    skipped = 0;
+    lastName = it.el.getAttribute("data-name");
+    used[lastName] = true;
+    usedCount++;
+    it.el.classList.remove("is-pulsing");
+    void it.el.offsetWidth; // restart the animation if it ran before
+    it.el.classList.add("is-pulsing");
   }
   layer.addEventListener("animationend", function (e) {
     e.target.classList.remove("is-pulsing");

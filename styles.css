@@ -41,7 +41,7 @@
   --label-2: #595959;       /* secondary text */
   --separator: #e2e2e2;     /* hairlines only, never text */
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.06);
-  --names: rgba(0, 0, 0, 0.09);
+  --names: rgba(0, 0, 0, 0.12);
 }
 [data-theme="dark"] {
   color-scheme: dark;
@@ -52,7 +52,7 @@
   --label-2: #a6a6a6;
   --separator: #262626;
   --shadow: none;
-  --names: rgba(237, 237, 237, 0.10);
+  --names: rgba(237, 237, 237, 0.14);
 }
 :root {
   --red: #ff0005;           /* the logo red */
@@ -821,7 +821,7 @@ main > .area {
   display: grid;
   align-content: center;
   min-height: 440px;
-  padding-block: calc(var(--s-24) + var(--s-8));   /* 128px on phones: room for the globe above and below the text */
+  padding-block: 168px;     /* phones: room for the globe above and below the text */
   background: var(--bg);
   text-align: center;
   /* terrain colors for the pulse: muted, earthy */
@@ -1012,7 +1012,7 @@ main > .area {
   visibility: hidden;
   white-space: nowrap;
   color: var(--names);
-  font-size: 16px;
+  font-size: 21px;          /* phones; 24px from 600px, 28px from 834px */
   font-weight: 500;
   line-height: 1.2;
   transform-origin: 50% 50%;
@@ -1210,6 +1210,7 @@ body.has-dock .toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .top-phone { display: inline-flex; }
 }
 @media (min-width: 600px) {
+  .area-place { font-size: 24px; }
   .facts-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-6) var(--s-8); }
   .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-4); }
   .price-card { padding: var(--s-8); }
