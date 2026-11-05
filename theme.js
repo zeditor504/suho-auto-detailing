@@ -1,13 +1,13 @@
 /* SUHO Detailing: day/night theme.
    Light mode between sunrise and sunset in Houston, TX; dark mode after sunset.
    Loaded in <head> (not deferred) so the right theme is set before first paint.
-   Visitors can override with the theme button (Auto -> Light -> Dark). */
+   There is no manual switch: the page follows Houston's sunrise and sunset. */
 (function () {
   "use strict";
 
   // Houston, TX. The business serves Houston, so the site follows Houston's sun.
   var LAT = 29.7604, LNG = -95.3698;
-  var KEY = "suho-theme"; // "auto" | "light" | "dark"
+  var KEY = "suho-theme"; // old saved choice from the removed theme button (cleared below)
 
   // --- Sunrise / sunset (standard NOAA-style solar equations) ---
   var rad = Math.PI / 180, dayMs = 864e5, J1970 = 2440588, J2000 = 2451545, J0 = 0.0009;
@@ -50,41 +50,26 @@
     return candidates[0];
   }
 
-  function getMode() {
-    try { return localStorage.getItem(KEY) || "auto"; } catch (e) { return "auto"; }
-  }
-  function saveMode(mode) {
-    try {
-      if (mode === "auto") localStorage.removeItem(KEY);
-      else localStorage.setItem(KEY, mode);
-    } catch (e) { /* storage blocked: the choice lasts for this visit only */ }
-  }
+  // Earlier versions let visitors pick light or dark and saved the choice.
+  // The site now always follows Houston's sun, so clear any saved choice.
+  try { localStorage.removeItem(KEY); } catch (e) { /* storage blocked */ }
 
-  var currentMode = getMode();
-
-  function resolve(mode) {
-    if (mode === "light" || mode === "dark") return mode;
-    return isDaytime(new Date()) ? "light" : "dark";
-  }
-
-  function apply(mode) {
+  function apply() {
     var root = document.documentElement;
-    var theme = resolve(mode);
+    var theme = isDaytime(new Date()) ? "light" : "dark";
     root.setAttribute("data-theme", theme);
-    root.setAttribute("data-theme-mode", mode);
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", theme === "dark" ? "#000000" : "#ffffff");
     return theme;
   }
 
-  apply(currentMode);
+  apply();
 
   window.SUHOTheme = {
     sunTimes: sunTimes,
     nextChange: nextChange,
-    mode: function () { return currentMode; },
     theme: function () { return document.documentElement.getAttribute("data-theme"); },
-    set: function (mode) { currentMode = mode; saveMode(mode); return apply(mode); },
-    refresh: function () { return apply(currentMode); }
+    wanted: function () { return isDaytime(new Date()) ? "light" : "dark"; },
+    refresh: apply
   };
 })();

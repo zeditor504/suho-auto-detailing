@@ -62,13 +62,15 @@ The page reads like a printed rate card from a one-person trade. The rules are w
 - **The logo's colors.** White page by day, black after sunset, black or near-white text. Red (`#ff0005`, sampled from the logo) marks only the logo, the booking button, the short footer rule and the check mark in the how-it-works drawing. Links are underlined in their own text color.
 - **One font, two weights.** Archivo at 400 and 700. The headline and the two prices use its wider 112.5% width; everything else is normal width. Five sizes in all (36/48, 26/32, 20, 17 and 15 px), no letter-spacing anywhere, and no small caps labels above headings.
 - **Nothing decorative.** No cards, shadows, blur, stripes or sticky bars. Thin lines appear only between the price features and between contact rows. One 4px corner radius, one button style.
-- **Motion** is the how-it-works loop, the globe and a short crossfade when the theme changes. Both scenes stop when scrolled off screen, with the **Pause animations** button in the footer (remembered on the device), and for visitors who choose "reduce motion".
+- **Motion** is the how-it-works loop (each step brightens in turn with the drawing), the globe and a short crossfade at sunrise and sunset. Both scenes stop when scrolled off screen, with the **play/pause button** at the bottom center of the service-area band (one button for both; remembered on the device), and for visitors who choose "reduce motion".
 
 Copy rules: sentence case, no periods on headings or buttons, no rhetorical questions, and every line states something a customer can check (price, what's included, where, how to book, how to reach).
 
 ### Service area place names
 
-The faint names behind "Houston, TX and surrounding areas" are the 92 Census places within 35 miles of downtown Houston: 23 Census Designated Places plus 69 incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point.
+The service radius is **25 miles from downtown Houston**, stated on the page as "We travel up to 25 miles from downtown Houston." and in the JSON-LD as a 25-mile circle (`areaServed`, 40,234 m).
+
+The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius: Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
 
 They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up.
 
@@ -79,13 +81,13 @@ They ride around a slowly turning globe, right to left, all at the same turn rat
 | Silver | City | Built-up Houston core, suburbs and the industrial east side |
 | Sand | Prairie | Coastal prairie, ranch and farm land to the west, south and east |
 
-Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration: screen readers skip it, and the names are drawn by CSS from a `data-name` attribute, so they don't count as page text for search engines. Names near the heading and paragraphs fade out in `area.js` so they never pass behind the words. The visible sentence below the heading names nine well-known places (Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land). It holds still with no pulses for visitors who choose "reduce motion" or press **Pause animations**.
+Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration: screen readers skip it, and the names are drawn by CSS from a `data-name` attribute, so they don't count as page text for search engines. Names near the heading and paragraphs fade out in `area.js` so they never pass behind the words. The visible sentence below the heading names nine well-known places, all 14 to 23 miles out (Spring, Humble, Kingwood, Pasadena, Clear Lake, Pearland, Missouri City, Sugar Land and Jersey Village). Katy (28 miles) and The Woodlands (30 miles) are outside the radius, so they're not listed. The globe holds still with no pulses for visitors who choose "reduce motion" or press the pause button.
 
 ### Light and dark mode
 
 The site is light from sunrise to sunset in Houston and dark after sunset. `theme.js` works out the sun times in the browser from Houston's coordinates, with no outside service. It switches by itself at sunrise and sunset if the page is open.
 
-Visitors can override it with the appearance button in the header, which cycles **Automatic → Light → Dark**. The icon shows the current setting (half-filled circle = automatic, sun = light, moon = dark), and the button's tooltip and screen-reader label say when the next switch happens. The choice is remembered on their device.
+There is no light/dark switch: every visitor sees light mode before sunset and dark mode after, by Houston's sun. (An earlier version had a switch; `theme.js` clears any choice a visitor saved with it.)
 
 To follow a different city's sun, change `LAT` and `LNG` at the top of `theme.js`.
 

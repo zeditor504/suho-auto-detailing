@@ -152,68 +152,26 @@ const GALLERY = [
   }
 
   /* =================================================================
-     Appearance: light by day, dark after sunset (Houston), with an
-     override button that cycles Automatic -> Light -> Dark.
+     Appearance: light from sunrise to sunset in Houston, dark after
+     (theme.js). There is no manual switch. While the page is open it
+     changes over at sunrise and sunset with a short crossfade.
      ================================================================= */
   const Theme = window.SUHOTheme;
-  const toggle = document.querySelector(".theme-toggle");
-  const MODES = ["auto", "light", "dark"];
-  const NAMES = { auto: "Automatic", light: "Light", dark: "Dark" };
-  const TOASTS = { auto: "Automatic: dark after sunset in Houston", light: "Light mode", dark: "Dark mode" };
-  const timeFmt = (d) =>
-    d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/Chicago" });
-
-  function describe() {
-    if (!Theme) return;
-    const mode = Theme.mode();
-    const next = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
-    let detail = "";
-    if (mode === "auto") {
-      const at = timeFmt(Theme.nextChange(new Date()));
-      detail = Theme.theme() === "light"
-        ? "Light until sunset in Houston (" + at + ")."
-        : "Dark until sunrise in Houston (" + at + ").";
-    }
-    if (toggle) {
-      toggle.setAttribute("aria-label", ["Appearance: " + NAMES[mode] + ".", detail, "Switch to " + NAMES[next] + "."].filter(Boolean).join(" "));
-      toggle.title = "Appearance: " + NAMES[mode];
-    }
+  function refreshTheme() {
+    if (!Theme || Theme.wanted() === Theme.theme()) return;
+    if (document.startViewTransition && !reduceMotion) document.startViewTransition(() => Theme.refresh());
+    else Theme.refresh();
   }
-
-  function setMode(mode) {
-    const apply = () => { Theme.set(mode); describe(); };
-    if (document.startViewTransition && !reduceMotion) document.startViewTransition(apply);
-    else apply();
-  }
-
-  if (Theme && toggle) {
-    toggle.hidden = false; // ships hidden, so it never shows without this handler
-    toggle.addEventListener("click", () => {
-      const next = MODES[(MODES.indexOf(Theme.mode()) + 1) % MODES.length];
-      setMode(next);
-      toast(TOASTS[next]);
-    });
-  }
-
-  // Switch at sunrise / sunset while the page is open.
   let sunTimer;
   function scheduleSun() {
     if (!Theme) return;
     clearTimeout(sunTimer);
     const wait = Math.min(Math.max(Theme.nextChange(new Date()) - new Date() + 1000, 1000), 6 * 3600 * 1000);
-    sunTimer = setTimeout(() => {
-      if (Theme.mode() === "auto") setMode("auto");
-      scheduleSun();
-    }, wait);
+    sunTimer = setTimeout(() => { refreshTheme(); scheduleSun(); }, wait);
   }
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && Theme && Theme.mode() === "auto") {
-      Theme.refresh();
-      describe();
-      scheduleSun();
-    }
+    if (document.visibilityState === "visible") { refreshTheme(); scheduleSun(); }
   });
-  describe();
   scheduleSun();
 
   /* ---- Share (Web Share API, copy-link fallback) ---- */
@@ -281,10 +239,16 @@ const GALLERY = [
     }, { threshold: 0.2 }).observe(how);
   }
 
+  // The play/pause button at the bottom of the service-area band. It shows a
+  // pause or play icon (styles.css) and says what it does in its label.
   const motionBtn = document.querySelector(".js-motion");
   const motionLabel = () => (root.dataset.motion === "paused" ? "Play animations" : "Pause animations");
+  function labelMotion() {
+    motionBtn.setAttribute("aria-label", motionLabel());
+    motionBtn.title = motionLabel();
+  }
   if (motionBtn) {
-    motionBtn.textContent = motionLabel();
+    labelMotion();
     motionBtn.hidden = reduceMotion; // nothing moves with "reduce motion", so there is nothing to pause
     motionBtn.addEventListener("click", () => {
       root.dataset.motion = root.dataset.motion === "paused" ? "on" : "paused";
@@ -292,7 +256,7 @@ const GALLERY = [
         if (root.dataset.motion === "paused") localStorage.setItem(MOTION_KEY, "paused");
         else localStorage.removeItem(MOTION_KEY);
       } catch (e) { /* storage blocked: the choice lasts for this visit only */ }
-      motionBtn.textContent = motionLabel();
+      labelMotion();
       syncHow();
       document.dispatchEvent(new CustomEvent("suho:motion"));
     });

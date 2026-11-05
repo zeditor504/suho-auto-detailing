@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.7.0] - 2026-11-05
+
+### Changed
+- How it works: the whole step line now brightens and dims in turn with the drawing, not just its number.
+- Light and dark mode follow Houston's sun only: light before sunset, dark after. The appearance button is gone, and any choice saved with it is cleared.
+- The service radius is spelled out: "We travel up to 25 miles from downtown Houston." The nearby-places sentence now names only places inside it (Spring, Humble, Kingwood, Pasadena, Clear Lake, Pearland, Missouri City, Sugar Land and Jersey Village); Katy and The Woodlands are farther out. The globe shows the 52 Census places within 25 miles (was 92 within 35), and the JSON-LD service area is a 25-mile circle around downtown.
+- The play/pause button moved from the footer to the bottom center of the service-area band, as a pause/play icon. It still pauses both moving scenes and is remembered on the device. Globe names fade around it like they do around the text.
+
 ## [v0.6.0] - 2026-11-05
 
 A plainer page: one column that reads like a printed rate card, in a new font, with the stock "landing page" parts taken out.

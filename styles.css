@@ -12,8 +12,10 @@
      only between price rows and contact rows. (Globe names near the
      service-area text fade out in area.js, not with a CSS gradient.)
    - One radius: 4px. One button: red, 20px bold label, 48px tall, natural width.
-   - Motion: the how-it-works loop, the globe and the theme crossfade only.
-     Both scenes pause off screen, with "Pause animations", and with reduce motion. */
+   - Light from sunrise to sunset in Houston, dark after (theme.js). No switch.
+   - Motion: the how-it-works loop, the globe and the sunset crossfade only.
+     Both scenes pause off screen, with the play/pause button at the bottom of
+     the service-area band, and with reduce motion. */
 
 @font-face {
   font-family: "Archivo";
@@ -31,7 +33,7 @@
   --bg: #ffffff;
   --tint: #f2f2f2;          /* service-area band only */
   --label: #000000;         /* all text unless listed below */
-  --label-2: #595959;       /* fine print, footer meta, inactive step numbers */
+  --label-2: #595959;       /* fine print, footer meta, the dimmed how-it-works steps */
   --separator: #d9d9d9;     /* hairlines only, never text */
   --red: #ff0005;           /* the logo red: button fill, footer rule, check mark */
   --red-hover: #d70015;     /* button hover/active only */
@@ -198,23 +200,6 @@ section h2 + * { margin-top: var(--s-6); }
 [data-theme="light"] .logo-dark,
 [data-theme="dark"] .logo-light { display: none; }
 
-.theme-toggle {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 44px; height: 44px;
-  margin-right: -12px;      /* icon edge on the text edge */
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius);
-  background: none;
-  color: var(--label);
-  cursor: pointer;
-}
-.theme-toggle .ic { grid-area: 1 / 1; display: none; }
-[data-theme-mode="auto"] .ic-auto,
-[data-theme-mode="light"] .ic-light,
-[data-theme-mode="dark"] .ic-dark { display: block; }
 
 /* ---------- Hero ---------- */
 main > .hero { padding: var(--s-6) 0 var(--s-4); }
@@ -296,10 +281,10 @@ main > .hero { padding: var(--s-6) 0 var(--s-4); }
   font-size: var(--fs-3);
   line-height: var(--lh-3);
 }
+.step { color: var(--label); }   /* the whole line brightens in turn while the scene plays */
 .step-num {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  color: var(--label);
 }
 
 /* How-it-works scene: clock -> check -> pin -> car, one 8s loop.
@@ -340,9 +325,9 @@ main > .hero { padding: var(--s-6) 0 var(--s-4); }
 .how-playing .s-car { animation: sc-car var(--cycle) infinite; }
 .how-playing .s-speed { animation: sc-speed var(--cycle) infinite; }
 .how-playing .s-road { animation: sc-road var(--cycle) infinite; }
-.how-playing .step:nth-child(1) .step-num { animation: sc-step-1 var(--cycle) infinite; }
-.how-playing .step:nth-child(2) .step-num { animation: sc-step-2 var(--cycle) infinite; }
-.how-playing .step:nth-child(3) .step-num { animation: sc-step-3 var(--cycle) infinite; }
+.how-playing .step:nth-child(1) { animation: sc-step-1 var(--cycle) infinite; }
+.how-playing .step:nth-child(2) { animation: sc-step-2 var(--cycle) infinite; }
+.how-playing .step:nth-child(3) { animation: sc-step-3 var(--cycle) infinite; }
 .how-paused * { animation-play-state: paused !important; }
 
 @keyframes sc-clock {
@@ -437,6 +422,33 @@ main > .area {
   margin-inline: auto;
 }
 .area-inner p { margin-top: var(--s-4); }
+.area-radius {
+  font-size: var(--fs-3);
+  line-height: var(--lh-3);
+  font-weight: 700;
+}
+.area-radius + p { margin-top: var(--s-2); }
+
+/* Play/pause, bottom center of the band */
+.area-motion {
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-4);
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  width: 44px; height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--label);
+  cursor: pointer;
+}
+.area-motion .ic { grid-area: 1 / 1; width: 22px; height: 22px; }
+.area-motion .ic-play,
+[data-motion="paused"] .area-motion .ic-pause { display: none; }
+[data-motion="paused"] .area-motion .ic-play { display: block; }
 
 /* Place names riding a slowly turning globe behind the text (drawn by area.js) */
 .area-globe {

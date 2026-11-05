@@ -1,6 +1,7 @@
 /* SUHO Detailing: service-area globe.
-   The 92 Census places within 35 miles of downtown Houston ride around a
-   slowly turning globe behind "Houston, TX and surrounding areas". Every few seconds one name
+   The 52 Census places within 25 miles of downtown Houston (the service
+   radius) ride around a slowly turning globe behind "Houston, TX and
+   surrounding areas". Every few seconds one name
    lights up in the color of its terrain.
 
    Terrain is a general read of each place's geography:
@@ -15,28 +16,19 @@
 
   var PLACES = [
   ["West University Place", "c"], ["Hedwig Village", "g"], ["Meadows Place", "c"],
-  ["Atascocita", "g"], ["Barrett", "p"], ["Shoreacres", "w"], ["Seabrook", "w"], ["Katy", "p"],
-  ["Woodbranch", "g"], ["Patton Village", "g"], ["Splendora", "g"], ["Southside Place", "c"],
+  ["Atascocita", "g"], ["Barrett", "p"], ["Shoreacres", "w"], ["Southside Place", "c"],
   ["Bunker Hill Village", "g"], ["Jersey Village", "c"], ["Mission Bend", "c"], ["Sienna", "p"],
-  ["El Lago", "w"], ["Sandy Point", "p"], ["Dickinson", "c"], ["Dayton", "p"], ["Pleak", "p"],
-  ["Brookshire", "p"], ["Bellaire", "c"], ["Aldine", "c"], ["Channelview", "w"],
-  ["Four Corners", "c"], ["Spring", "g"], ["Cinco Ranch", "p"], ["Kemah", "w"], ["Bacliff", "w"],
-  ["Fulshear", "p"], ["Stagecoach", "g"], ["Hilshire Village", "g"], ["South Houston", "c"],
-  ["Fifth Street", "p"], ["Arcola", "p"], ["Crosby", "p"], ["Pecan Grove", "p"], ["Richmond", "w"],
-  ["Rosharon", "p"], ["Beach City", "w"], ["Fairchilds", "p"], ["Jacinto City", "c"],
-  ["Cloverleaf", "c"], ["Sheldon", "c"], ["Manvel", "p"], ["Webster", "c"], ["Baytown", "w"],
-  ["Hillcrest Village", "p"], ["The Woodlands", "g"], ["Woodloch", "g"],
-  ["Old River-Winfree", "p"], ["Hunters Creek Village", "g"], ["Brookside Village", "c"],
-  ["Deer Park", "c"], ["Highlands", "w"], ["Iowa Colony", "p"], ["League City", "c"],
-  ["Porter Heights", "g"], ["Shenandoah", "g"], ["San Leon", "w"], ["Cove", "p"],
-  ["Galena Park", "c"], ["Pearland", "c"], ["Fresno", "p"], ["Sugar Land", "c"],
-  ["Nassau Bay", "w"], ["Alvin", "p"], ["Tomball", "g"], ["Mont Belvieu", "p"],
-  ["Roman Forest", "g"], ["Grangerland", "g"], ["Spring Valley Village", "g"], ["Stafford", "c"],
-  ["Missouri City", "c"], ["Friendswood", "c"], ["Taylor Lake Village", "w"], ["Thompsons", "w"],
-  ["Oak Ridge North", "g"], ["Santa Fe", "p"], ["Bonney", "p"], ["Weston Lakes", "p"],
+  ["El Lago", "w"], ["Bellaire", "c"], ["Aldine", "c"], ["Channelview", "w"],
+  ["Four Corners", "c"], ["Spring", "g"], ["Cinco Ranch", "p"], ["Hilshire Village", "g"],
+  ["South Houston", "c"], ["Fifth Street", "p"], ["Arcola", "p"], ["Crosby", "p"],
+  ["Pecan Grove", "p"], ["Jacinto City", "c"], ["Cloverleaf", "c"], ["Sheldon", "c"],
+  ["Manvel", "p"], ["Webster", "c"], ["Baytown", "w"], ["Hunters Creek Village", "g"],
+  ["Brookside Village", "c"], ["Deer Park", "c"], ["Highlands", "w"], ["Iowa Colony", "p"],
+  ["League City", "c"], ["Galena Park", "c"], ["Pearland", "c"], ["Fresno", "p"],
+  ["Sugar Land", "c"], ["Nassau Bay", "w"], ["Alvin", "p"], ["Spring Valley Village", "g"],
+  ["Stafford", "c"], ["Missouri City", "c"], ["Friendswood", "c"], ["Taylor Lake Village", "w"],
   ["Piney Point Village", "g"], ["Pasadena", "c"], ["Humble", "g"], ["La Porte", "w"],
-  ["Morgan's Point", "w"], ["Clear Lake Shores", "w"], ["Cumings", "p"], ["Rosenberg", "p"],
-  ["Liverpool", "p"], ["Plum Grove", "g"]
+  ["Morgan's Point", "w"]
   ];
   var TERRAIN = { w: "water", g: "woods", c: "city", p: "prairie" };
 
@@ -145,18 +137,22 @@
     return w;
   }
 
-  // Line boxes of the heading and paragraphs (links included), relative to the band.
+  // Line boxes of the heading and paragraphs (links included) and the
+  // play/pause button, relative to the band. Names fade out near them.
   function measureText() {
     var base = area.getBoundingClientRect(), boxes = [];
+    function add(r) {
+      if (!r.width || !r.height) return;
+      boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,
+                  r.top - base.top - TEXT_PAD, r.bottom - base.top + TEXT_PAD]);
+    }
     heading.querySelectorAll("p, h2").forEach(function (el) {
       var range = document.createRange();
       range.selectNodeContents(el);
-      [].forEach.call(range.getClientRects(), function (r) {
-        if (!r.width || !r.height) return;
-        boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,
-                    r.top - base.top - TEXT_PAD, r.bottom - base.top + TEXT_PAD]);
-      });
+      [].forEach.call(range.getClientRects(), add);
     });
+    var btn = area.querySelector(".area-motion");
+    if (btn && !btn.hidden) add(btn.getBoundingClientRect());
     return boxes;
   }
   // Distance from a name's box to the nearest line of text (0 if they overlap).
