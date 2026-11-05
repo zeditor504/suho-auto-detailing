@@ -54,9 +54,9 @@
   var spin = 0;            // current rotation
   var last = 0, raf = 0, running = false, visible = false;
   var pulseTimer = 0, pulseKick = 0, pulseIndex = 0;
-  var lastName = "";       // the name that lit up last: never lights up twice in a row
-  var used = {};           // names that have lit up this round (each place once per round)
-  var usedCount = 0, waitingSince = 0;
+  var litOrder = {};       // name -> number of the pulse it last lit up on
+  var pulseCount = 0;
+  var SPARE = 8;           // names kept free to choose from (see memory())
   var textBoxes = [];      // the text's line boxes, relative to the band, padded by TEXT_PAD
   var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
 
@@ -306,31 +306,27 @@
     for (var i = 0; i < items.length; i++) {
       var it = items[i];
       var name = it.el.getAttribute("data-name");
-      if (!it.shown || name === lastName || used[name] || it.o < minO || it.ct < minCt) continue;
+      if (!it.shown || recent(name) || it.o < minO || it.ct < minCt) continue;
       var halfW = it.w * it.ct / 2;
       if (it.X - halfW < 8 || it.X + halfW > W - 8) continue;
       (it.el.getAttribute("data-terrain") === want ? pool : other).push(it);
     }
     return [pool, other];
   }
-  // Every place lights up once per round, in no fixed order, and the same
-  // name never lights up twice in a row (other copies of it included).
-  // A new round starts once all the places have had a turn. If no unused
-  // name is in view, the pulse waits for the globe to turn one in; only if
-  // a whole turn of the globe goes by without one does a new round start.
-  function newRound() {
-    used = {};
-    usedCount = 0;
-    waitingSince = 0;
+  // No place lights up again until most of the others have had a turn:
+  // a name that lit up within the last memory() pulses is skipped, so any
+  // run of that many highlights in a row is all different places (44 of
+  // the 52 on a wide screen; on phones, all but 8 of the names that can
+  // show there). The 8 left free mean there is nearly always a fresh name
+  // in view, so the highlights keep coming instead of stalling while the
+  // last unused names are around the back of the globe.
+  function memory() {
+    return Math.max(1, (reachableCount || PLACES.length) - SPARE);
   }
-  function roundDone() {
-    var left = 0;
-    for (var i = 0; i < PLACES.length; i++) {
-      var n = PLACES[i][0];
-      if (reachable[n] && !used[n]) left++;
-    }
-    return left === 0 || (!reachableCount && usedCount >= PLACES.length);
+  function recent(name) {
+    return name in litOrder && pulseCount - litOrder[name] <= memory();
   }
+
   // Pick the next name: one that is about to turn out of view for a long
   // while goes first, so the last names of a round aren't all at the back
   // of the globe when their turn comes. Otherwise the terrain colors take
@@ -346,6 +342,7 @@
       if (!(n in score)) score[n] = urgency(n);
     });
     var by = function (a, b) { return score[a.el.getAttribute("data-name")] - score[b.el.getAttribute("data-name")]; };
+    var age = function (it) { var n = it.el.getAttribute("data-name"); return n in litOrder ? litOrder[n] : -1; };
     pool.sort(by);
     if (score[pool[0].el.getAttribute("data-name")] <= 2 * PULSE_EVERY) return pool[0];
     var strict = candidates(0.95, 0.6, want);   // fully faded in, facing you
@@ -357,29 +354,20 @@
           var n = it.el.getAttribute("data-name");
           if (!(n in score)) score[n] = urgency(n);
         });
-        lists[k].sort(by);
-        return lists[k][Math.floor(Math.random() * Math.ceil(lists[k].length / 3))];
+        // never lit, or lit longest ago, first; then the one leaving soonest
+        lists[k].sort(function (a, b) { return age(a) - age(b) || by(a, b); });
+        return lists[k][0];
       }
     }
     return null;
   }
   function pulse() {
     if (!running) return;
-    if (roundDone()) newRound();
     var it = pick();
-    if (!it) {
-      var now = Date.now();
-      if (!waitingSince) waitingSince = now;
-      if (now - waitingSince < (2 * Math.PI) / omega) return; // one full turn
-      newRound();
-      it = pick();
-      if (!it) return;
-    }
+    if (!it) return; // nothing fresh in view: wait for the globe to turn one in
     pulseIndex++;
-    waitingSince = 0;
-    lastName = it.el.getAttribute("data-name");
-    used[lastName] = true;
-    usedCount++;
+    pulseCount++;
+    litOrder[it.el.getAttribute("data-name")] = pulseCount;
     it.el.classList.remove("is-pulsing");
     void it.el.offsetWidth; // restart the animation if it ran before
     it.el.classList.add("is-pulsing");
