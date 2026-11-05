@@ -13,12 +13,12 @@ const CONFIG = {
   // Your Square Appointments booking page (see README, "Booking with Square").
   // Until it is set, every booking button says "Text to book" and opens a text
   // message with a short note already written, so keep PHONE filled in until then.
-  SQUARE_BOOKING_URL: "{{SQUARE_BOOKING_URL}}",
+  SQUARE_BOOKING_URL: "https://book.squareup.com/appointments/wh7iodku2zdf8t/location/LB0XJ4A4B422F/services",
 
   // Optional: a Square link that opens straight to one service. Leave "" to use SQUARE_BOOKING_URL.
   SQUARE_SERVICE_URLS: {
-    autoRefresh: "",        // AUTO REFRESH ($65)
-    motorcycleRefresh: ""   // MOTORCYCLE REFRESH ($50)
+    autoRefresh: "https://book.squareup.com/appointments/wh7iodku2zdf8t/location/LB0XJ4A4B422F/services/KRA2DQTMTGKXFLLWKCQ7CIME",       // AUTO REFRESH ($65)
+    motorcycleRefresh: "https://book.squareup.com/appointments/wh7iodku2zdf8t/location/LB0XJ4A4B422F/services/IKKDIGKH36AIPJO5TBCATKIC"  // MOTORCYCLE REFRESH ($50)
   }
 };
 
@@ -280,10 +280,10 @@ const REVIEWS = [
      searches OpenStreetMap data. Results lean toward Houston and stay
      within about 100 miles of it. The distance is a straight line from
      downtown Houston (the same point as the JSON-LD service area), checked
-     against the 25-mile radius. "Use my current location" asks the device
+     against the 35-mile radius. "Use my current location" asks the device
      (GPS or Wi-Fi) instead, and names the place with Photon's reverse lookup.
      ================================================================= */
-  const AREA = { lat: 29.7604, lng: -95.3698, miles: 25 };
+  const AREA = { lat: 29.7604, lng: -95.3698, miles: 35 };
   const PHOTON = "https://photon.komoot.io";
   const BBOX = "-97.2,28.3,-93.5,31.3"; // roughly 100 miles around Houston
   const checkForm = document.querySelector("[data-check]");
@@ -308,7 +308,7 @@ const REVIEWS = [
       const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(AREA.lat)) * Math.cos(toRad(lat)) * Math.sin(dLng / 2) ** 2;
       return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
     }
-    // Whole miles, but one decimal near the edge so 25.4 never reads as "25".
+    // Whole miles, but one decimal near the edge so 35.4 never reads as "35".
     const fmtMiles = (d) => {
       const v = d < 10 || Math.abs(d - AREA.miles) < 1.5 ? Math.round(d * 10) / 10 : Math.round(d);
       return v + (v === 1 ? " mile" : " miles");
@@ -432,6 +432,12 @@ const REVIEWS = [
       const url = smsWithBody("Hi, I'd like to book a detail at " + address + ".");
       return url ? '<a class="link-inline" href="' + esc(url) + '">Text to book at this address</a>' : "";
     }
+    // Google Maps driving directions from downtown Houston; "leave now" shows the time in current traffic.
+    function trafficLink(place) {
+      const url = "https://www.google.com/maps/dir/?api=1&origin=" + AREA.lat + "," + AREA.lng +
+        "&destination=" + place.lat + "," + place.lng + "&travelmode=driving";
+      return '<a class="link-inline" href="' + esc(url) + '" target="_blank" rel="noopener">Drive time with live traffic (Google Maps)</a>';
+    }
     function verdict(place) {
       chosen = place;
       const d = milesFromDowntown(place.lat, place.lng);
@@ -439,7 +445,7 @@ const REVIEWS = [
       if (d <= AREA.miles) {
         const book = bookLink(place.full);
         show("yes", ICON_YES + '<span><strong>Yes, we come to you.</strong> ' + name + " is " + fmtMiles(d) +
-          " from downtown Houston." + (book ? " " + book : "") + "</span>");
+          " from downtown Houston." + (book ? " " + book : "") + " " + trafficLink(place) + "</span>");
       } else {
         show("no", ICON_NO + "<span><strong>Sorry, that's outside our area.</strong> " + name + " is " + fmtMiles(d) +
           " from downtown Houston. We travel up to " + AREA.miles + " miles.</span>");

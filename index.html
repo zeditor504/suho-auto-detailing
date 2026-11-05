@@ -10,7 +10,7 @@
   <meta name="color-scheme" content="light dark">
 
   <!-- Sets light/dark (Houston sunrise to sunset) before first paint -->
-  <script src="theme.js?v=0.8.0"></script>
+  <script src="theme.js?v=0.9.0"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -36,9 +36,9 @@
   <!-- Font: Archivo, self-hosted (SIL OFL 1.1, see assets/fonts/OFL.txt) -->
   <link rel="preload" href="assets/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=0.8.0">
-  <script src="script.js?v=0.8.0" defer></script>
-  <script src="area.js?v=0.8.0" defer></script>
+  <link rel="stylesheet" href="styles.css?v=0.9.0">
+  <script src="script.js?v=0.9.0" defer></script>
+  <script src="area.js?v=0.9.0" defer></script>
 
   <script type="application/ld+json">
   {
@@ -62,9 +62,9 @@
     },
     "areaServed": {
       "@type": "GeoCircle",
-      "description": "Houston, TX and surrounding areas, up to 25 miles from downtown Houston",
+      "description": "Houston, TX and surrounding areas, up to 35 miles from downtown Houston",
       "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 29.7604, "longitude": -95.3698 },
-      "geoRadius": 40234
+      "geoRadius": 56327
     },
     "makesOffer": [
       { "@type": "Offer", "name": "Auto Refresh", "description": "Basic interior + exterior", "price": "65", "priceCurrency": "USD" },
@@ -80,7 +80,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "Do you come to me?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SUHO Detailing is mobile: we come to your location. We travel up to 25 miles from downtown Houston. To check your address, type it into the address check in the service area section." } },
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SUHO Detailing is mobile: we come to your location. We travel up to 35 miles from downtown Houston. To check your address, type it into the address check in the service area section." } },
       { "@type": "Question", "name": "How much does a detail cost?",
         "acceptedAnswer": { "@type": "Answer", "text": "Auto Refresh is $65 and Motorcycle Refresh is $50. These are introductory prices. Additional charges may apply for heavily soiled vehicles." } },
       { "@type": "Question", "name": "What does the Auto Refresh include?",
@@ -203,7 +203,7 @@
       <ul class="wrap facts-grid" role="list">
         <li class="fact">
           <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div><p class="fact-title">We come to you</p><p>At your location, up to 25 miles from downtown Houston. <a class="link-inline" href="#area-check" data-check-link hidden>Check your address</a></p></div>
+          <div><p class="fact-title">We come to you</p><p>At your location, up to 35 miles from downtown Houston. <a class="link-inline" href="#area-check" data-check-link hidden>Check your address</a></p></div>
         </li>
         <li class="fact">
           <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 16v-3l2-5h9l4 5h1.5a1.5 1.5 0 0 1 1.5 1.5V16"/><circle cx="7" cy="16.5" r="2"/><circle cx="17" cy="16.5" r="2"/><path d="M9 16.5h6"/></svg>
@@ -339,20 +339,21 @@
       </div>
     </section>
 
-    <!-- Service area: up to 25 miles from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W).
-         Behind the text, area.js turns a globe of the 52 Census places within that radius
+    <!-- Service area: up to 35 miles from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W).
+         Behind the text, area.js turns a globe of the 92 Census places within that radius
          (2024 U.S. Census Gazetteer, Texas: Census Designated Places and incorporated cities
          and towns, measured to each place's internal point; Houston itself left out).
-         The sentence names nine well-known places 14 to 23 miles out, clockwise from the north. -->
+         The sentence names nine well-known places, clockwise from the west. -->
     <section class="area" id="area" aria-labelledby="area-title">
       <div class="area-globe" aria-hidden="true"></div>
       <div class="area-inner">
         <h2 class="section-title" id="area-title"><span class="nowrap">Houston, TX</span> and surrounding areas</h2>
-        <p class="area-radius">We travel up to 25 miles from downtown Houston.</p>
-        <p>Nearby places include Spring, Humble, Kingwood, Pasadena, Clear Lake, Pearland, Missouri City, Sugar Land and Jersey Village.</p>
+        <p class="area-radius">We travel up to 35 miles from downtown Houston.</p>
+        <p>Nearby places include Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land.</p>
+        <p class="area-traffic">We leave 45 minutes between jobs for the drive, but Houston traffic can still delay an arrival. <a class="link-inline" href="https://www.google.com/maps/@29.7604,-95.3698,11z/data=!5m1!1e1" target="_blank" rel="noopener">See live traffic on Google Maps</a></p>
         <!-- Address check: suggestions as you type (Photon, OpenStreetMap data), or the
              device's location. Straight-line distance from downtown Houston, against the
-             25-mile radius. Built by script.js; without scripts the fallback line shows. -->
+             35-mile radius. Built by script.js; without scripts the fallback line shows. -->
         <form class="check" id="area-check" data-check hidden novalidate autocomplete="off">
           <label class="check-label" for="check-input">Check your address</label>
           <div class="check-box">
@@ -394,7 +395,7 @@
         <div class="faq">
           <details>
             <summary>Do you come to me?</summary>
-            <p>Yes. SUHO Detailing is mobile: we come to your location. We travel up to 25 miles from downtown Houston. To check your address, type it into <a class="link-inline" href="#area-check">the address check</a> in the service area section.</p>
+            <p>Yes. SUHO Detailing is mobile: we come to your location. We travel up to 35 miles from downtown Houston. To check your address, type it into <a class="link-inline" href="#area-check">the address check</a> in the service area section.</p>
           </details>
           <details>
             <summary>How much does a detail cost?</summary>

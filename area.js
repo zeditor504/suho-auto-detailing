@@ -1,5 +1,5 @@
 /* SUHO Detailing: service-area globe.
-   The 52 Census places within 25 miles of downtown Houston (the service
+   The 92 Census places within 35 miles of downtown Houston (the service
    radius) ride around a slowly turning globe behind "Houston, TX and
    surrounding areas". Every few seconds one name
    lights up in the color of its terrain.
@@ -16,19 +16,28 @@
 
   var PLACES = [
   ["West University Place", "c"], ["Hedwig Village", "g"], ["Meadows Place", "c"],
-  ["Atascocita", "g"], ["Barrett", "p"], ["Shoreacres", "w"], ["Southside Place", "c"],
+  ["Atascocita", "g"], ["Barrett", "p"], ["Shoreacres", "w"], ["Seabrook", "w"], ["Katy", "p"],
+  ["Woodbranch", "g"], ["Patton Village", "g"], ["Splendora", "g"], ["Southside Place", "c"],
   ["Bunker Hill Village", "g"], ["Jersey Village", "c"], ["Mission Bend", "c"], ["Sienna", "p"],
-  ["El Lago", "w"], ["Bellaire", "c"], ["Aldine", "c"], ["Channelview", "w"],
-  ["Four Corners", "c"], ["Spring", "g"], ["Cinco Ranch", "p"], ["Hilshire Village", "g"],
-  ["South Houston", "c"], ["Fifth Street", "p"], ["Arcola", "p"], ["Crosby", "p"],
-  ["Pecan Grove", "p"], ["Jacinto City", "c"], ["Cloverleaf", "c"], ["Sheldon", "c"],
-  ["Manvel", "p"], ["Webster", "c"], ["Baytown", "w"], ["Hunters Creek Village", "g"],
-  ["Brookside Village", "c"], ["Deer Park", "c"], ["Highlands", "w"], ["Iowa Colony", "p"],
-  ["League City", "c"], ["Galena Park", "c"], ["Pearland", "c"], ["Fresno", "p"],
-  ["Sugar Land", "c"], ["Nassau Bay", "w"], ["Alvin", "p"], ["Spring Valley Village", "g"],
-  ["Stafford", "c"], ["Missouri City", "c"], ["Friendswood", "c"], ["Taylor Lake Village", "w"],
+  ["El Lago", "w"], ["Sandy Point", "p"], ["Dickinson", "c"], ["Dayton", "p"], ["Pleak", "p"],
+  ["Brookshire", "p"], ["Bellaire", "c"], ["Aldine", "c"], ["Channelview", "w"],
+  ["Four Corners", "c"], ["Spring", "g"], ["Cinco Ranch", "p"], ["Kemah", "w"], ["Bacliff", "w"],
+  ["Fulshear", "p"], ["Stagecoach", "g"], ["Hilshire Village", "g"], ["South Houston", "c"],
+  ["Fifth Street", "p"], ["Arcola", "p"], ["Crosby", "p"], ["Pecan Grove", "p"], ["Richmond", "w"],
+  ["Rosharon", "p"], ["Beach City", "w"], ["Fairchilds", "p"], ["Jacinto City", "c"],
+  ["Cloverleaf", "c"], ["Sheldon", "c"], ["Manvel", "p"], ["Webster", "c"], ["Baytown", "w"],
+  ["Hillcrest Village", "p"], ["The Woodlands", "g"], ["Woodloch", "g"],
+  ["Old River-Winfree", "p"], ["Hunters Creek Village", "g"], ["Brookside Village", "c"],
+  ["Deer Park", "c"], ["Highlands", "w"], ["Iowa Colony", "p"], ["League City", "c"],
+  ["Porter Heights", "g"], ["Shenandoah", "g"], ["San Leon", "w"], ["Cove", "p"],
+  ["Galena Park", "c"], ["Pearland", "c"], ["Fresno", "p"], ["Sugar Land", "c"],
+  ["Nassau Bay", "w"], ["Alvin", "p"], ["Tomball", "g"], ["Mont Belvieu", "p"],
+  ["Roman Forest", "g"], ["Grangerland", "g"], ["Spring Valley Village", "g"], ["Stafford", "c"],
+  ["Missouri City", "c"], ["Friendswood", "c"], ["Taylor Lake Village", "w"], ["Thompsons", "w"],
+  ["Oak Ridge North", "g"], ["Santa Fe", "p"], ["Bonney", "p"], ["Weston Lakes", "p"],
   ["Piney Point Village", "g"], ["Pasadena", "c"], ["Humble", "g"], ["La Porte", "w"],
-  ["Morgan's Point", "w"]
+  ["Morgan's Point", "w"], ["Clear Lake Shores", "w"], ["Cumings", "p"], ["Rosenberg", "p"],
+  ["Liverpool", "p"], ["Plum Grove", "g"]
   ];
   var TERRAIN = { w: "water", g: "woods", c: "city", p: "prairie" };
 

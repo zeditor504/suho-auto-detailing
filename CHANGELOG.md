@@ -1,5 +1,19 @@
 # Changelog
 
+## [v0.9.0] - 2026-11-05
+
+Online booking through Square Appointments, and a wider service area.
+
+### Added
+- **Book online with Square.** `SQUARE_BOOKING_URL` in `script.js` now points to the SUHO Auto Detailing booking page, and `SQUARE_SERVICE_URLS` to one link per service, so every "Text to book" button becomes **Book now**, and the per-service buttons become **Book Auto Refresh** and **Book Motorcycle Refresh**, opening straight to that service. In Square: Auto Refresh ($65, 1 hr 30 min) and Motorcycle Refresh ($50, 45 min), both bookable online, at the customer's location, with 45 minutes blocked after each job for the drive, and text and email reminders.
+- **Traffic note** in the service-area band: "We leave 45 minutes between jobs for the drive, but Houston traffic can still delay an arrival.", with a link to live traffic on Google Maps.
+- **Drive time with live traffic (Google Maps)** link in the address check's "Yes, we come to you" answer: driving directions from downtown Houston to the address.
+
+### Changed
+- Service radius is 35 miles from downtown Houston (was 25): the page text, the questions and their JSON-LD, the `areaServed` circle (56,327 m), and the address check.
+- The globe shows the 92 Census places within 35 miles again (was 52 within 25), and the nearby-places sentence names Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land.
+- Version bumped to 0.9.0 in the asset links.
+
 ## [v0.8.0] - 2026-11-05
 
 A redesign after the layouts of well-run detailing sites (the offer readable in the first few seconds, a booking button always in reach, prices in full, a quick service-area check, answers to the usual questions), keeping SUHO's own pieces: the logo's line-drawn car, the globe of place names, Houston's sunrise and sunset theme and the how-it-works loop.

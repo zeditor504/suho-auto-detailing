@@ -74,7 +74,7 @@ In the service-area band, visitors type their address and get an answer right un
 
 - **Suggestions while typing** come from [Photon](https://photon.komoot.io) by komoot: free, no account or API key, built on OpenStreetMap data. Results lean toward Houston and stay within about 100 miles of it. Arrow keys, Enter and tapping all work; pressing Enter without picking uses the top match, and ZIP codes and neighborhood names work too.
 - **Use my current location** asks the phone or computer for its location (GPS or Wi-Fi) instead, then names the street with Photon. The browser asks the visitor first.
-- **The rule** is a straight line from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W), 25 miles or less: the same circle as the JSON-LD. Change `AREA` in `script.js` to move the center or the radius (and update the page text and JSON-LD to match).
+- **The rule** is a straight line from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W), 35 miles or less: the same circle as the JSON-LD. Change `AREA` in `script.js` to move the center or the radius (and update the page text and JSON-LD to match).
 - **Privacy:** what a visitor types is sent to Photon to find matches; nothing goes to SUHO until they choose to text. The attribution line under the field is required by the OpenStreetMap license; keep it.
 - **If Photon is down** the answer line says it couldn't look the address up. Without JavaScript, the old "To check your address, text us or send a DM on Instagram" line shows instead.
 - Photon's public server is shared and meant for fair use. A one-business site is well within it. If the site ever gets heavy traffic, the same code can point at a paid Photon-compatible host by changing `PHOTON` in `script.js`. (Google's address autocomplete is the other common choice, but it needs a Google Cloud billing account and an API key.)
@@ -85,9 +85,11 @@ The five answers use only facts already on the page (prices, what's included, th
 
 ### Service area place names
 
-The service radius is **25 miles from downtown Houston**, stated on the page as "We travel up to 25 miles from downtown Houston." and in the JSON-LD as a 25-mile circle (`areaServed`, 40,234 m).
+The service radius is **35 miles from downtown Houston**, stated on the page as "We travel up to 35 miles from downtown Houston." and in the JSON-LD as a 35-mile circle (`areaServed`, 56,327 m).
 
-The faint names behind "Houston, TX and surrounding areas" are the 52 Census places within that radius (each shows up about two or three times around the whole globe, so few names repeat on the visible side): Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
+Under it, one line says Square leaves 45 minutes between jobs for the drive and that Houston traffic can still delay an arrival, with a link to Google Maps' live traffic layer over Houston. When the address check says yes, it also links to Google Maps driving directions from downtown Houston to that address, which show the drive time in current traffic. If the gap after each job changes in Square (**Block extra time** on each service), change the number in that line too.
+
+The faint names behind "Houston, TX and surrounding areas" are the 92 Census places within that radius: Census Designated Places and incorporated cities, towns and villages (Houston itself is left out). Source: the 2024 U.S. Census Gazetteer place file for Texas, with distance measured from Houston City Hall (29.7604 N, 95.3698 W) to each place's official internal point. If the radius changes, update the sentence in `index.html`, the `geoRadius` in the JSON-LD, and the `PLACES` list in `area.js`.
 
 They ride around a slowly turning globe, right to left, all at the same turn rate (rows near the top and bottom travel a shorter circle, as on a real globe). Every 3.2 seconds one name on the front of the globe lights up in its terrain color: 0.5 s ease in, 1 s hold, 0.5 s ease out. Colors take turns so all four show up. No place lights up again until 44 others have had a turn (on phones, where some rows stay behind the text the whole way round, all but 8 of the names that can show there), so any run of highlights that long is all different places, and the same name never lights up twice in a row. Places that have never lit up, or lit up longest ago, go first, and a name about to turn out of view for a while jumps the queue. Keeping 8 names free means a fresh one is nearly always in view, so the highlights keep coming. (Strict rounds of all 52 stalled for up to half a minute while the last few were around the back of the globe.) The numbers are `SPARE` and `memory()` in `area.js`.
 
@@ -100,7 +102,7 @@ Names are 21px on phones, 24px from 600px wide and 28px from 834px. Below 834px 
 | Silver | City | Built-up Houston core, suburbs and the industrial east side |
 | Sand | Prairie | Coastal prairie, ranch and farm land to the west, south and east |
 
-Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration: screen readers skip it, and the names are drawn by CSS from a `data-name` attribute, so they don't count as page text for search engines. Names near the heading and paragraphs fade out in `area.js` so they never pass behind the words. The visible sentence below the heading names nine well-known places, all 14 to 23 miles out (Spring, Humble, Kingwood, Pasadena, Clear Lake, Pearland, Missouri City, Sugar Land and Jersey Village). Katy (28 miles) and The Woodlands (30 miles) are outside the radius, so they're not listed. The globe holds still with no pulses for visitors who choose "reduce motion" or press the pause button.
+Terrain is a general read of each place's geography, not a land-cover survey. The list lives in `area.js` (`PLACES`); change a place's letter (`w`, `g`, `c`, `p`) to recolor it. The colors themselves are `--t-woods`, `--t-water`, `--t-city` and `--t-prairie` in `styles.css`, with separate values for light and dark mode. The globe is decoration: screen readers skip it, and the names are drawn by CSS from a `data-name` attribute, so they don't count as page text for search engines. Names near the heading and paragraphs fade out in `area.js` so they never pass behind the words. The visible sentence below the heading names nine well-known places inside the radius (Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land). The globe holds still with no pulses for visitors who choose "reduce motion" or press the pause button.
 
 ### Light and dark mode
 
@@ -176,6 +178,9 @@ Bookings go through **Square Appointments**. The site is static (no server), so 
 6. Turn on **Online Booking** and copy your booking page link (Square: Online Booking → booking site / "Share" or *Add booking to your website*).
 
 ### Connect it to the site
+
+Already done (v0.9.0): the booking page and both service links are in `script.js`, and in Square both services are bookable online with 45 minutes of **Block extra time** after each job, appointments are **At the customer's location**, and text (1 hour before) and email (1 day before) reminders are on.
+
 
 Open `script.js` and paste the link into the config block:
 
@@ -263,7 +268,7 @@ dig +short suhodetailing.com
 
 Each release is a snapshot of the site with a downloadable zip.
 
-**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.8.0`, `script.js?v=0.8.0`, `theme.js?v=0.8.0` and `area.js?v=0.8.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.9.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
+**Before each release, bump the version in `index.html`.** The stylesheet and scripts are linked as `styles.css?v=0.9.0`, `script.js?v=0.9.0`, `theme.js?v=0.9.0` and `area.js?v=0.9.0`. GitHub Pages lets browsers keep files for 10 minutes, so without a new number a visitor can get the new page with the old styles. Change all four to the new version, e.g. `?v=0.10.0`. (The font file has no version number: it never changes. A replacement font gets a new file name instead.)
 
 1. Add a section to the top of `CHANGELOG.md`, e.g. `## [v0.2.0] - 2026-11-10`, listing what changed.
 2. Commit, then tag and push the tag:
