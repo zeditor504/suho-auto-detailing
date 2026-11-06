@@ -277,8 +277,12 @@ const REVIEWS = [
   /* =================================================================
      Address check: do we come to you?
      Suggestions come from Photon (photon.komoot.io, free, no key), which
-     searches OpenStreetMap data. Results lean toward Houston and stay
-     within about 100 miles of it. The distance is a straight line from
+     searches OpenStreetMap data. Results lean toward Cypress, but a city
+     or town named exactly what the visitor typed always comes first, found
+     anywhere in the US if need be ("Austin, TX" is the city of Austin, 135
+     miles away, never a street or school nearby). An optional state
+     ("Richmond, VA") picks which one. Counties and states are never
+     matched: they are too big to measure to. The distance is a straight line from
      Cypress, TX, where Umair is based (the same point as the JSON-LD
      service area), checked against the 30-mile radius. Places in EXCLUDE
      are always outside, whatever the distance. "Use my current location" asks the device
@@ -287,7 +291,13 @@ const REVIEWS = [
   const AREA = { lat: 29.9691, lng: -95.6972, miles: 30, from: "Cypress" };
   const EXCLUDE = ["Spring", "Galveston"]; // never served, even inside the radius
   const PHOTON = "https://photon.komoot.io";
-  const BBOX = "-97.2,28.3,-93.5,31.3"; // roughly 100 miles around Houston
+  // Everything but county, state and country results (a county's middle can
+  // be 30 miles from anywhere in it, so it can't answer "do you come to me?").
+  const LAYERS = "&layer=house&layer=street&layer=locality&layer=district&layer=city&layer=other";
+  // Streets and addresses are looked for within roughly 100 miles of Houston,
+  // so "123 Oak Ln" never lands in another state. Only a city or town with the
+  // exact typed name is looked up beyond that (see search()).
+  const BBOX = "-97.2,28.3,-93.5,31.3";
   const checkForm = document.querySelector("[data-check]");
   if (checkForm && window.fetch && window.Promise) {
     const input = checkForm.querySelector(".check-input");
@@ -316,14 +326,26 @@ const REVIEWS = [
       return v + (v === 1 ? " mile" : " miles");
     };
 
-    const STATES = { Texas: "TX", Louisiana: "LA" };
+    const STATES = {
+      Alabama: "AL", Alaska: "AK", Arizona: "AZ", Arkansas: "AR", California: "CA", Colorado: "CO",
+      Connecticut: "CT", Delaware: "DE", "District of Columbia": "DC", Florida: "FL", Georgia: "GA",
+      Hawaii: "HI", Idaho: "ID", Illinois: "IL", Indiana: "IN", Iowa: "IA", Kansas: "KS", Kentucky: "KY",
+      Louisiana: "LA", Maine: "ME", Maryland: "MD", Massachusetts: "MA", Michigan: "MI", Minnesota: "MN",
+      Mississippi: "MS", Missouri: "MO", Montana: "MT", Nebraska: "NE", Nevada: "NV", "New Hampshire": "NH",
+      "New Jersey": "NJ", "New Mexico": "NM", "New York": "NY", "North Carolina": "NC", "North Dakota": "ND",
+      Ohio: "OH", Oklahoma: "OK", Oregon: "OR", Pennsylvania: "PA", "Rhode Island": "RI",
+      "South Carolina": "SC", "South Dakota": "SD", Tennessee: "TN", Texas: "TX", Utah: "UT", Vermont: "VT",
+      Virginia: "VA", Washington: "WA", "West Virginia": "WV", Wisconsin: "WI", Wyoming: "WY"
+    };
+    const PLACE_TYPES = /^(city|town|village|hamlet|locality|district|suburb)$/;
     function describe(f) {
       const p = f.properties || {};
       const street = [p.housenumber, p.street].filter(Boolean).join(" ");
-      const isPlace = /^(city|town|village|locality|district|county)$/.test(p.type || "");
+      const isPlace = PLACE_TYPES.test(p.type || "");
       const town = (isPlace && p.name) || p.city || p.town || p.village || p.district ||
         (p.county ? p.county + " County" : "");
-      const region = [STATES[p.state] || p.state, p.postcode].filter(Boolean).join(" ");
+      // a whole town has no one ZIP code (and OpenStreetMap's can be wrong), so towns get none
+      const region = [STATES[p.state] || p.state, isPlace ? "" : p.postcode].filter(Boolean).join(" ");
       let main, sub;
       if (p.name && p.type !== "street" && p.name !== street && street) {
         main = p.name;
@@ -334,37 +356,90 @@ const REVIEWS = [
       }
       sub = sub.filter(Boolean).join(", ");
       const c = f.geometry && f.geometry.coordinates;
+      const abbr = STATES[p.state] || p.state || "";
       return {
         main: main,
         sub: sub,
-        short: main === town || !town ? main : main + ", " + town,
+        // a city or town carries its state, so "Austin, TX is 135 miles from Cypress" says which Austin
+        short: isPlace && main === town ? (abbr ? main + ", " + abbr : main)
+          : main === town || !town ? main : main + ", " + town,
         full: sub ? main + ", " + sub : main,
         town: town,
+        isPlace: isPlace,
+        name: (p.name || "").toLowerCase(),
+        state: p.state || "",
         lat: c ? c[1] : NaN,
         lng: c ? c[0] : NaN
       };
     }
     function parse(json) {
-      const seen = new Set(), out = [];
+      const out = [];
       ((json && json.features) || []).forEach((f) => {
-        if (f.properties && f.properties.countrycode && f.properties.countrycode !== "US") return;
+        const p = f.properties || {};
+        if (p.countrycode && p.countrycode !== "US") return;
+        if (/^(county|state|country)$/.test(p.type || "")) return; // too big to measure to
         const d = describe(f);
-        if (!d.main || isNaN(d.lat) || seen.has(d.full)) return;
-        seen.add(d.full);
+        if (!d.main || isNaN(d.lat)) return;
         out.push(d);
       });
-      return out.slice(0, 5);
+      return out;
+    }
+    // What the visitor typed, read as a place name with an optional state:
+    // "Austin, TX", "austin texas", "Richmond, VA 23219" -> { name: "austin", state: "Texas" }.
+    // Longest names first, so "West Virginia" isn't read as "Virginia".
+    const STATE_NAMES = Object.keys(STATES).sort((a, b) => b.length - a.length);
+    function readPlace(q) {
+      let s = q.toLowerCase().replace(/[.]/g, "").replace(/\s+/g, " ").trim();
+      s = s.replace(/[\s,]+(usa|us|united states)$/, "").replace(/[\s,]+\d{5}(-\d{4})?$/, "");
+      let state = "";
+      for (const full of STATE_NAMES) {
+        // A full state name may follow a space or a comma. A two-letter code needs
+        // a comma ("Richmond, VA"), except TX, so "Spring Ct" isn't read as Connecticut.
+        const ab = STATES[full].toLowerCase();
+        const re = new RegExp("(?:[\\s,]+" + full.toLowerCase() + "|\\s*,\\s*" + ab +
+          (ab === "tx" ? "|\\s+tx" : "") + ")$");
+        if (re.test(s)) { state = full; s = s.replace(re, ""); break; }
+      }
+      return { name: s.replace(/,$/, "").trim(), state: state };
+    }
+    // A city, town or neighborhood with exactly the typed name (and state, if one was typed).
+    function exactPlaces(list, want) {
+      return list.filter((d) => d.isPlace && d.name === want.name && (!want.state || d.state === want.state));
+    }
+    function photon(params) {
+      return fetch(PHOTON + "/api/?" + params + "&lang=en" + LAYERS, ctrl ? { signal: ctrl.signal } : undefined)
+        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+        .then(parse);
     }
     function search(q) {
       const key = q.toLowerCase();
       if (cache.has(key)) return Promise.resolve(cache.get(key));
       if (ctrl) ctrl.abort();
       ctrl = "AbortController" in window ? new AbortController() : null;
-      const url = PHOTON + "/api/?q=" + encodeURIComponent(q) + "&limit=8&lang=en" +
-        "&lat=" + AREA.lat + "&lon=" + AREA.lng + "&bbox=" + BBOX;
-      return fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
-        .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
-        .then((json) => { const out = parse(json); cache.set(key, out); return out; });
+      const want = readPlace(q);
+      const near = photon("q=" + encodeURIComponent(q) + "&limit=10&lat=" + AREA.lat + "&lon=" + AREA.lng + "&bbox=" + BBOX);
+      return near.then((local) => {
+        // Nothing nearby has the exact name typed: look it up without the lean
+        // toward Cypress, so "Austin, TX" finds the city of Austin, not Austin High School.
+        if (!want.name || exactPlaces(local, want).length) return [local, []];
+        return photon("q=" + encodeURIComponent(q) + "&limit=10").then((wide) => [local, wide]);
+      }).then((lists) => {
+        const all = lists[0].concat(lists[1]);
+        // Exact-name places first: in the state typed, else Texas first, then the nearest.
+        // From the wide lookup only those are kept; everything else comes from near Houston.
+        const exact = exactPlaces(all, want).sort((a, b) =>
+          (b.state === "Texas") - (a.state === "Texas") ||
+          milesFromBase(a.lat, a.lng) - milesFromBase(b.lat, b.lng));
+        const seen = new Set(), out = [];
+        exact.concat(lists[0]).forEach((d) => {
+          if (seen.has(d.full)) return;
+          seen.add(d.full);
+          out.push(d);
+        });
+        const top = out.slice(0, 5);
+        cache.set(key, top);
+        return top;
+      });
     }
 
     function setBusy(on) { checkForm.classList.toggle("is-busy", on); }

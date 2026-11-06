@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.10.2] - 2026-11-05
+
+### Fixed
+- **The address check measured "Austin, TX" to the wrong place.** It said "Austin is 33 miles from Cypress": the search only looked within about 100 miles of Houston, so the city of Austin (124 miles away) was never found, and the best match left was Austin County, named just "Austin" and measured to the middle of the county. Now:
+  - A city or town named exactly what was typed always comes first, looked up anywhere in the US when there's none nearby. "Austin, TX", "austin texas" and "Austin" all give "Austin, TX is 124 miles from Cypress", and "San Antonio, TX", "Dallas" and "Richmond, VA" find those cities.
+  - An optional state picks between towns with the same name: "Richmond" is Richmond, TX (inside) and "Richmond, VA" is Virginia's. A two-letter state needs a comma, except TX, so a street like "Spring Ct" isn't read as Connecticut.
+  - Counties, states and countries are never matched.
+  - Streets and addresses still stay within about 100 miles of Houston, so a street name never lands in another state.
+  - A city or town's answer names its state ("Austin, TX"), and towns no longer show a ZIP code (OpenStreetMap had a wrong one for Richmond).
+- Version bumped to 0.10.2 in the asset links.
+
 ## [v0.10.1] - 2026-11-05
 
 ### Fixed
