@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.10.1] - 2026-11-05
+
+### Fixed
+- **The globe is full on phones.** Below 720px the service-area text filled almost the whole band, so the globe behind it showed about 10 names in thin strips above and below. On phones the globe now has its own square above the heading, as wide as the screen (up to 460px tall), with nothing over it: about 50 names show at once. Names there are 17px (24px from 600px). From 720px wide nothing changes: the globe still turns behind the text.
+- Version bumped to 0.10.1 in the asset links.
+
 ## [v0.10.0] - 2026-11-05
 
 ### Changed

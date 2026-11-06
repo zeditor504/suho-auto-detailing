@@ -1,7 +1,7 @@
 /* SUHO Detailing: service-area globe.
    The 52 Census places within 30 miles of Cypress, TX (the service
    radius; Spring and Houston itself left out) ride around a slowly turning globe behind "Houston, TX and
-   surrounding areas". Every few seconds one name
+   surrounding areas" (on phones, in its own square above that text). Every few seconds one name
    lights up in the color of its terrain.
 
    Terrain is a general read of each place's geography:
@@ -64,8 +64,10 @@
     layer.textContent = "";
     items = [];
     widths = {};             // fonts may have changed since the last build
-    W = area.clientWidth;
-    H = area.clientHeight;
+    // The globe's own box: the whole band from 720px, or its own square
+    // above the text on phones (styles.css).
+    W = layer.clientWidth;
+    H = layer.clientHeight;
     if (!W || !H) return;
     RX = W * 0.49;
     RY = H * (W < 834 ? 0.47 : 0.42); // phones and tablets: reach nearer the top and bottom, where the names show
@@ -155,9 +157,10 @@
   }
 
   // Line boxes of the heading and paragraphs (links included) and the
-  // play/pause button, relative to the band. Names fade out near them.
+  // play/pause button, relative to the globe. Names fade out near them
+  // (on phones the text sits below the globe, so nothing fades).
   function measureText() {
-    var base = area.getBoundingClientRect(), boxes = [];
+    var base = layer.getBoundingClientRect(), boxes = [];
     function add(r) {
       if (!r.width || !r.height) return;
       boxes.push([r.left - base.left - TEXT_PAD, r.right - base.left + TEXT_PAD,

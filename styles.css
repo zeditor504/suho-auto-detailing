@@ -728,8 +728,7 @@ main > .area {
   isolation: isolate;
   display: grid;
   align-content: center;
-  min-height: 440px;
-  padding-block: 168px;     /* phones: room for the globe above and below the text */
+  padding-block: var(--s-12) var(--s-16); /* phones: the globe sits above the text (see .area-globe) */
   background: var(--bg);
   text-align: center;
   /* terrain colors for the pulse: muted, earthy */
@@ -904,11 +903,13 @@ main > .area {
 [data-motion="paused"] .area-motion .ic-pause { display: none; }
 [data-motion="paused"] .area-motion .ic-play { display: block; }
 
-/* Place names riding a slowly turning globe behind the text (drawn by area.js) */
+/* Place names riding a slowly turning globe (drawn by area.js). On phones
+   the text fills the band, so the globe gets its own square above the text
+   instead of hiding behind it; from 720px it sits behind the text. */
 .area-globe {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
+  position: relative;
+  height: min(100vw, 460px);
+  margin-bottom: var(--s-6);
   pointer-events: none;
   user-select: none;
 }
@@ -920,7 +921,7 @@ main > .area {
   visibility: hidden;
   white-space: nowrap;
   color: var(--names);
-  font-size: 21px;          /* phones; 24px from 600px, 28px from 834px */
+  font-size: 17px;          /* phones; 24px from 600px, 28px from 834px */
   font-weight: 500;
   line-height: 1.2;
   transform-origin: 50% 50%;
@@ -1119,6 +1120,8 @@ body.has-dock .toast { bottom: calc(88px + env(safe-area-inset-bottom, 0px)); }
   .service-book .btn { width: auto; }
 }
 @media (min-width: 720px) {
+  main > .area { min-height: 440px; padding-block: 168px; } /* room for the globe above and below the text */
+  .area-globe { position: absolute; inset: 0; z-index: -1; height: auto; margin: 0; }
   .dock { display: none; }
   body.has-dock .footer { padding-bottom: calc(var(--s-12) + env(safe-area-inset-bottom, 0px)); }
   body.has-dock .toast { bottom: calc(24px + env(safe-area-inset-bottom, 0px)); }
