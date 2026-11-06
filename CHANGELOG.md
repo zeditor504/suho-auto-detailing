@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.9.1] - 2026-11-05
+
+### Changed
+- The "How do I book?" answer in the `FAQPage` JSON-LD (what search engines read) now leads with the Square booking page, matching the answer visitors see. Text, call and Instagram are still listed.
+
 ## [v0.9.0] - 2026-11-05
 
 Online booking through Square Appointments, and a wider service area.
