@@ -279,11 +279,13 @@ const REVIEWS = [
      Suggestions come from Photon (photon.komoot.io, free, no key), which
      searches OpenStreetMap data. Results lean toward Houston and stay
      within about 100 miles of it. The distance is a straight line from
-     downtown Houston (the same point as the JSON-LD service area), checked
-     against the 35-mile radius. "Use my current location" asks the device
+     Cypress, TX, where Umair is based (the same point as the JSON-LD
+     service area), checked against the 30-mile radius. Places in EXCLUDE
+     are always outside, whatever the distance. "Use my current location" asks the device
      (GPS or Wi-Fi) instead, and names the place with Photon's reverse lookup.
      ================================================================= */
-  const AREA = { lat: 29.7604, lng: -95.3698, miles: 35 };
+  const AREA = { lat: 29.9691, lng: -95.6972, miles: 30, from: "Cypress" };
+  const EXCLUDE = ["Spring", "Galveston"]; // never served, even inside the radius
   const PHOTON = "https://photon.komoot.io";
   const BBOX = "-97.2,28.3,-93.5,31.3"; // roughly 100 miles around Houston
   const checkForm = document.querySelector("[data-check]");
@@ -303,12 +305,12 @@ const REVIEWS = [
     let options = [], active = -1, timer = 0, ctrl = null, seq = 0, chosen = null;
 
     const toRad = (d) => (d * Math.PI) / 180;
-    function milesFromDowntown(lat, lng) {
+    function milesFromBase(lat, lng) {
       const dLat = toRad(lat - AREA.lat), dLng = toRad(lng - AREA.lng);
       const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(AREA.lat)) * Math.cos(toRad(lat)) * Math.sin(dLng / 2) ** 2;
       return 3958.8 * 2 * Math.asin(Math.min(1, Math.sqrt(a)));
     }
-    // Whole miles, but one decimal near the edge so 35.4 never reads as "35".
+    // Whole miles, but one decimal near the edge so 30.4 never reads as "30".
     const fmtMiles = (d) => {
       const v = d < 10 || Math.abs(d - AREA.miles) < 1.5 ? Math.round(d * 10) / 10 : Math.round(d);
       return v + (v === 1 ? " mile" : " miles");
@@ -337,6 +339,7 @@ const REVIEWS = [
         sub: sub,
         short: main === town || !town ? main : main + ", " + town,
         full: sub ? main + ", " + sub : main,
+        town: town,
         lat: c ? c[1] : NaN,
         lng: c ? c[0] : NaN
       };
@@ -432,7 +435,7 @@ const REVIEWS = [
       const url = smsWithBody("Hi, I'd like to book a detail at " + address + ".");
       return url ? '<a class="link-inline" href="' + esc(url) + '">Text to book at this address</a>' : "";
     }
-    // Google Maps driving directions from downtown Houston; "leave now" shows the time in current traffic.
+    // Google Maps driving directions from Cypress; "leave now" shows the time in current traffic.
     function trafficLink(place) {
       const url = "https://www.google.com/maps/dir/?api=1&origin=" + AREA.lat + "," + AREA.lng +
         "&destination=" + place.lat + "," + place.lng + "&travelmode=driving";
@@ -440,15 +443,19 @@ const REVIEWS = [
     }
     function verdict(place) {
       chosen = place;
-      const d = milesFromDowntown(place.lat, place.lng);
+      const d = milesFromBase(place.lat, place.lng);
       const name = esc(place.short);
-      if (d <= AREA.miles) {
+      const excluded = EXCLUDE.some((t) => [place.town, place.main].some((v) => v && v.toLowerCase() === t.toLowerCase()));
+      if (excluded) {
+        show("no", ICON_NO + "<span><strong>Sorry, that's outside our area.</strong> We don't travel to " +
+          esc(EXCLUDE.find((t) => [place.town, place.main].some((v) => v && v.toLowerCase() === t.toLowerCase()))) + ".</span>");
+      } else if (d <= AREA.miles) {
         const book = bookLink(place.full);
         show("yes", ICON_YES + '<span><strong>Yes, we come to you.</strong> ' + name + " is " + fmtMiles(d) +
-          " from downtown Houston." + (book ? " " + book : "") + " " + trafficLink(place) + "</span>");
+          " from " + AREA.from + "." + (book ? " " + book : "") + " " + trafficLink(place) + "</span>");
       } else {
         show("no", ICON_NO + "<span><strong>Sorry, that's outside our area.</strong> " + name + " is " + fmtMiles(d) +
-          " from downtown Houston. We travel up to " + AREA.miles + " miles.</span>");
+          " from " + AREA.from + ". We travel up to " + AREA.miles + " miles.</span>");
       }
     }
     function choose(place) {

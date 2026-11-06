@@ -10,7 +10,7 @@
   <meta name="color-scheme" content="light dark">
 
   <!-- Sets light/dark (Houston sunrise to sunset) before first paint -->
-  <script src="theme.js?v=0.9.0"></script>
+  <script src="theme.js?v=0.10.0"></script>
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
@@ -36,9 +36,9 @@
   <!-- Font: Archivo, self-hosted (SIL OFL 1.1, see assets/fonts/OFL.txt) -->
   <link rel="preload" href="assets/fonts/archivo-latin-var.woff2" as="font" type="font/woff2" crossorigin>
 
-  <link rel="stylesheet" href="styles.css?v=0.9.0">
-  <script src="script.js?v=0.9.0" defer></script>
-  <script src="area.js?v=0.9.0" defer></script>
+  <link rel="stylesheet" href="styles.css?v=0.10.0">
+  <script src="script.js?v=0.10.0" defer></script>
+  <script src="area.js?v=0.10.0" defer></script>
 
   <script type="application/ld+json">
   {
@@ -62,9 +62,9 @@
     },
     "areaServed": {
       "@type": "GeoCircle",
-      "description": "Houston, TX and surrounding areas, up to 35 miles from downtown Houston",
-      "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 29.7604, "longitude": -95.3698 },
-      "geoRadius": 56327
+      "description": "Houston, TX and surrounding areas, up to 30 miles from Cypress, TX (not Spring or Galveston)",
+      "geoMidpoint": { "@type": "GeoCoordinates", "latitude": 29.9691, "longitude": -95.6972 },
+      "geoRadius": 48280
     },
     "makesOffer": [
       { "@type": "Offer", "name": "Auto Refresh", "description": "Basic interior + exterior", "price": "65", "priceCurrency": "USD" },
@@ -80,7 +80,7 @@
     "@type": "FAQPage",
     "mainEntity": [
       { "@type": "Question", "name": "Do you come to me?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SUHO Detailing is mobile: we come to your location. We travel up to 35 miles from downtown Houston. To check your address, type it into the address check in the service area section." } },
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. SUHO Detailing is mobile: we come to your location. We travel up to 30 miles from Cypress, TX, but not to Spring or Galveston. To check your address, type it into the address check in the service area section." } },
       { "@type": "Question", "name": "How much does a detail cost?",
         "acceptedAnswer": { "@type": "Answer", "text": "Auto Refresh is $65 and Motorcycle Refresh is $50. These are introductory prices. Additional charges may apply for heavily soiled vehicles." } },
       { "@type": "Question", "name": "What does the Auto Refresh include?",
@@ -123,7 +123,7 @@
 
   <main id="main">
 
-    <!-- Hero: always dark, like a studio with the lights on one car -->
+    <!-- Hero: always dark, text centered -->
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap hero-grid">
         <div class="hero-copy">
@@ -143,58 +143,6 @@
             <li><a href="#motorcycle-refresh"><span>Motorcycle Refresh</span> <strong>$50</strong></a></li>
           </ul>
         </div>
-
-        <!-- The logo's line-drawn car, drawn large. It draws itself in once,
-             then a band of light passes over it now and then. -->
-        <div class="hero-art" aria-hidden="true">
-          <svg class="car" viewBox="0 0 640 260" width="640" height="260">
-            <defs>
-              <linearGradient id="sheen" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0" stop-color="#fff" stop-opacity="0"/>
-                <stop offset="0.5" stop-color="#fff" stop-opacity="1"/>
-                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-              </linearGradient>
-              <radialGradient id="floor" cx="0.5" cy="0.5" r="0.5">
-                <stop offset="0" stop-color="#fff" stop-opacity="0.16"/>
-                <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-              </radialGradient>
-              <mask id="car-lines" maskUnits="userSpaceOnUse" x="-20" y="-20" width="680" height="300">
-                <g class="car-mask" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
-                  <use href="#car-body"/>
-                </g>
-              </mask>
-            </defs>
-            <ellipse class="car-floor" cx="320" cy="214" rx="300" ry="26" fill="url(#floor)"/>
-            <g id="car-body" class="car-lines">
-              <!-- roofline: tail to nose, like the logo's swoosh -->
-              <path class="cl cl-1" pathLength="1" d="M36 150 C 120 128, 210 70, 330 66 C 420 63, 470 92, 528 124 C 560 132, 596 140, 616 150"/>
-              <!-- side window -->
-              <path class="cl cl-2" pathLength="1" d="M214 118 C 262 90, 300 82, 336 82 C 384 82, 418 96, 452 120 Z"/>
-              <!-- B pillar -->
-              <path class="cl cl-3" pathLength="1" d="M346 82 L 342 120"/>
-              <!-- shoulder line -->
-              <path class="cl cl-4" pathLength="1" d="M150 136 L 560 132"/>
-              <!-- lower body with wheel arches -->
-              <path class="cl cl-5" pathLength="1" d="M40 152 C 40 168, 46 178, 70 182 L 104 182 A 52 52 0 0 1 206 182 L 432 182 A 52 52 0 0 1 534 182 L 590 182 C 608 180, 616 168, 616 152"/>
-              <!-- wheels -->
-              <circle class="cl cl-6" pathLength="1" cx="155" cy="186" r="40"/>
-              <circle class="cl cl-6" pathLength="1" cx="483" cy="186" r="40"/>
-              <circle class="cl cl-7" pathLength="1" cx="155" cy="186" r="22"/>
-              <circle class="cl cl-7" pathLength="1" cx="483" cy="186" r="22"/>
-              <!-- door line and handle -->
-              <path class="cl cl-8" pathLength="1" d="M338 136 C 340 156, 338 170, 334 182"/>
-              <path class="cl cl-8" pathLength="1" d="M372 146 L 396 146"/>
-              <!-- headlight -->
-              <path class="cl cl-9" pathLength="1" d="M584 140 L 612 147"/>
-            </g>
-            <!-- tail light: the logo's red streak -->
-            <path class="car-tail" pathLength="1" d="M40 146 L 92 140"/>
-            <!-- the moving band of light, seen only through the car's lines -->
-            <g mask="url(#car-lines)">
-              <rect class="car-sheen" x="-200" y="0" width="160" height="260" fill="url(#sheen)"/>
-            </g>
-          </svg>
-        </div>
       </div>
     </section>
 
@@ -203,7 +151,7 @@
       <ul class="wrap facts-grid" role="list">
         <li class="fact">
           <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          <div><p class="fact-title">We come to you</p><p>At your location, up to 35 miles from downtown Houston. <a class="link-inline" href="#area-check" data-check-link hidden>Check your address</a></p></div>
+          <div><p class="fact-title">We come to you</p><p>At your location, up to 30 miles from Cypress, TX. <a class="link-inline" href="#area-check" data-check-link hidden>Check your address</a></p></div>
         </li>
         <li class="fact">
           <svg class="ic ic-lg" aria-hidden="true" viewBox="0 0 24 24"><path d="M3 16v-3l2-5h9l4 5h1.5a1.5 1.5 0 0 1 1.5 1.5V16"/><circle cx="7" cy="16.5" r="2"/><circle cx="17" cy="16.5" r="2"/><path d="M9 16.5h6"/></svg>
@@ -339,21 +287,21 @@
       </div>
     </section>
 
-    <!-- Service area: up to 35 miles from downtown Houston (Houston City Hall, 29.7604 N, 95.3698 W).
-         Behind the text, area.js turns a globe of the 92 Census places within that radius
+    <!-- Service area: up to 30 miles from Cypress, TX (29.9691 N, 95.6972 W), where Umair is based; never Spring or Galveston.
+         Behind the text, area.js turns a globe of the 52 Census places within that radius
          (2024 U.S. Census Gazetteer, Texas: Census Designated Places and incorporated cities
-         and towns, measured to each place's internal point; Houston itself left out).
+         and towns, measured to each place's internal point; Spring and Houston itself left out).
          The sentence names nine well-known places, clockwise from the west. -->
     <section class="area" id="area" aria-labelledby="area-title">
       <div class="area-globe" aria-hidden="true"></div>
       <div class="area-inner">
         <h2 class="section-title" id="area-title"><span class="nowrap">Houston, TX</span> and surrounding areas</h2>
-        <p class="area-radius">We travel up to 35 miles from downtown Houston.</p>
-        <p>Nearby places include Katy, Cypress, The Woodlands, Kingwood, Baytown, Pasadena, Clear Lake, Pearland and Sugar Land.</p>
+        <p class="area-radius">We travel up to 30 miles from Cypress, TX.</p>
+        <p>Nearby places include Katy, Waller, Magnolia, Tomball, The Woodlands, Jersey Village, Bellaire, Sugar Land and Fulshear. We don't travel to Spring or Galveston.</p>
         <p class="area-traffic">We leave 45 minutes between jobs for the drive, but Houston traffic can still delay an arrival. <a class="link-inline" href="https://www.google.com/maps/@29.7604,-95.3698,11z/data=!5m1!1e1" target="_blank" rel="noopener">See live traffic on Google Maps</a></p>
         <!-- Address check: suggestions as you type (Photon, OpenStreetMap data), or the
-             device's location. Straight-line distance from downtown Houston, against the
-             35-mile radius. Built by script.js; without scripts the fallback line shows. -->
+             device's location. Straight-line distance from Cypress, TX, against the
+             30-mile radius (Spring and Galveston always outside). Built by script.js; without scripts the fallback line shows. -->
         <form class="check" id="area-check" data-check hidden novalidate autocomplete="off">
           <label class="check-label" for="check-input">Check your address</label>
           <div class="check-box">
@@ -395,7 +343,7 @@
         <div class="faq">
           <details>
             <summary>Do you come to me?</summary>
-            <p>Yes. SUHO Detailing is mobile: we come to your location. We travel up to 35 miles from downtown Houston. To check your address, type it into <a class="link-inline" href="#area-check">the address check</a> in the service area section.</p>
+            <p>Yes. SUHO Detailing is mobile: we come to your location. We travel up to 30 miles from Cypress, TX, but not to Spring or Galveston. To check your address, type it into <a class="link-inline" href="#area-check">the address check</a> in the service area section.</p>
           </details>
           <details>
             <summary>How much does a detail cost?</summary>
@@ -445,7 +393,6 @@
       <div class="footer-brand">
         <img class="footer-logo" src="assets/logo-wordmark-white.png" alt="" width="1000" height="379" loading="lazy">
         <p class="footer-tag">SLEEVES UP. HANDS ON.</p>
-        <span class="divider" aria-hidden="true"></span>
         <p>Mobile car and motorcycle detailing in <span class="nowrap">Houston, TX</span> and surrounding areas.</p>
       </div>
       <nav class="footer-nav" aria-label="Footer">

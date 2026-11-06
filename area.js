@@ -1,6 +1,6 @@
 /* SUHO Detailing: service-area globe.
-   The 92 Census places within 35 miles of downtown Houston (the service
-   radius) ride around a slowly turning globe behind "Houston, TX and
+   The 52 Census places within 30 miles of Cypress, TX (the service
+   radius; Spring and Houston itself left out) ride around a slowly turning globe behind "Houston, TX and
    surrounding areas". Every few seconds one name
    lights up in the color of its terrain.
 
@@ -15,29 +15,20 @@
   "use strict";
 
   var PLACES = [
-  ["West University Place", "c"], ["Hedwig Village", "g"], ["Meadows Place", "c"],
-  ["Atascocita", "g"], ["Barrett", "p"], ["Shoreacres", "w"], ["Seabrook", "w"], ["Katy", "p"],
-  ["Woodbranch", "g"], ["Patton Village", "g"], ["Splendora", "g"], ["Southside Place", "c"],
-  ["Bunker Hill Village", "g"], ["Jersey Village", "c"], ["Mission Bend", "c"], ["Sienna", "p"],
-  ["El Lago", "w"], ["Sandy Point", "p"], ["Dickinson", "c"], ["Dayton", "p"], ["Pleak", "p"],
-  ["Brookshire", "p"], ["Bellaire", "c"], ["Aldine", "c"], ["Channelview", "w"],
-  ["Four Corners", "c"], ["Spring", "g"], ["Cinco Ranch", "p"], ["Kemah", "w"], ["Bacliff", "w"],
-  ["Fulshear", "p"], ["Stagecoach", "g"], ["Hilshire Village", "g"], ["South Houston", "c"],
-  ["Fifth Street", "p"], ["Arcola", "p"], ["Crosby", "p"], ["Pecan Grove", "p"], ["Richmond", "w"],
-  ["Rosharon", "p"], ["Beach City", "w"], ["Fairchilds", "p"], ["Jacinto City", "c"],
-  ["Cloverleaf", "c"], ["Sheldon", "c"], ["Manvel", "p"], ["Webster", "c"], ["Baytown", "w"],
-  ["Hillcrest Village", "p"], ["The Woodlands", "g"], ["Woodloch", "g"],
-  ["Old River-Winfree", "p"], ["Hunters Creek Village", "g"], ["Brookside Village", "c"],
-  ["Deer Park", "c"], ["Highlands", "w"], ["Iowa Colony", "p"], ["League City", "c"],
-  ["Porter Heights", "g"], ["Shenandoah", "g"], ["San Leon", "w"], ["Cove", "p"],
-  ["Galena Park", "c"], ["Pearland", "c"], ["Fresno", "p"], ["Sugar Land", "c"],
-  ["Nassau Bay", "w"], ["Alvin", "p"], ["Tomball", "g"], ["Mont Belvieu", "p"],
-  ["Roman Forest", "g"], ["Grangerland", "g"], ["Spring Valley Village", "g"], ["Stafford", "c"],
-  ["Missouri City", "c"], ["Friendswood", "c"], ["Taylor Lake Village", "w"], ["Thompsons", "w"],
-  ["Oak Ridge North", "g"], ["Santa Fe", "p"], ["Bonney", "p"], ["Weston Lakes", "p"],
-  ["Piney Point Village", "g"], ["Pasadena", "c"], ["Humble", "g"], ["La Porte", "w"],
-  ["Morgan's Point", "w"], ["Clear Lake Shores", "w"], ["Cumings", "p"], ["Rosenberg", "p"],
-  ["Liverpool", "p"], ["Plum Grove", "g"]
+  ["Sugar Land", "c"], ["Tomball", "g"], ["Rosenberg", "p"], ["Todd Mission", "g"],
+  ["Pinehurst", "g"], ["Conroe", "g"], ["Magnolia", "g"], ["Woodloch", "g"],
+  ["Hilshire Village", "g"], ["Porter Heights", "g"], ["Plantersville", "g"],
+  ["Piney Point Village", "g"], ["San Felipe", "w"], ["Montgomery", "g"], ["Four Corners", "c"],
+  ["Pinebrook", "g"], ["Simonton", "p"], ["Stagecoach", "g"], ["Missouri City", "c"],
+  ["The Woodlands", "g"], ["Southside Place", "c"], ["Mission Bend", "c"],
+  ["West University Place", "c"], ["Cumings", "p"], ["Shenandoah", "g"], ["Hedwig Village", "g"],
+  ["Brazos Country", "w"], ["Jersey Village", "c"], ["Grangerland", "g"], ["Meadows Place", "c"],
+  ["Pecan Grove", "p"], ["Stafford", "c"], ["Fulshear", "p"], ["Bunker Hill Village", "g"],
+  ["Waller", "p"], ["Humble", "g"], ["Prairie View", "p"], ["Aldine", "c"], ["Pine Island", "p"],
+  ["Cinco Ranch", "p"], ["Fifth Street", "p"], ["Oak Ridge North", "g"], ["Pattison", "p"],
+  ["Brookshire", "p"], ["Hunters Creek Village", "g"], ["Hempstead", "p"],
+  ["Spring Valley Village", "g"], ["Weston Lakes", "p"], ["Bellaire", "c"],
+  ["South Frydek", "p"], ["Katy", "p"], ["Richmond", "w"]
   ];
   var TERRAIN = { w: "water", g: "woods", c: "city", p: "prairie" };
 

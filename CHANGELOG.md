@@ -1,5 +1,16 @@
 # Changelog
 
+## [v0.10.0] - 2026-11-05
+
+### Changed
+- **Service area: 30 miles from Cypress, TX**, where Umair is based (was 35 miles from downtown Houston), so no job is far from home. Spring and Galveston are never served: the address check answers "We don't travel to Spring." (or Galveston) whatever the distance. Updated everywhere: page text, quick facts, the questions and their JSON-LD, the `areaServed` circle (48,280 m around Cypress), the address check (now "N miles from Cypress"), and the Google Maps drive-time link (now from Cypress).
+- The globe shows the 52 Census places within 30 miles of Cypress (Spring and Houston itself left out), and the nearby-places sentence names Katy, Waller, Magnolia, Tomball, The Woodlands, Jersey Village, Bellaire, Sugar Land and Fulshear.
+- Hero: the line-drawn car is gone, and the text is centered in one column.
+- Version bumped to 0.10.0 in the asset links.
+
+### Removed
+- Every decorative red line: the dash before "Mobile detailing in Houston, TX", the red bars on top of the price cards, the footer dash, the red underline under the current section in the header, the red hover underlines, the red bar on the selected address suggestion, and the red plus/minus on the questions (now the text color). Red stays on buttons, icons and check marks.
+
 ## [v0.9.1] - 2026-11-05
 
 ### Changed
